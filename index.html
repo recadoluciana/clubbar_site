@@ -153,6 +153,78 @@
 
     }
 
+    .corujita-chat {
+
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+
+      background: #111;
+      border: 1px solid #2d2d2d;
+
+      border-radius: 80px;
+
+      padding: 14px 18px;
+
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      text-decoration: none;
+
+      box-shadow: 0 0 30px rgba(0,0,0,0.45);
+
+      z-index: 9999;
+
+      transition: 0.2s;
+    }
+
+    .corujita-chat:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: #f5c542;
+    }
+
+    .corujita-chat img {
+
+      width: 64px;
+      height: 64px;
+
+      object-fit: contain;
+    }
+
+    .corujita-chat span {
+
+      color: white;
+
+      font-size: 15px;
+      line-height: 1.4;
+
+      font-weight: bold;
+    }
+
+    @media(max-width: 768px) {
+
+      .corujita-chat {
+
+        right: 14px;
+        bottom: 14px;
+
+        padding: 10px 14px;
+      }
+
+      .corujita-chat img {
+
+        width: 52px;
+        height: 52px;
+      }
+
+      .corujita-chat span {
+
+        font-size: 13px;
+      }
+
+    }
+
   </style>
 </head>
 
@@ -273,6 +345,21 @@
   <footer>
     Clubbar © 2026 — Venda produtos e ingressos antecipadamente.
   </footer>
+
+  <!-- CORUJITA FLOAT -->
+
+  <a
+    href="https://wa.me/5535999811045"
+    class="corujita-chat"
+    target="_blank"
+  >
+    <img src="corujao.png" alt="Corujita">
+
+    <span>
+      Converse com a Corujita<br>
+      e tire suas dúvidas
+    </span>
+  </a>
 
 </body>
 </html>
