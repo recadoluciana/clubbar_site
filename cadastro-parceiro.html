@@ -279,6 +279,11 @@
 
         e.preventDefault();
 
+        const btn = document.querySelector('.btn');
+
+        btn.disabled = true;
+        btn.innerText = 'Enviando cadastro...';
+
         const body = {
 
           nome_responsavel:
@@ -303,6 +308,8 @@
             document.getElementById('mensagem').value,
         };
 
+        console.log('BODY =>', body);
+
         try {
 
           const response = await fetch(
@@ -318,12 +325,20 @@
             }
           );
 
+          const data = await response.json();
+
+          console.log('STATUS =>', response.status);
+          console.log('RESPOSTA =>', data);
+
           if (!response.ok) {
-            throw new Error('Erro ao enviar cadastro');
+
+            throw new Error(
+              data.detail || 'Erro ao enviar cadastro'
+            );
           }
 
           alert(
-            'Cadastro enviado com sucesso!'
+            'Cadastro enviado com sucesso! Entraremos em contato.'
           );
 
           document
@@ -332,11 +347,18 @@
 
         } catch (e) {
 
+          console.error(e);
+
           alert(
-            'Erro ao enviar cadastro.'
+            'Erro ao enviar cadastro: ' + e.message
           );
 
-          console.error(e);
+        } finally {
+
+          btn.disabled = false;
+
+          btn.innerText =
+            'Quero ser parceiro do Clubbar';
         }
 
       });
