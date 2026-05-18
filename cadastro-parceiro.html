@@ -136,6 +136,50 @@
       text-decoration: none;
     }
 
+    .clubbar-toast {
+
+      position: fixed;
+
+      top: 30px;
+      right: 30px;
+
+      background: #111;
+
+      border: 1px solid #f5c542;
+
+      color: white;
+
+      padding: 22px 26px;
+
+      border-radius: 20px;
+
+      z-index: 99999;
+
+      box-shadow: 0 0 30px rgba(0,0,0,0.45);
+
+      font-size: 16px;
+
+      animation: fadeIn 0.3s ease;
+    }
+
+    .clubbar-toast strong {
+
+      color: #f5c542;
+      font-size: 18px;
+    }
+
+    @keyframes fadeIn {
+
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
     @media(max-width: 768px) {
 
       .container {
@@ -155,7 +199,23 @@
 
     }
 
+    .clubbar-toast {
+
+        right: 12px;
+        left: 12px;
+
+        top: 12px;
+
+        font-size: 14px;
+
+        padding: 18px;
+      }
+
+    }
+
+
   </style>
+
 </head>
 
 <body>
@@ -337,8 +397,8 @@
             );
           }
 
-          alert(
-            'Cadastro enviado com sucesso! Entraremos em contato.'
+          mostrarMensagem(
+            'Entraremos em contato em breve 🚀'
           );
 
           document
@@ -362,6 +422,24 @@
         }
 
       });
+
+      function mostrarMensagem(texto) {
+
+        const div = document.createElement('div');
+
+        div.innerHTML = `
+          <div class="clubbar-toast">
+            <strong>CLUBBAR</strong><br><br>
+            ${texto}
+          </div>
+        `;
+
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+          div.remove();
+        }, 4000);
+      }
 
   </script>
 
