@@ -3,374 +3,409 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clubbar - Plataforma para bares e eventos</title>
 
-  <title>Clubbar - A sua balada perfeita começa aqui</title>
-  <link rel="icon" type="image/png" href="corujao.png">
+  <link rel="icon" type="image/png" href="assets/images/coruja.png" />
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #080808;
+      background: #050505;
       color: #fff;
     }
 
     header {
-      padding: 6px 8%;
       background: #000;
+      padding: 24px 8%;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: center;
       border-bottom: 1px solid #222;
     }
 
-    .logo-area {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    .logo-area img {
-      height: 110px;
-      display: block;
-    }
-
-    .parceiro-btn {
-      margin-bottom: 30px;
+    header img {
+      height: 62px;
+      object-fit: contain;
     }
 
     .hero {
-      padding: 25px 8% 50px;
+      padding: 25px 8% 80px;
       background: linear-gradient(135deg, #000, #111, #222);
       text-align: center;
     }
 
-    .hero h2 {
-      font-size: 56px;
-      margin-bottom: 24px;
-      line-height: 1.2;
-    }
-
-    .hero p {
-      font-size: 22px;
-      max-width: 900px;
-      margin: 0 auto 40px;
-      color: #ddd;
-      line-height: 1.7;
-    }
-
-    .btn {
+    .portal {
       display: inline-block;
       background: #f5c542;
       color: #000;
-      padding: 18px 38px;
-      border-radius: 40px;
-      text-decoration: none;
+      padding: 14px 38px;
+      border-radius: 30px;
       font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 35px;
+      text-decoration: none;
+    }
+
+    .hero h1 {
+      font-size: 46px;
+      max-width: 900px;
+      margin: 0 auto 20px;
+      line-height: 1.15;
+    }
+
+    .hero p {
       font-size: 18px;
-      transition: 0.2s;
+      color: #e0e0e0;
+      max-width: 780px;
+      margin: 0 auto 35px;
+      line-height: 1.7;
+    }
+
+    .botoes {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #f5c542;
+      color: #000;
+      padding: 16px 34px;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s;
     }
 
     .btn:hover {
-      transform: scale(1.03);
-      opacity: 0.95;
+      background: #dcae24;
+      transform: translateY(-3px);
     }
 
-    section {
+    .btn.secundario {
+      background: transparent;
+      color: #f5c542;
+      border: 2px solid #f5c542;
+    }
+
+    .indicadores {
+      display: flex;
+      justify-content: center;
+      gap: 35px;
+      flex-wrap: wrap;
+      margin-top: 50px;
+      color: #ccc;
+    }
+
+    .indicadores strong {
+      display: block;
+      color: #f5c542;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .beneficios {
       padding: 70px 8%;
-    }
-
-    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 24px;
     }
 
     .card {
       background: #151515;
-      border-radius: 22px;
+      border: 1px solid #2d2d2d;
+      border-radius: 20px;
       padding: 28px;
-      border: 1px solid #2a2a2a;
-      transition: 0.2s;
+      min-height: 220px;
+      transition: 0.3s;
     }
 
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px);
       border-color: #f5c542;
+    }
+
+    .card .icone {
+      font-size: 30px;
+      margin-bottom: 18px;
     }
 
     .card h3 {
       color: #f5c542;
-      margin-top: 0;
-      font-size: 24px;
+      font-size: 20px;
+      margin-bottom: 14px;
     }
 
     .card p {
-      color: #ccc;
-      line-height: 1.7;
+      color: #ddd;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .planos {
+      padding: 70px 8%;
+      background: #0b0b0b;
+      text-align: center;
+    }
+
+    .planos h2 {
+      font-size: 38px;
+      margin-bottom: 15px;
+    }
+
+    .planos > p {
+      color: #bbb;
+      margin-bottom: 45px;
       font-size: 17px;
     }
 
-    .cta {
-      text-align: center;
-      background: #111;
-      border-top: 1px solid #222;
+    .grid-planos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      max-width: 1150px;
+      margin: auto;
     }
 
-    .cta h2 {
-      font-size: 42px;
-      margin-bottom: 20px;
+    .plano {
+      background: #161616;
+      border: 1px solid #333;
+      border-radius: 24px;
+      padding: 35px;
+      text-align: left;
     }
 
-    .cta p {
-      font-size: 20px;
+    .plano.destaque {
+      border: 2px solid #f5c542;
+      transform: scale(1.03);
+    }
+
+    .plano h3 {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
+
+    .preco {
+      font-size: 38px;
+      color: #f5c542;
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    .preco span {
+      font-size: 15px;
       color: #ccc;
-      margin-bottom: 40px;
+    }
+
+    .plano ul {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .plano li {
+      margin-bottom: 13px;
+      color: #ddd;
+      font-size: 15px;
+    }
+
+    .plano .btn {
+      display: block;
+      text-align: center;
+      border-radius: 14px;
+    }
+
+    .cta-final {
+      padding: 80px 8%;
+      text-align: center;
+      background: linear-gradient(135deg, #111, #000);
+    }
+
+    .cta-final h2 {
+      font-size: 40px;
+      margin-bottom: 18px;
+    }
+
+    .cta-final p {
+      color: #ccc;
+      font-size: 18px;
+      margin-bottom: 30px;
     }
 
     footer {
+      padding: 30px 8%;
       text-align: center;
-      padding: 28px;
+      color: #777;
       background: #000;
-      color: #888;
       font-size: 14px;
-      border-top: 1px solid #222;
     }
 
-    @media(max-width: 768px) {
+    .whatsapp {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 40px;
+      padding: 14px 22px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
 
-      header {
-        padding: 5px 5%;
-        gap: 12px;
-      }
+    .whatsapp span {
+      color: #f5c542;
+    }
 
-      .hero {
-        padding: 25px 8% 50px;
-      }
-
-      .hero h2 {
-        font-size: 34px;
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
       }
 
       .hero p {
-        font-size: 17px;
+        font-size: 16px;
       }
 
-      .logo-area img {
-        height: 58px;
+      .plano.destaque {
+        transform: none;
       }
 
-      .btn {
-        padding: 12px 18px;
-        font-size: 14px;
+      .cta-final h2 {
+        font-size: 30px;
       }
-
-      .corujita-chat {
-
-        right: 14px;
-        bottom: 14px;
-
-        padding: 10px 14px;
-      }
-
-      .corujita-chat img {
-
-        width: 52px;
-        height: 52px;
-      }
-
-      .corujita-chat span {
-
-        font-size: 13px;
-      }
-
     }
-
-    .corujita-chat {
-
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-
-      background: #111;
-      border: 1px solid #2d2d2d;
-
-      border-radius: 80px;
-
-      padding: 14px 18px;
-
-      display: flex;
-      align-items: center;
-      gap: 14px;
-
-      text-decoration: none;
-
-      box-shadow: 0 0 30px rgba(0,0,0,0.45);
-
-      z-index: 9999;
-
-      transition: 0.2s;
-    }
-
-    .corujita-chat:hover {
-      transform: translateY(-3px) scale(1.02);
-      border-color: #f5c542;
-    }
-
-    .corujita-chat img {
-
-      width: 64px;
-      height: 64px;
-
-      object-fit: contain;
-    }
-
-    .corujita-chat span {
-
-      color: white;
-
-      font-size: 15px;
-      line-height: 1.4;
-
-      font-weight: bold;
-    }
-
-    @media(max-width: 768px) {
-
-      .corujita-chat {
-
-        right: 14px;
-        bottom: 14px;
-
-        padding: 10px 14px;
-      }
-
-      .corujita-chat img {
-
-        width: 52px;
-        height: 52px;
-      }
-
-      .corujita-chat span {
-
-        font-size: 13px;
-      }
-
-    }
-
   </style>
 </head>
 
 <body>
 
   <header>
-
-    <div class="logo-area">
-      <img src="logo_branca.png" alt="Clubbar Logo">
-    </div>
-
+    <img src="assets/images/clubbar_branco.png" alt="Clubbar" />
   </header>
 
-
   <section class="hero">
+    <a class="portal" href="https://clubbaradmin-production.up.railway.app/" target="_blank">Portal do Parceiro</a>
 
-    <a class="btn" href="https://clubbaradmin-production.up.railway.app/" target="_blank">Parceiro Clubbar</a>
-
-    <h2>
-      A sua balada perfeita começa aqui
-    </h2>
+    <h1>Venda ingressos, produtos e experiências antes do cliente chegar.</h1>
 
     <p>
-      Se você possui um bar, uma casa noturna ou realiza shows ou eventos,
-      conheça o Clubbar: uma plataforma simples para vender ingressos, produtos e experiências antecipadamente.
+      O Clubbar é uma plataforma simples para bares, casas noturnas e eventos venderem ingressos,
+      bebidas, produtos e experiências de forma antecipada, reduzindo filas e aumentando o faturamento.
     </p>
 
-    <a class="btn" href="cadastro-parceiro.html">
-      Receber <br> informações
-    </a>
-    
-    &nbsp;&nbsp;&nbsp;
-
-    <a class="btn" href="planos-parceria.html">
-      Conhecer<br>&nbsp;&nbsp;&nbsp; planos &nbsp;&nbsp;&nbsp;
-    </a>
-
-  </section>
-
-  <section>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>Venda antecipada</h3>
-
-        <p>
-          Seus clientes podem comprar ingressos, bebidas e outros produtos antes de chegar ao local.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Menos filas</h3>
-
-        <p>
-          Reduza filas, agilize o atendimento e melhore
-          a experiência do cliente dentro do estabelecimento.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Divulgação</h3>
-
-        <p>
-          Divulgue seu estabelecimento, sua agenda, seus shows e eventos, seu cardápio e promoções diretamente na plataforma.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Painel gerencial</h3>
-
-        <p>
-          Acompanhe as vendas de ingressos e produtos, as  entradas e saídas e tenha o controle operacional através de relatórios gerenciais.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Sem burocracia</h3>
-
-        <p>
-          Parceria simples através de cadastro e contrato digital na plataforma, com modalidade de cobrança adequada a seu negócio.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>App e navegador(web)</h3>
-
-        <p>
-          Seus clientes podem baixar o app nas lojas (Play Store ou App Store) ou através do QRCode disponível nos estabelecimentos ou usar a versão web também através do QRCode.
-        </p>
-      </div>
-
+    <div class="botoes">
+      <a class="btn" href="cadastro_lead.html">Quero ser parceiro</a>
+      <a class="btn secundario" href="#planos">Conhecer planos</a>
     </div>
 
+    <div class="indicadores">
+      <div><strong>+ vendas</strong>Antes do evento começar</div>
+      <div><strong>menos filas</strong>Atendimento mais rápido</div>
+      <div><strong>gestão</strong>Painel completo para parceiros</div>
+    </div>
+  </section>
+
+  <section class="beneficios">
+    <div class="card">
+      <div class="icone">🎟️</div>
+      <h3>Venda antecipada</h3>
+      <p>Permita que seus clientes comprem ingressos, bebidas e produtos antes de chegar ao local.</p>
+    </div>
+
+    <div class="card">
+      <div class="icone">⚡</div>
+      <h3>Menos filas</h3>
+      <p>Agilize o atendimento e melhore a experiência do cliente dentro do estabelecimento.</p>
+    </div>
+
+    <div class="card">
+      <div class="icone">📢</div>
+      <h3>Divulgação</h3>
+      <p>Divulgue sua agenda, shows, eventos, promoções e cardápio diretamente na plataforma.</p>
+    </div>
+
+    <div class="card">
+      <div class="icone">📊</div>
+      <h3>Painel gerencial</h3>
+      <p>Acompanhe vendas, entradas, produtos vendidos e relatórios operacionais.</p>
+    </div>
+
+    <div class="card">
+      <div class="icone">✅</div>
+      <h3>Sem burocracia</h3>
+      <p>Cadastro simples, contrato digital e modelo adaptado para bares, baladas e eventos.</p>
+    </div>
+
+    <div class="card">
+      <div class="icone">📱</div>
+      <h3>App e navegador</h3>
+      <p>Seus clientes podem acessar pelo aplicativo, navegador web ou QR Code no estabelecimento.</p>
+    </div>
+  </section>
+
+  <section class="planos" id="planos">
+    <h2>Escolha o plano ideal</h2>
+    <p>Comece pequeno e evolua conforme sua operação crescer.</p>
+
+    <div class="grid-planos">
+      <div class="plano">
+        <h3>Plano 1</h3>
+        <div class="preco">R$ 49<span>/mês</span></div>
+        <ul>
+          <li>✔ Cardápio digital</li>
+          <li>✔ Cadastro de produtos</li>
+          <li>✔ Página do estabelecimento</li>
+          <li>✔ Suporte inicial</li>
+        </ul>
+        <a class="btn" href="cadastro_lead.html?plano=1">Contratar plano</a>
+      </div>
+
+      <div class="plano destaque">
+        <h3>Plano 2</h3>
+        <div class="preco">R$ 99<span>/mês</span></div>
+        <ul>
+          <li>✔ Tudo do Plano 1</li>
+          <li>✔ Venda de ingressos</li>
+          <li>✔ Controle de eventos</li>
+          <li>✔ Painel administrativo</li>
+          <li>✔ Relatórios de vendas</li>
+        </ul>
+        <a class="btn" href="cadastro_lead.html?plano=2">Contratar plano</a>
+      </div>
+
+      <div class="plano">
+        <h3>Plano 3</h3>
+        <div class="preco">R$ 199<span>/mês</span></div>
+        <ul>
+          <li>✔ Tudo do Plano 2</li>
+          <li>✔ Múltiplos estabelecimentos</li>
+          <li>✔ Dashboard avançado</li>
+          <li>✔ Integrações de pagamento</li>
+          <li>✔ Suporte prioritário</li>
+        </ul>
+        <a class="btn" href="cadastro_lead.html?plano=3">Contratar plano</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <h2>Pronto para vender mais com o Clubbar?</h2>
+    <p>Cadastre sua empresa e comece a preparar sua operação digital.</p>
+    <a class="btn" href="cadastro_lead.html">Quero ser parceiro</a>
   </section>
 
   <footer>
-    Clubbar © 2026 — Venda produtos e ingressos antecipadamente.
+    © 2026 Clubbar. Todos os direitos reservados.
   </footer>
 
-  <!-- CORUJITA FLOAT -->
-
-  <a
-    href="https://wa.me/5535999811045"
-    class="corujita-chat"
-    target="_blank"
-  >
-    <img src="corujao.png" alt="Corujita">
-
-    <span>
-      Posso ajudar?
-    </span>
+  <a class="whatsapp" href="https://wa.me/5500000000000" target="_blank">
+    🦉 <span>Posso ajudar?</span>
   </a>
 
 </body>

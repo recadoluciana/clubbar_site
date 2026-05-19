@@ -32,11 +32,11 @@
 
     .logo {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 15px;
     }
 
     .logo img {
-      height: 70px;
+      height: 80px;
     }
 
     h1 {
@@ -179,6 +179,16 @@
         opacity: 1;
         transform: translateY(0);
       }
+
+      header {
+        padding: 6px 8%;
+        background: #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #222;
+      }
+
     }
 
     @media(max-width: 768px) {
@@ -212,6 +222,17 @@
   
     }
 
+    .logo-area {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .logo-area img {
+      height: 110px;
+      display: block;
+    }
+
 
   </style>
 
@@ -219,12 +240,17 @@
 
 <body>
 
+  <header>
+
+      <div class="logo-area">
+        <img src="logo_branca.png" alt="Clubbar Logo">
+      </div>
+
+  </header>
+
   <div class="container">
 
-    <div class="logo">
-      <img src="logo_branca.png" alt="Clubbar">
-    </div>
-
+    
     <h1>Cadastro de Parceiro</h1>
 
     <div class="subtitle">

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Clubbar - A sua balada perfeita começa aqui</title>
+  <link rel="icon" type="image/png" href="corujao.png">
+
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #080808;
+      color: #fff;
+    }
+
+    header {
+      padding: 6px 8%;
+      background: #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #222;
+    }
+
+    .logo-area {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .logo-area img {
+      height: 110px;
+      display: block;
+    }
+
+    .parceiro-btn {
+      margin-bottom: 30px;
+    }
+
+    .hero {
+      padding: 25px 8% 50px;
+      background: linear-gradient(135deg, #000, #111, #222);
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 56px;
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 22px;
+      max-width: 900px;
+      margin: 0 auto 40px;
+      color: #ddd;
+      line-height: 1.7;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #f5c542;
+      color: #000;
+      padding: 18px 38px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+      opacity: 0.95;
+    }
+
+    section {
+      padding: 70px 8%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: #151515;
+      border-radius: 22px;
+      padding: 28px;
+      border: 1px solid #2a2a2a;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #f5c542;
+    }
+
+    .card h3 {
+      color: #f5c542;
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .card p {
+      color: #ccc;
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .cta {
+      text-align: center;
+      background: #111;
+      border-top: 1px solid #222;
+    }
+
+    .cta h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      font-size: 20px;
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 28px;
+      background: #000;
+      color: #888;
+      font-size: 14px;
+      border-top: 1px solid #222;
+    }
+
+    @media(max-width: 768px) {
+
+      header {
+        padding: 5px 5%;
+        gap: 12px;
+      }
+
+      .hero {
+        padding: 25px 8% 50px;
+      }
+
+      .hero h2 {
+        font-size: 34px;
+      }
+
+      .hero p {
+        font-size: 17px;
+      }
+
+      .logo-area img {
+        height: 58px;
+      }
+
+      .btn {
+        padding: 12px 18px;
+        font-size: 14px;
+      }
+
+      .corujita-chat {
+
+        right: 14px;
+        bottom: 14px;
+
+        padding: 10px 14px;
+      }
+
+      .corujita-chat img {
+
+        width: 52px;
+        height: 52px;
+      }
+
+      .corujita-chat span {
+
+        font-size: 13px;
+      }
+
+    }
+
+    .corujita-chat {
+
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+
+      background: #111;
+      border: 1px solid #2d2d2d;
+
+      border-radius: 80px;
+
+      padding: 14px 18px;
+
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      text-decoration: none;
+
+      box-shadow: 0 0 30px rgba(0,0,0,0.45);
+
+      z-index: 9999;
+
+      transition: 0.2s;
+    }
+
+    .corujita-chat:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: #f5c542;
+    }
+
+    .corujita-chat img {
+
+      width: 64px;
+      height: 64px;
+
+      object-fit: contain;
+    }
+
+    .corujita-chat span {
+
+      color: white;
+
+      font-size: 15px;
+      line-height: 1.4;
+
+      font-weight: bold;
+    }
+
+    @media(max-width: 768px) {
+
+      .corujita-chat {
+
+        right: 14px;
+        bottom: 14px;
+
+        padding: 10px 14px;
+      }
+
+      .corujita-chat img {
+
+        width: 52px;
+        height: 52px;
+      }
+
+      .corujita-chat span {
+
+        font-size: 13px;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <header>
+
+    <div class="logo-area">
+      <img src="logo_branca.png" alt="Clubbar Logo">
+    </div>
+
+  </header>
+
+
+  <section class="hero">
+
+    <a class="btn" href="https://clubbaradmin-production.up.railway.app/" target="_blank">Portal do Parceiro</a>
+
+    <h2>
+      A sua balada perfeita começa aqui
+    </h2>
+
+    <p>
+      Se você possui um bar, uma casa noturna ou realiza shows ou eventos,
+      conheça o Clubbar: uma plataforma simples para vender ingressos, produtos e experiências antecipadamente.
+    </p>
+
+    <a class="btn" href="cadastro-parceiro.html">
+      Quero ser <br> parceiro
+    </a>
+    
+    &nbsp;&nbsp;&nbsp;
+
+    <a class="btn" href="planos-parceria.html">
+      Conhecer<br>&nbsp;&nbsp;&nbsp; planos &nbsp;&nbsp;&nbsp;
+    </a>
+
+  </section>
+
+  <section>
+
+    <div class="grid">
+
+      <div class="card">
+        <h3>Venda antecipada</h3>
+
+        <p>
+          Seus clientes podem comprar ingressos, bebidas e outros produtos antes de chegar ao local.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Menos filas</h3>
+
+        <p>
+          Reduza filas, agilize o atendimento e melhore
+          a experiência do cliente dentro do estabelecimento.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Divulgação</h3>
+
+        <p>
+          Divulgue seu estabelecimento, sua agenda, seus shows e eventos, seu cardápio e promoções diretamente na plataforma.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Painel gerencial</h3>
+
+        <p>
+          Acompanhe as vendas de ingressos e produtos, as  entradas e saídas e tenha o controle operacional através de relatórios gerenciais.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Sem burocracia</h3>
+
+        <p>
+          Parceria simples através de cadastro e contrato digital na plataforma, com modalidade de cobrança adequada a seu negócio.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>App e navegador(web)</h3>
+
+        <p>
+          Seus clientes podem baixar o app nas lojas (Play Store ou App Store) ou através do QRCode disponível nos estabelecimentos ou usar a versão web também através do QRCode.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <footer>
+    Clubbar © 2026 — Venda produtos e ingressos antecipadamente.
+  </footer>
+
+  <!-- CORUJITA FLOAT -->
+
+  <a
+    href="https://wa.me/5535999811045"
+    class="corujita-chat"
+    target="_blank"
+  >
+    <img src="corujao.png" alt="Corujita">
+
+    <span>
+      Posso ajudar?
+    </span>
+  </a>
+
+</body>
+</html>
