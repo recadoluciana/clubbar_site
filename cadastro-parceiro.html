@@ -436,30 +436,48 @@
         btn.innerText = 'Enviando cadastro...';
 
         const body = {
-
           nome_responsavel:
-            document.getElementById('nome_responsavel').value,
+            document
+              .getElementById('nome_responsavel')
+              .value
+              .trim(),
 
           nome_estabelecimento:
-            document.getElementById('nome_estabelecimento').value,
+            document
+              .getElementById('nome_estabelecimento')
+              .value
+              .trim(),
 
           tipo:
-            document.getElementById('tipo').value,
+            document
+              .getElementById('tipo')
+              .value,
 
           telefone:
-            document.getElementById('telefone').value,
+            document
+              .getElementById('telefone')
+              .value
+              .trim(),
 
           email:
-            document.getElementById('email').value,
+            document
+              .getElementById('email')
+              .value
+              .trim()
+              .toLowerCase(),
 
           cidade:
-            document.getElementById('cidade').value,
+            document
+              .getElementById('cidade')
+              .value
+              .trim(),
 
           mensagem:
-            document.getElementById('mensagem').value,
+            document
+              .getElementById('mensagem')
+              .value
+              .trim(),
         };
-
-        console.log('BODY =>', body);
 
         try {
 
@@ -478,9 +496,6 @@
 
           const data = await response.json();
 
-          console.log('STATUS =>', response.status);
-          console.log('RESPOSTA =>', data);
-
           if (!response.ok) {
 
             throw new Error(
@@ -489,7 +504,7 @@
           }
 
           mostrarMensagem(
-            'Entraremos em contato em breve 🚀'
+            'Cadastro enviado com sucesso. Entraremos em contato em breve 🚀'
           );
 
           document
@@ -500,8 +515,8 @@
 
           console.error(e);
 
-          alert(
-            'Erro ao enviar cadastro: ' + e.message
+          mostrarMensagem(
+            'Erro ao enviar cadastro: ' + e.message, 'erro'
           );
 
         } finally {
@@ -509,18 +524,29 @@
           btn.disabled = false;
 
           btn.innerText =
-            'Confirmar';
+            'Quero ser parceiro do Clubbar';
         }
 
       });
 
-      function mostrarMensagem(texto) {
-
+      function mostrarMensagem(texto, tipo = 'sucesso') {
         const div = document.createElement('div');
 
+        const corBorda =
+          tipo === 'erro' ? '#dc3545' : '#f5c542';
+
+        const corTitulo =
+          tipo === 'erro' ? '#dc3545' : '#f5c542';
+
         div.innerHTML = `
-          <div class="clubbar-toast">
-            <strong>CLUBBAR</strong><br><br>
+          <div
+            class="clubbar-toast"
+            style="border-color:${corBorda};"
+          >
+            <strong style="color:${corTitulo};">
+              CLUBBAR
+            </strong>
+            <br><br>
             ${texto}
           </div>
         `;
