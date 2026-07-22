@@ -1,0 +1,8 @@
+1. Copie index.html e cadastro-parceiro.html para a raiz do clubbar_site.
+2. Copie js/config.js para clubbar_site/js/config.js.
+3. Copie api/localidades.py para app/routers/localidades.py na API.
+4. No main.py da API, registre:
+   from app.routers import localidades
+   app.include_router(localidades.router)
+5. O cadastro envia POST para /parceiros/interesse usando:
+   nmresponsavel, nmestabelecimento, tipo, telefone, email, estado_id, cidade_id e mensagem.
