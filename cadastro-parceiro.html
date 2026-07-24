@@ -547,7 +547,7 @@
         d.className = "toast " + (type === "err" ? "err" : "");
         d.innerHTML = `<div>${type === "err" ? "⚠️" : "✅"}</div><div><strong>${type === "err" ? "Não foi possível enviar" : "Cadastro enviado"}</strong><p>${text}</p></div>`;
         document.body.appendChild(d);
-        setTimeout(() => d.remove(), 5000);
+        setTimeout(() => d.remove(), 8000);
       }
       async function json(res) {
         const t = await res.text();
