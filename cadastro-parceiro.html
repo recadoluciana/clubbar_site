@@ -726,15 +726,30 @@
               m = d.detail.map((x) => x.msg).join(" ");
             throw new Error(m);
           }
+          if (!d.acesso_portal) {
+            throw new Error(
+              "Cadastro realizado, mas a API não retornou o acesso ao portal.",
+            );
+          }
+
           toast(
-            "Recebemos seus dados. Nossa equipe entrará em contato em breve.",
+            "Cadastro recebido com sucesso! Estamos preparando seu portal. " +
+              "Você será direcionado em 8 segundos.",
           );
+
           form.reset();
+
           cidade.disabled = true;
           cidade.innerHTML =
             '<option value="">Selecione primeiro o estado</option>';
+
           contador.textContent = "0/1000";
           clearAll();
+
+          setTimeout(() => {
+            window.location.href =
+              `portal-parceiro.html#acesso=${encodeURIComponent(d.acesso_portal)}`;
+          }, 8000);
         } catch (err) {
           toast(err.message || "Erro inesperado.", "err");
         } finally {

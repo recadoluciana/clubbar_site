@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal do Parceiro | Clubbar</title>
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+
+    <style>
+      :root {
+        --bg: #080808;
+        --card: #131313;
+        --card-soft: #191919;
+        --line: #2d2d2d;
+        --gold: #f5c542;
+        --gold-dark: #d5a91f;
+        --text: #ffffff;
+        --muted: #aaaaaa;
+        --success: #31b66a;
+        --danger: #e05252;
+        --info: #3287ff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at 10% 10%,
+            rgba(245, 197, 66, 0.09),
+            transparent 27%
+          ),
+          radial-gradient(
+            circle at 90% 75%,
+            rgba(50, 135, 255, 0.08),
+            transparent 30%
+          ),
+          var(--bg);
+      }
+
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+      }
+
+      .topbar {
+        min-height: 74px;
+        padding: 8px max(18px, 6vw);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background: #000;
+        border-bottom: 1px solid #222;
+      }
+
+      .topbar img {
+        width: auto;
+        height: 58px;
+        object-fit: contain;
+      }
+
+      .btn-exit {
+        padding: 10px 15px;
+        border: 1px solid #383838;
+        border-radius: 999px;
+        color: #fff;
+        background: #151515;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .btn-exit:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 28px 0 54px;
+      }
+
+      .hero {
+        margin-bottom: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        border: 1px solid rgba(245, 197, 66, 0.3);
+        border-radius: 24px;
+        background: linear-gradient(135deg, #1a1a1a, #101010);
+        box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
+      }
+
+      .hero-icon {
+        width: 64px;
+        height: 64px;
+        flex: 0 0 64px;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        color: var(--gold);
+        background: rgba(245, 197, 66, 0.12);
+        font-size: 29px;
+      }
+
+      .hero-copy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .hero h1 {
+        margin-bottom: 6px;
+        font-size: clamp(23px, 4vw, 34px);
+      }
+
+      .hero p {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .status-badge {
+        padding: 8px 12px;
+        border: 1px solid rgba(245, 197, 66, 0.38);
+        border-radius: 999px;
+        color: var(--gold);
+        background: rgba(245, 197, 66, 0.08);
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .stats {
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .stat {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+      }
+
+      .stat strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--gold);
+        font-size: 25px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.75fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .column {
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--card);
+        box-shadow: 0 13px 35px rgba(0, 0, 0, 0.2);
+      }
+
+      .panel-head {
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-head h2 {
+        font-size: 18px;
+      }
+
+      .panel-head p {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .panel-body {
+        padding: 18px 20px 20px;
+      }
+
+      .btn-refresh {
+        padding: 8px 10px;
+        border: 1px solid #3b3b3b;
+        border-radius: 11px;
+        color: #ddd;
+        background: #1b1b1b;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .messages {
+        max-height: 480px;
+        padding-right: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        overflow-y: auto;
+      }
+
+      .message {
+        max-width: 82%;
+        padding: 12px 14px;
+        border-radius: 16px;
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .message.clubbar {
+        align-self: flex-start;
+        border: 1px solid #333;
+        border-bottom-left-radius: 5px;
+        background: #202020;
+      }
+
+      .message.lead {
+        align-self: flex-end;
+        border: 1px solid rgba(245, 197, 66, 0.4);
+        border-bottom-right-radius: 5px;
+        color: #141414;
+        background: #ffe792;
+      }
+
+      .message small {
+        display: block;
+        margin-top: 6px;
+        opacity: 0.68;
+        font-size: 10px;
+      }
+
+      .message-form {
+        margin-top: 15px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .message-form textarea {
+        width: 100%;
+        min-height: 92px;
+        padding: 13px;
+        resize: vertical;
+        border: 1px solid #3b3b3b;
+        border-radius: 14px;
+        color: #111;
+        background: #f7f7f7;
+      }
+
+      .message-form textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.13);
+      }
+
+      .btn-primary {
+        min-height: 48px;
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 14px;
+        color: #000;
+        background: var(--gold);
+        font-weight: 900;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--gold-dark);
+      }
+
+      .list {
+        display: grid;
+        gap: 11px;
+      }
+
+      .item {
+        padding: 14px;
+        border: 1px solid #303030;
+        border-radius: 15px;
+        background: var(--card-soft);
+      }
+
+      .item-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .item h3 {
+        margin-bottom: 5px;
+        font-size: 15px;
+      }
+
+      .item p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .item-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn-small {
+        padding: 8px 11px;
+        border: 1px solid #3b3b3b;
+        border-radius: 10px;
+        color: #fff;
+        background: #232323;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .btn-small.confirm {
+        color: #c9ffe0;
+        border-color: rgba(49, 182, 106, 0.55);
+        background: rgba(49, 182, 106, 0.12);
+      }
+
+      .btn-small.reject {
+        color: #ffcaca;
+        border-color: rgba(224, 82, 82, 0.55);
+        background: rgba(224, 82, 82, 0.12);
+      }
+
+      .badge {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #292929;
+        color: #d6d6d6;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .badge.pendente {
+        color: #ffe89a;
+        background: rgba(245, 197, 66, 0.13);
+      }
+
+      .badge.confirmado,
+      .badge.realizado {
+        color: #bfffd8;
+        background: rgba(49, 182, 106, 0.13);
+      }
+
+      .badge.recusado,
+      .badge.cancelado {
+        color: #ffc6c6;
+        background: rgba(224, 82, 82, 0.13);
+      }
+
+      .material-link {
+        color: var(--gold);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .material-link:hover {
+        text-decoration: underline;
+      }
+
+      .decision-copy {
+        margin-bottom: 13px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .decision-actions {
+        display: grid;
+        gap: 9px;
+      }
+
+      .decision-button {
+        min-height: 46px;
+        padding: 11px;
+        border: 1px solid #383838;
+        border-radius: 13px;
+        color: #fff;
+        background: #1e1e1e;
+        font-weight: 850;
+      }
+
+      .decision-button.accept {
+        border-color: rgba(49, 182, 106, 0.55);
+      }
+
+      .decision-button.doubt {
+        border-color: rgba(50, 135, 255, 0.55);
+      }
+
+      .decision-button.decline {
+        border-color: rgba(224, 82, 82, 0.55);
+      }
+
+      .empty,
+      .loading,
+      .access-error {
+        padding: 25px 15px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.55;
+      }
+
+      .screen-state {
+        min-height: calc(100vh - 74px);
+        padding: 30px 15px;
+        display: grid;
+        place-items: center;
+      }
+
+      .state-card {
+        width: min(520px, 100%);
+        padding: 30px;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--card);
+      }
+
+      .state-card .state-icon {
+        margin-bottom: 14px;
+        font-size: 42px;
+      }
+
+      .state-card h1 {
+        margin-bottom: 10px;
+        font-size: 25px;
+      }
+
+      .state-card p {
+        margin-bottom: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .toast {
+        position: fixed;
+        z-index: 9999;
+        top: 18px;
+        right: 18px;
+        width: min(390px, calc(100% - 28px));
+        padding: 16px 18px;
+        border: 1px solid var(--gold);
+        border-radius: 16px;
+        color: #fff;
+        background: #171717;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+      }
+
+      .toast.error {
+        border-color: var(--danger);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 850px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .topbar {
+          min-height: 66px;
+          padding-inline: 14px;
+        }
+
+        .topbar img {
+          height: 48px;
+        }
+
+        .page {
+          width: min(100% - 20px, 1180px);
+          padding-top: 14px;
+        }
+
+        .hero {
+          padding: 19px;
+          align-items: flex-start;
+        }
+
+        .hero-icon {
+          width: 52px;
+          height: 52px;
+          flex-basis: 52px;
+          border-radius: 16px;
+          font-size: 23px;
+        }
+
+        .status-badge {
+          display: none;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .stat {
+          padding: 14px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .stat strong {
+          margin: 0;
+          font-size: 21px;
+        }
+
+        .panel-head,
+        .panel-body {
+          padding-inline: 15px;
+        }
+
+        .message {
+          max-width: 91%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <img src="assets/images/clubbar_branco.png" alt="Clubbar" />
+      <button class="btn-exit" id="btnSair" type="button">Sair</button>
+    </header>
+
+    <section class="screen-state" id="telaCarregando">
+      <div class="state-card">
+        <div class="state-icon">🦉</div>
+        <h1>Preparando seu portal</h1>
+        <p>Aguarde enquanto carregamos seu atendimento.</p>
+      </div>
+    </section>
+
+    <section class="screen-state hidden" id="telaErro">
+      <div class="state-card">
+        <div class="state-icon">🔒</div>
+        <h1>Não foi possível acessar</h1>
+        <p id="textoErroAcesso">
+          Seu acesso é inválido ou expirou. Entre em contato com a equipe
+          Clubbar.
+        </p>
+        <a class="btn-primary" href="index.html">Voltar ao site</a>
+      </div>
+    </section>
+
+    <main class="page hidden" id="conteudoPortal">
+      <section class="hero">
+        <div class="hero-icon">🤝</div>
+        <div class="hero-copy">
+          <h1 id="saudacao">Olá!</h1>
+          <p>
+            Acompanhe seu atendimento, responda às mensagens e consulte os
+            materiais enviados pela equipe Clubbar.
+          </p>
+        </div>
+        <span class="status-badge" id="statusLead">Novo</span>
+      </section>
+
+      <section class="stats">
+        <article class="stat">
+          <strong id="qtdMensagens">0</strong>
+          <span>Mensagens não lidas</span>
+        </article>
+        <article class="stat">
+          <strong id="qtdAgendamentos">0</strong>
+          <span>Agendamentos pendentes</span>
+        </article>
+        <article class="stat">
+          <strong id="qtdMateriais">0</strong>
+          <span>Materiais disponíveis</span>
+        </article>
+      </section>
+
+      <div class="layout">
+        <div class="column">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2>Mensagens</h2>
+                <p>Converse diretamente com a equipe Clubbar.</p>
+              </div>
+              <button class="btn-refresh" id="btnAtualizarMensagens">
+                Atualizar
+              </button>
+            </header>
+            <div class="panel-body">
+              <div class="messages" id="listaMensagens"></div>
+
+              <form class="message-form" id="formMensagem">
+                <textarea
+                  id="novaMensagem"
+                  maxlength="3000"
+                  placeholder="Digite sua mensagem..."
+                  required
+                ></textarea>
+                <button class="btn-primary" id="btnEnviarMensagem" type="submit">
+                  Enviar mensagem
+                </button>
+              </form>
+            </div>
+          </section>
+
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2>Agendamentos</h2>
+                <p>Confirme ou recuse os horários propostos.</p>
+              </div>
+            </header>
+            <div class="panel-body">
+              <div class="list" id="listaAgendamentos"></div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="column">
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2>Materiais</h2>
+                <p>Apresentações, propostas e contratos.</p>
+              </div>
+            </header>
+            <div class="panel-body">
+              <div class="list" id="listaMateriais"></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2>Sua decisão</h2>
+                <p id="decisaoAtual">Decisão atual: pendente</p>
+              </div>
+            </header>
+            <div class="panel-body">
+              <p class="decision-copy">
+                Depois de conhecer a proposta, informe à nossa equipe como
+                deseja prosseguir.
+              </p>
+              <div class="decision-actions">
+                <button
+                  class="decision-button accept"
+                  data-decisao="ACEITOU"
+                  type="button"
+                >
+                  Aceitar parceria
+                </button>
+                <button
+                  class="decision-button doubt"
+                  data-decisao="DUVIDAS"
+                  type="button"
+                >
+                  Ainda tenho dúvidas
+                </button>
+                <button
+                  class="decision-button decline"
+                  data-decisao="RECUSOU"
+                  type="button"
+                >
+                  Não tenho interesse
+                </button>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script>
+      const STORAGE_KEY = "clubbar_portal_lead_token";
+
+      const elementos = {
+        telaCarregando: document.getElementById("telaCarregando"),
+        telaErro: document.getElementById("telaErro"),
+        textoErroAcesso: document.getElementById("textoErroAcesso"),
+        conteudoPortal: document.getElementById("conteudoPortal"),
+        saudacao: document.getElementById("saudacao"),
+        statusLead: document.getElementById("statusLead"),
+        qtdMensagens: document.getElementById("qtdMensagens"),
+        qtdAgendamentos: document.getElementById("qtdAgendamentos"),
+        qtdMateriais: document.getElementById("qtdMateriais"),
+        listaMensagens: document.getElementById("listaMensagens"),
+        listaAgendamentos: document.getElementById("listaAgendamentos"),
+        listaMateriais: document.getElementById("listaMateriais"),
+        formMensagem: document.getElementById("formMensagem"),
+        novaMensagem: document.getElementById("novaMensagem"),
+        btnEnviarMensagem: document.getElementById("btnEnviarMensagem"),
+        btnAtualizarMensagens: document.getElementById(
+          "btnAtualizarMensagens",
+        ),
+        decisaoAtual: document.getElementById("decisaoAtual"),
+        btnSair: document.getElementById("btnSair"),
+      };
+
+      function obterToken() {
+        const parametros = new URLSearchParams(
+          window.location.hash.substring(1),
+        );
+        const tokenRecebido = parametros.get("acesso");
+
+        if (tokenRecebido) {
+          sessionStorage.setItem(STORAGE_KEY, tokenRecebido);
+          history.replaceState(
+            null,
+            document.title,
+            window.location.pathname + window.location.search,
+          );
+          return tokenRecebido;
+        }
+
+        return sessionStorage.getItem(STORAGE_KEY);
+      }
+
+      let token = obterToken();
+      let resumoAtual = null;
+
+      function nomeStatus(valor) {
+        const nomes = {
+          NOVO: "Novo",
+          CONTATADO: "Contatado",
+          NEGOCIANDO: "Em negociação",
+          CONVERTIDO: "Parceiro",
+          PERDIDO: "Encerrado",
+        };
+        return nomes[valor] || valor || "Não informado";
+      }
+
+      function nomeDecisao(valor) {
+        const nomes = {
+          PENDENTE: "Pendente",
+          ACEITOU: "Parceria aceita",
+          DUVIDAS: "Ainda possui dúvidas",
+          RECUSOU: "Parceria recusada",
+        };
+        return nomes[valor] || valor || "Pendente";
+      }
+
+      function nomeTipoAgendamento(valor) {
+        const nomes = {
+          DEMONSTRACAO: "Demonstração",
+          LIGACAO: "Ligação",
+          REUNIAO_ONLINE: "Reunião online",
+          VISITA: "Visita presencial",
+        };
+        return nomes[valor] || valor;
+      }
+
+      function nomeTipoMaterial(valor) {
+        const nomes = {
+          APRESENTACAO: "Apresentação",
+          PROPOSTA: "Proposta",
+          CONTRATO: "Contrato",
+          VIDEO: "Vídeo",
+          OUTRO: "Material",
+        };
+        return nomes[valor] || valor;
+      }
+
+      function formatarData(valor) {
+        if (!valor) return "";
+        const data = new Date(valor);
+        if (Number.isNaN(data.getTime())) return valor;
+        return new Intl.DateTimeFormat("pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }).format(data);
+      }
+
+      function mostrarToast(mensagem, erro = false) {
+        document.querySelectorAll(".toast").forEach((item) => item.remove());
+        const toast = document.createElement("div");
+        toast.className = `toast${erro ? " error" : ""}`;
+        toast.textContent = mensagem;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 7000);
+      }
+
+      async function api(caminho, opcoes = {}) {
+        const headers = new Headers(opcoes.headers || {});
+        headers.set("Authorization", `Bearer ${token}`);
+
+        if (opcoes.body && !headers.has("Content-Type")) {
+          headers.set("Content-Type", "application/json");
+        }
+
+        const resposta = await fetch(
+          `${CLUBBAR_CONFIG.API_BASE_URL}${caminho}`,
+          {
+            ...opcoes,
+            headers,
+          },
+        );
+
+        const texto = await resposta.text();
+        let dados = {};
+
+        if (texto) {
+          try {
+            dados = JSON.parse(texto);
+          } catch {
+            dados = { detail: texto };
+          }
+        }
+
+        if (!resposta.ok) {
+          if (resposta.status === 401) {
+            sessionStorage.removeItem(STORAGE_KEY);
+          }
+
+          let mensagem = dados.detail || "Não foi possível concluir a ação.";
+          if (Array.isArray(mensagem)) {
+            mensagem = mensagem.map((item) => item.msg).join(" ");
+          }
+          throw new Error(mensagem);
+        }
+
+        return dados;
+      }
+
+      function mostrarErroAcesso(mensagem) {
+        elementos.telaCarregando.classList.add("hidden");
+        elementos.conteudoPortal.classList.add("hidden");
+        elementos.telaErro.classList.remove("hidden");
+        elementos.textoErroAcesso.textContent = mensagem;
+      }
+
+      function mostrarPortal() {
+        elementos.telaCarregando.classList.add("hidden");
+        elementos.telaErro.classList.add("hidden");
+        elementos.conteudoPortal.classList.remove("hidden");
+      }
+
+      function criarVazio(texto) {
+        const vazio = document.createElement("div");
+        vazio.className = "empty";
+        vazio.textContent = texto;
+        return vazio;
+      }
+
+      async function carregarResumo() {
+        const resumo = await api("/portal-parceiro/resumo");
+        resumoAtual = resumo;
+
+        elementos.saudacao.textContent =
+          `Olá, ${resumo.nmresponsavel || "parceiro"}!`;
+        elementos.statusLead.textContent = nomeStatus(resumo.status);
+        elementos.qtdMensagens.textContent = resumo.mensagens_nao_lidas ?? 0;
+        elementos.qtdAgendamentos.textContent =
+          resumo.agendamentos_pendentes ?? 0;
+        elementos.qtdMateriais.textContent = resumo.materiais ?? 0;
+        elementos.decisaoAtual.textContent =
+          `Decisão atual: ${nomeDecisao(resumo.decisao)}`;
+
+        document.querySelectorAll("[data-decisao]").forEach((botao) => {
+          botao.disabled =
+            resumo.status === "CONVERTIDO" ||
+            botao.dataset.decisao === resumo.decisao;
+        });
+      }
+
+      async function carregarMensagens() {
+        const mensagens = await api("/portal-parceiro/mensagens");
+        elementos.listaMensagens.replaceChildren();
+
+        if (!mensagens.length) {
+          elementos.listaMensagens.append(
+            criarVazio("Nenhuma mensagem disponível no momento."),
+          );
+          return;
+        }
+
+        mensagens.forEach((item) => {
+          const caixa = document.createElement("article");
+          caixa.className =
+            `message ${item.origem === "LEAD" ? "lead" : "clubbar"}`;
+
+          const texto = document.createElement("div");
+          texto.textContent = item.mensagem;
+
+          const data = document.createElement("small");
+          data.textContent =
+            `${item.origem === "LEAD" ? "Você" : "Clubbar"} • ` +
+            formatarData(item.dtcriacao);
+
+          caixa.append(texto, data);
+          elementos.listaMensagens.append(caixa);
+        });
+
+        elementos.listaMensagens.scrollTop =
+          elementos.listaMensagens.scrollHeight;
+      }
+
+      async function enviarMensagem(evento) {
+        evento.preventDefault();
+        const mensagem = elementos.novaMensagem.value.trim();
+        if (!mensagem) return;
+
+        elementos.btnEnviarMensagem.disabled = true;
+        elementos.btnEnviarMensagem.textContent = "Enviando...";
+
+        try {
+          await api("/portal-parceiro/mensagens", {
+            method: "POST",
+            body: JSON.stringify({ mensagem }),
+          });
+          elementos.novaMensagem.value = "";
+          await carregarMensagens();
+          mostrarToast("Mensagem enviada com sucesso.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnEnviarMensagem.disabled = false;
+          elementos.btnEnviarMensagem.textContent = "Enviar mensagem";
+        }
+      }
+
+      async function carregarAgendamentos() {
+        const itens = await api("/portal-parceiro/agendamentos");
+        elementos.listaAgendamentos.replaceChildren();
+
+        if (!itens.length) {
+          elementos.listaAgendamentos.append(
+            criarVazio("Nenhum agendamento disponível."),
+          );
+          return;
+        }
+
+        itens.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "item";
+
+          const topo = document.createElement("div");
+          topo.className = "item-top";
+
+          const copia = document.createElement("div");
+          const titulo = document.createElement("h3");
+          titulo.textContent = nomeTipoAgendamento(item.tipo);
+          const data = document.createElement("p");
+          data.textContent = formatarData(item.dtagendamento);
+          copia.append(titulo, data);
+
+          const badge = document.createElement("span");
+          badge.className = `badge ${item.status.toLowerCase()}`;
+          badge.textContent = nomeStatusAgendamento(item.status);
+
+          topo.append(copia, badge);
+          card.append(topo);
+
+          if (item.observacao) {
+            const observacao = document.createElement("p");
+            observacao.style.marginTop = "9px";
+            observacao.textContent = item.observacao;
+            card.append(observacao);
+          }
+
+          if (item.status === "PENDENTE") {
+            const acoes = document.createElement("div");
+            acoes.className = "item-actions";
+
+            const confirmar = document.createElement("button");
+            confirmar.className = "btn-small confirm";
+            confirmar.textContent = "Confirmar";
+            confirmar.addEventListener("click", () =>
+              responderAgendamento(item.leadagendamento_id, "CONFIRMADO"),
+            );
+
+            const recusar = document.createElement("button");
+            recusar.className = "btn-small reject";
+            recusar.textContent = "Recusar";
+            recusar.addEventListener("click", () =>
+              responderAgendamento(item.leadagendamento_id, "RECUSADO"),
+            );
+
+            acoes.append(confirmar, recusar);
+            card.append(acoes);
+          }
+
+          elementos.listaAgendamentos.append(card);
+        });
+      }
+
+      function nomeStatusAgendamento(valor) {
+        const nomes = {
+          PENDENTE: "Pendente",
+          CONFIRMADO: "Confirmado",
+          RECUSADO: "Recusado",
+          REALIZADO: "Realizado",
+          CANCELADO: "Cancelado",
+        };
+        return nomes[valor] || valor;
+      }
+
+      async function responderAgendamento(id, status) {
+        const acao = status === "CONFIRMADO" ? "confirmar" : "recusar";
+        if (!window.confirm(`Deseja realmente ${acao} este agendamento?`)) {
+          return;
+        }
+
+        try {
+          await api(`/portal-parceiro/agendamentos/${id}/resposta`, {
+            method: "PATCH",
+            body: JSON.stringify({ status }),
+          });
+          await Promise.all([carregarAgendamentos(), carregarResumo()]);
+          mostrarToast("Resposta registrada com sucesso.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function carregarMateriais() {
+        const itens = await api("/portal-parceiro/materiais");
+        elementos.listaMateriais.replaceChildren();
+
+        if (!itens.length) {
+          elementos.listaMateriais.append(
+            criarVazio("Nenhum material enviado até agora."),
+          );
+          return;
+        }
+
+        itens.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "item";
+
+          const topo = document.createElement("div");
+          topo.className = "item-top";
+
+          const titulo = document.createElement("h3");
+          titulo.textContent = item.titulo;
+
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = nomeTipoMaterial(item.tipo);
+
+          topo.append(titulo, badge);
+          card.append(topo);
+
+          if (item.descricao) {
+            const descricao = document.createElement("p");
+            descricao.style.marginTop = "8px";
+            descricao.textContent = item.descricao;
+            card.append(descricao);
+          }
+
+          const acoes = document.createElement("div");
+          acoes.className = "item-actions";
+
+          const link = document.createElement("a");
+          link.className = "material-link";
+          link.textContent = "Abrir material ↗";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.href = new URL(
+            item.urlarquivo,
+            CLUBBAR_CONFIG.API_BASE_URL,
+          ).href;
+
+          acoes.append(link);
+          card.append(acoes);
+          elementos.listaMateriais.append(card);
+        });
+      }
+
+      async function registrarDecisao(decisao) {
+        const textos = {
+          ACEITOU: "aceitar a parceria",
+          DUVIDAS: "informar que ainda possui dúvidas",
+          RECUSOU: "recusar a parceria",
+        };
+
+        if (!window.confirm(`Deseja realmente ${textos[decisao]}?`)) return;
+
+        try {
+          await api("/portal-parceiro/decisao", {
+            method: "PATCH",
+            body: JSON.stringify({ decisao }),
+          });
+          await carregarResumo();
+          mostrarToast("Sua decisão foi registrada.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function iniciar() {
+        if (!token) {
+          mostrarErroAcesso(
+            "O link de acesso não contém um token válido. Solicite um novo link à equipe Clubbar.",
+          );
+          return;
+        }
+
+        try {
+          await carregarMensagens();
+          await Promise.all([
+            carregarAgendamentos(),
+            carregarMateriais(),
+            carregarResumo(),
+          ]);
+          mostrarPortal();
+        } catch (erro) {
+          mostrarErroAcesso(erro.message);
+        }
+      }
+
+      elementos.formMensagem.addEventListener("submit", enviarMensagem);
+
+      elementos.btnAtualizarMensagens.addEventListener("click", async () => {
+        elementos.btnAtualizarMensagens.disabled = true;
+        try {
+          await carregarMensagens();
+          await carregarResumo();
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnAtualizarMensagens.disabled = false;
+        }
+      });
+
+      document.querySelectorAll("[data-decisao]").forEach((botao) => {
+        botao.addEventListener("click", () =>
+          registrarDecisao(botao.dataset.decisao),
+        );
+      });
+
+      elementos.btnSair.addEventListener("click", () => {
+        sessionStorage.removeItem(STORAGE_KEY);
+        token = null;
+        window.location.href = "index.html";
+      });
+
+      iniciar();
+    </script>
+  </body>
+</html>
