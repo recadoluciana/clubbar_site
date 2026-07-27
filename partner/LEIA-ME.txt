@@ -1,0 +1,20 @@
+CARROSSEL CLUBBAR
+
+COMO ABRIR
+1. Extraia o arquivo ZIP.
+2. Abra index.html no navegador.
+
+COMO PUBLICAR
+Envie a pasta inteira para seu servidor, por exemplo:
+clubbar.com.br/apresentacao/
+
+ARQUIVOS
+- index.html: estrutura
+- style.css: visual
+- script.js: swipe, setas, teclado e tela cheia
+- assets/: imagens
+
+BOTÃO FINAL
+Atualmente aponta para https://clubbar.com.br.
+Para usar WhatsApp, abra index.html e troque o endereço do botão por:
+https://wa.me/55DDDNUMERO?text=Olá%2C%20quero%20uma%20demonstração%20do%20Clubbar

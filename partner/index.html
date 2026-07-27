@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#07101f" />
+  <title>Clubbar — Apresentação</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="carousel" aria-label="Apresentação Clubbar">
+    <div class="slides" id="slides">
+      <section class="slide"><img src="assets/01-capa.png" alt="Capa Clubbar" /></section>
+      <section class="slide"><img src="assets/02-historia.png" alt="História do Clubbar" /></section>
+      <section class="slide"><img src="assets/03-solucao.png" alt="A solução e como funciona" /></section>
+      <section class="slide"><img src="assets/04-jornada-beneficios.png" alt="Jornada do cliente e benefícios" /></section>
+
+      <section class="slide final-slide" aria-label="Contato">
+        <div class="final-card">
+          <div class="brand">CLUB<span>BAR</span></div>
+          <h1>Vamos modernizar seu estabelecimento?</h1>
+          <p>Venda antes, reduza filas e ofereça uma experiência mais rápida aos seus clientes.</p>
+          <a id="cta" class="cta" href="https://clubbar.com.br" target="_blank" rel="noopener">
+            Quero uma demonstração
+          </a>
+          <small>clubbar.com.br</small>
+        </div>
+      </section>
+    </div>
+
+    <button class="nav prev" id="prev" aria-label="Tela anterior">‹</button>
+    <button class="nav next" id="next" aria-label="Próxima tela">›</button>
+
+    <div class="topbar">
+      <span id="counter">1 / 5</span>
+      <button id="fullscreen" aria-label="Tela cheia">⛶</button>
+    </div>
+
+    <div class="dots" id="dots" aria-label="Navegação"></div>
+    <div class="hint" id="hint">Deslize para continuar</div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
