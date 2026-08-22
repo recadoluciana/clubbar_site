@@ -48,7 +48,7 @@
         border-bottom: 1px solid #222;
       }
       header img {
-        height: 60px;
+        height: 68px;
       }
       .back {
         position: absolute;
@@ -87,15 +87,15 @@
         border-bottom: 1px solid #292929;
       }
       .head .icon {
-        width: 58px;
-        height: 58px;
+        width: 76px;
+        height: 76px;
         margin: 0 auto 14px;
-        display: grid;
-        place-items: center;
-        border-radius: 18px;
-        background: rgba(245, 197, 66, 0.13);
-        color: var(--gold);
-        font-size: 27px;
+      }
+      .head .icon img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
       }
       .head h1 {
         font-size: clamp(27px, 4vw, 38px);
@@ -363,7 +363,9 @@
     <main>
       <section class="box">
         <div class="head">
-          <div class="icon">🤝</div>
+          <div class="icon">
+            <img src="assets/images/coruja.png" alt="Coruja mascote do Clubbar" />
+          </div>
           <h1>Venha ser nosso parceiro...</h1>
           <p>
             Conte um pouco sobre seu estabelecimento. Nossa equipe entrará em
