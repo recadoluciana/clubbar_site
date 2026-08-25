@@ -586,6 +586,10 @@
           Seu acesso é inválido ou expirou. Entre em contato com a equipe
           Clubbar.
         </p>
+        <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
+          <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <button class="btn-primary" id="btnNovoAcesso" type="submit">Enviar novo link por e-mail</button>
+        </form>
         <a class="btn-primary" href="index.html">Voltar ao site</a>
       </div>
     </section>
@@ -739,6 +743,9 @@
         ),
         decisaoAtual: document.getElementById("decisaoAtual"),
         btnSair: document.getElementById("btnSair"),
+        formNovoAcesso: document.getElementById("formNovoAcesso"),
+        emailNovoAcesso: document.getElementById("emailNovoAcesso"),
+        btnNovoAcesso: document.getElementById("btnNovoAcesso"),
       };
 
       function obterToken() {
@@ -1154,6 +1161,31 @@
       }
 
       elementos.formMensagem.addEventListener("submit", enviarMensagem);
+
+      elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        elementos.btnNovoAcesso.disabled = true;
+        elementos.btnNovoAcesso.textContent = "Enviando...";
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/solicitar-acesso`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: elementos.emailNovoAcesso.value.trim().toLowerCase() }),
+            },
+          );
+          const dados = await resposta.json();
+          if (!resposta.ok) throw new Error(dados.detail || "Não foi possível solicitar o acesso.");
+          mostrarToast(dados.mensagem);
+          elementos.formNovoAcesso.reset();
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnNovoAcesso.disabled = false;
+          elementos.btnNovoAcesso.textContent = "Enviar novo link por e-mail";
+        }
+      });
 
       elementos.btnAtualizarMensagens.addEventListener("click", async () => {
         elementos.btnAtualizarMensagens.disabled = true;

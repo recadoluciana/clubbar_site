@@ -34,7 +34,13 @@
 </main>
 <footer>© 2026 Clubbar. Todos os direitos reservados.</footer>
 <script src="js/config.js"></script><script>
-  document.getElementById('portalParceiro').href=CLUBBAR_CONFIG.PARTNER_URL;
+  const portalParceiro=document.getElementById('portalParceiro');
+  portalParceiro.href=CLUBBAR_CONFIG.PARTNER_URL;
+  const acompanhar=document.createElement('a');
+  acompanhar.className='btn outline';
+  acompanhar.href='portal-parceiro.html';
+  acompanhar.textContent='Acompanhar proposta';
+  portalParceiro.parentElement.insertBefore(acompanhar,portalParceiro);
   (()=>{
     const coruja=document.getElementById('corujaDeslizante');
     const cabecalho=document.querySelector('header');
