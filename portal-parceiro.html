@@ -873,11 +873,16 @@
         return dados;
       }
 
-      function mostrarErroAcesso(mensagem) {
+      function mostrarErroAcesso(mensagem, semToken = false) {
         elementos.telaCarregando.classList.add("hidden");
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
-        elementos.textoErroAcesso.textContent = mensagem;
+        elementos.telaErro.querySelector("h1").textContent = semToken
+          ? "Acompanhar minha proposta"
+          : "Acesso expirado ou inválido";
+        elementos.textoErroAcesso.textContent = semToken
+          ? "Informe o mesmo e-mail utilizado no cadastro. Enviaremos um link seguro para acessar seu atendimento."
+          : mensagem + " Solicite abaixo um novo link de acesso.";
       }
 
       function mostrarPortal() {
@@ -1141,6 +1146,8 @@
 
       async function iniciar() {
         if (!token) {
+          mostrarErroAcesso("", true);
+          return;
           mostrarErroAcesso(
             "O link de acesso não contém um token válido. Solicite um novo link à equipe Clubbar.",
           );
