@@ -412,6 +412,7 @@
                 <option value="BAR">Bar</option>
                 <option value="CASA_NOTURNA">Casa noturna</option>
                 <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
+                <option value="CASA_EVENTOS">Casa de eventos</option>
               </select>
               <div class="error" id="erro-tipo"></div>
             </div>
@@ -464,33 +465,13 @@
           </div>
           <div class="grid">
             <div class="group">
-              <label for="estado_id"
-                >Estado <span class="required">*</span></label
-              ><select id="estado_id">
-                <option value="">Carregando estados...</option>
-              </select>
-              <div class="error" id="erro-estado_id"></div>
-            </div>
-            <div class="group">
               <label for="cidade_id"
                 >Cidade <span class="required">*</span></label
-              ><select id="cidade_id" disabled>
-                <option value="">Selecione primeiro o estado</option>
+              ><select id="cidade_id">
+                <option value="">Carregando cidades...</option>
               </select>
               <div class="error" id="erro-cidade_id"></div>
             </div>
-          </div>
-          <div class="group">
-            <div class="counter">
-              <label for="mensagem">Mensagem</label
-              ><span id="contador">0/1000</span>
-            </div>
-            <textarea
-              id="mensagem"
-              maxlength="1000"
-              placeholder="Conte um pouco sobre seu estabelecimento, eventos ou operação..."
-            ></textarea>
-            <div class="error" id="erro-mensagem"></div>
           </div>
           <button class="btn" id="btnEnviar" type="submit">
             Quero conhecer o Clubbar
@@ -502,11 +483,8 @@
     <script>
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
-        estado = document.getElementById("estado_id"),
         cidade = document.getElementById("cidade_id"),
-        tel = document.getElementById("telefone"),
-        msg = document.getElementById("mensagem"),
-        contador = document.getElementById("contador");
+        tel = document.getElementById("telefone");
       const ids = [
         "nmresponsavel",
         "nmestabelecimento",
@@ -514,9 +492,7 @@
         "tipovenda",
         "telefone",
         "email",
-        "estado_id",
         "cidade_id",
-        "mensagem",
       ];
       const nums = (v) => v.replace(/\D/g, "");
       function mask(v) {
@@ -560,42 +536,12 @@
           return { detail: t };
         }
       }
-      async function loadStates() {
-        estado.disabled = true;
-        try {
-          const r = await fetch(
-              `${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`,
-            ),
-            d = await json(r);
-          if (!r.ok)
-            throw new Error(
-              d.detail || "Não foi possível carregar os estados.",
-            );
-          estado.innerHTML = '<option value="">Selecione o estado</option>';
-          d.forEach((x) =>
-            estado.insertAdjacentHTML(
-              "beforeend",
-              `<option value="${x.estado_id}">${x.nmestado} - ${x.sgestado}</option>`,
-            ),
-          );
-          estado.disabled = false;
-        } catch (e) {
-          estado.innerHTML =
-            '<option value="">Erro ao carregar estados</option>';
-          toast(e.message, "err");
-        }
-      }
-      async function loadCities(id) {
+      async function loadCities() {
         cidade.disabled = true;
         cidade.innerHTML = '<option value="">Carregando cidades...</option>';
-        if (!id) {
-          cidade.innerHTML =
-            '<option value="">Selecione primeiro o estado</option>';
-          return;
-        }
         try {
           const r = await fetch(
-              `${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${id}/cidades`,
+              `${CLUBBAR_CONFIG.API_BASE_URL}/cidades`,
             ),
             d = await json(r);
           if (!r.ok)
@@ -606,7 +552,7 @@
           d.forEach((x) =>
             cidade.insertAdjacentHTML(
               "beforeend",
-              `<option value="${x.cidade_id}">${x.nmcidade}</option>`,
+              `<option value="${x.cidade_id}" data-estado="${x.estado_id}">${x.label}</option>`,
             ),
           );
           cidade.disabled = false;
@@ -651,10 +597,6 @@
           fail("email", "Informe um e-mail válido.");
           ok = false;
         }
-        if (!estado.value) {
-          fail("estado_id", "Selecione o estado.");
-          ok = false;
-        }
         if (!cidade.value) {
           fail("cidade_id", "Selecione a cidade.");
           ok = false;
@@ -664,15 +606,6 @@
       tel.addEventListener("input", () => {
         tel.value = mask(tel.value);
         clear("telefone");
-      });
-      msg.addEventListener(
-        "input",
-        () => (contador.textContent = `${msg.value.length}/1000`),
-      );
-      estado.addEventListener("change", () => {
-        clear("estado_id");
-        clear("cidade_id");
-        loadCities(estado.value);
       });
       cidade.addEventListener("change", () => clear("cidade_id"));
       document
@@ -685,7 +618,6 @@
         "nmestabelecimento",
         "tipo",
         "email",
-        "mensagem",
       ].forEach((id) =>
         document.getElementById(id).addEventListener("input", () => clear(id)),
       );
@@ -708,9 +640,8 @@
             .value,
           telefone: nums(tel.value),
           email: document.getElementById("email").value.trim().toLowerCase(),
-          estado_id: Number(estado.value),
+          estado_id: Number(cidade.selectedOptions[0].dataset.estado),
           cidade_id: Number(cidade.value),
-          mensagem: msg.value.trim() || null,
         };
         try {
           const r = await fetch(
@@ -741,11 +672,7 @@
 
           form.reset();
 
-          cidade.disabled = true;
-          cidade.innerHTML =
-            '<option value="">Selecione primeiro o estado</option>';
-
-          contador.textContent = "0/1000";
+          loadCities();
           clearAll();
 
           setTimeout(() => {
@@ -759,7 +686,7 @@
           btn.textContent = original;
         }
       });
-      loadStates();
+      loadCities();
     </script>
   </body>
 </html>
