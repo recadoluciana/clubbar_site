@@ -303,6 +303,27 @@
         background: var(--gold-dark);
       }
 
+      .btn-secondary {
+        min-height: 46px;
+        margin-top: 22px;
+        padding: 11px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4a4a4a;
+        border-radius: 14px;
+        color: #fff;
+        background: #242424;
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      .btn-secondary:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+        background: #181818;
+      }
+
       .list {
         display: grid;
         gap: 11px;
@@ -590,7 +611,7 @@
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Enviar novo link por e-mail</button>
         </form>
-        <a class="btn-primary" href="index.html">Voltar ao site</a>
+        <a class="btn-secondary" href="index.html">← Voltar ao site</a>
       </div>
     </section>
 
