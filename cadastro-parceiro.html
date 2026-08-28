@@ -317,6 +317,51 @@
         font-size: 14px;
         line-height: 1.45;
       }
+      .portal-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: none;
+        place-items: center;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(8px);
+      }
+      .portal-loading.show {
+        display: grid;
+      }
+      .portal-loading-card {
+        width: min(440px, 100%);
+        padding: 34px 26px;
+        text-align: center;
+        border: 1px solid rgba(245, 197, 66, 0.45);
+        border-radius: 24px;
+        background: #141414;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      }
+      .portal-spinner {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 22px;
+        border: 5px solid rgba(245, 197, 66, 0.2);
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      .portal-loading h2 {
+        margin-bottom: 10px;
+        color: var(--gold);
+        font-size: 24px;
+      }
+      .portal-loading p {
+        color: #ddd;
+        line-height: 1.6;
+      }
+      .portal-loading small {
+        display: block;
+        margin-top: 15px;
+        color: var(--muted);
+      }
       @media (max-width: 680px) {
         header {
           justify-content: flex-end;
@@ -483,12 +528,32 @@
         </form>
       </section>
     </main>
+    <div
+      class="portal-loading"
+      id="portalLoading"
+      role="status"
+      aria-live="polite"
+      aria-hidden="true"
+    >
+      <div class="portal-loading-card">
+        <div class="portal-spinner" aria-hidden="true"></div>
+        <h2>Preparando seu portal</h2>
+        <p>
+          Estamos montando seu espaço para conversar com o time Clubbar,
+          acompanhar mensagens, agendamentos e materiais.
+        </p>
+        <small id="portalLoadingTempo">Abrindo em alguns segundos...</small>
+      </div>
+    </div>
     <script src="js/config.js"></script>
     <script>
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
         cidade = document.getElementById("cidade_id"),
-        tel = document.getElementById("telefone");
+        tel = document.getElementById("telefone"),
+        portalLoading = document.getElementById("portalLoading"),
+        portalLoadingTempo = document.getElementById("portalLoadingTempo");
+      let redirecionando = false;
       const ids = [
         "nmresponsavel",
         "nmestabelecimento",
@@ -539,6 +604,32 @@
         } catch {
           return { detail: t };
         }
+      }
+      function prepararPortal(acesso) {
+        redirecionando = true;
+        portalLoading.classList.add("show");
+        portalLoading.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+
+        let segundos = 4;
+        const atualizarTempo = () => {
+          portalLoadingTempo.textContent =
+            segundos > 1
+              ? `Seu portal será aberto em ${segundos} segundos.`
+              : "Abrindo seu portal...";
+        };
+        atualizarTempo();
+
+        const contador = setInterval(() => {
+          segundos -= 1;
+          atualizarTempo();
+          if (segundos <= 0) {
+            clearInterval(contador);
+            window.location.replace(
+              `portal-parceiro.html#acesso=${encodeURIComponent(acesso)}`,
+            );
+          }
+        }, 1000);
       }
       async function loadCities() {
         cidade.disabled = true;
@@ -669,25 +760,14 @@
             );
           }
 
-          toast(
-            "Cadastro recebido com sucesso! Estamos preparando seu portal. " +
-              "Você será direcionado em 8 segundos.",
-          );
-
-          form.reset();
-
-          loadCities();
-          clearAll();
-
-          setTimeout(() => {
-            window.location.href =
-              `portal-parceiro.html#acesso=${encodeURIComponent(d.acesso_portal)}`;
-          }, 8000);
+          prepararPortal(d.acesso_portal);
         } catch (err) {
           toast(err.message || "Erro inesperado.", "err");
         } finally {
-          btn.disabled = false;
-          btn.textContent = original;
+          if (!redirecionando) {
+            btn.disabled = false;
+            btn.textContent = original;
+          }
         }
       });
       loadCities();
