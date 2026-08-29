@@ -1,4 +1,4 @@
-1. Copie index.html e cadastro-parceiro.html para a raiz do clubbar_site.
+1. Copie index.html e cadastro-lead.html para a raiz do clubbar_site.
 2. Copie js/config.js para clubbar_site/js/config.js.
 3. Copie api/localidades.py para app/routers/localidades.py na API.
 4. No main.py da API, registre:
