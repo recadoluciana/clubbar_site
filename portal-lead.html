@@ -507,6 +507,12 @@
         border-color: rgba(49, 182, 106, 0.55);
       }
 
+      .decision-button.pending {
+        color: #211700;
+        border-color: #e4ac00;
+        background: #ffc107;
+      }
+
       .decision-button.decline {
         border-color: rgba(224, 82, 82, 0.55);
       }
@@ -774,15 +780,22 @@
             <header class="panel-head">
               <div class="decision-title">
                 <h2>Sua decisão</h2>
-                <span class="decision-status pending" id="decisaoAtual">Pendente</span>
+                <span class="decision-status pending" id="decisaoAtual">Em análise</span>
               </div>
             </header>
             <div class="panel-body">
               <p class="decision-copy">
-                Depois de conhecer a proposta, informe à nossa equipe como
-                deseja prosseguir.
+                Depois de conhecer o produto, as propostas e o contrato,
+                informe à nossa equipe como deseja prosseguir.
               </p>
               <div class="decision-actions">
+                <button
+                  class="decision-button pending"
+                  data-decisao="PENDENTE"
+                  type="button"
+                >
+                  Ainda estou analisando
+                </button>
                 <button
                   class="decision-button accept"
                   data-decisao="ACEITOU"
@@ -869,7 +882,7 @@
 
       function nomeDecisao(valor) {
         const nomes = {
-          PENDENTE: "Pendente",
+          PENDENTE: "Em análise",
           ACEITOU: "Parceria aceita",
           RECUSOU: "Recusou parceria",
         };
@@ -1217,6 +1230,7 @@
 
       async function registrarDecisao(decisao) {
         const textos = {
+          PENDENTE: "continuar analisando a parceria",
           ACEITOU: "aceitar a parceria",
           RECUSOU: "recusar a parceria",
         };
