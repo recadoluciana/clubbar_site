@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portal do Parceiro | Clubbar</title>
+    <title>Portal do Lead | Clubbar</title>
     <link rel="icon" type="image/png" href="assets/images/coruja.png" />
 
     <style>
@@ -75,6 +75,27 @@
         width: auto;
         height: 58px;
         object-fit: contain;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-site {
+        padding: 10px 15px;
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        color: #000;
+        background: var(--gold);
+        font-size: 13px;
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      .btn-site:hover {
+        background: var(--gold-dark);
       }
 
       .btn-exit {
@@ -447,10 +468,6 @@
         border-color: rgba(49, 182, 106, 0.55);
       }
 
-      .decision-button.doubt {
-        border-color: rgba(50, 135, 255, 0.55);
-      }
-
       .decision-button.decline {
         border-color: rgba(224, 82, 82, 0.55);
       }
@@ -483,6 +500,13 @@
       .state-card .state-icon {
         margin-bottom: 14px;
         font-size: 42px;
+      }
+
+      .state-card .state-owl {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 14px;
+        object-fit: contain;
       }
 
       .state-card h1 {
@@ -587,14 +611,17 @@
 
   <body>
     <header class="topbar">
-      <img src="assets/images/clubbar_branco.png" alt="Clubbar" />
-      <button class="btn-exit" id="btnSair" type="button">Sair</button>
+      <img src="assets/images/logo.png" alt="Clubbar" />
+      <div class="topbar-actions">
+        <a class="btn-site" href="index.html">← Voltar ao site</a>
+        <button class="btn-exit" id="btnSair" type="button">Sair</button>
+      </div>
     </header>
 
     <section class="screen-state" id="telaCarregando">
       <div class="state-card">
-        <div class="state-icon">🦉</div>
-        <h1>Preparando seu portal</h1>
+        <img class="state-owl" src="assets/images/coruja.png" alt="" aria-hidden="true" />
+        <h1>Preparando o seu portal</h1>
         <p>Aguarde enquanto carregamos seu atendimento.</p>
       </div>
     </section>
@@ -717,13 +744,6 @@
                   type="button"
                 >
                   Aceitar parceria
-                </button>
-                <button
-                  class="decision-button doubt"
-                  data-decisao="DUVIDAS"
-                  type="button"
-                >
-                  Ainda tenho dúvidas
                 </button>
                 <button
                   class="decision-button decline"
@@ -1147,7 +1167,6 @@
       async function registrarDecisao(decisao) {
         const textos = {
           ACEITOU: "aceitar a parceria",
-          DUVIDAS: "informar que ainda possui dúvidas",
           RECUSOU: "recusar a parceria",
         };
 
