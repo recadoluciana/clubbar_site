@@ -98,21 +98,6 @@
         background: var(--gold-dark);
       }
 
-      .btn-exit {
-        padding: 10px 15px;
-        border: 1px solid #383838;
-        border-radius: 999px;
-        color: #fff;
-        background: #151515;
-        font-size: 13px;
-        font-weight: 800;
-      }
-
-      .btn-exit:hover {
-        color: var(--gold);
-        border-color: var(--gold);
-      }
-
       .page {
         width: min(1180px, calc(100% - 28px));
         margin: 0 auto;
@@ -614,7 +599,6 @@
       <img src="assets/images/logo.png" alt="Clubbar" />
       <div class="topbar-actions">
         <a class="btn-site" href="index.html">← Voltar ao site</a>
-        <button class="btn-exit" id="btnSair" type="button">Sair</button>
       </div>
     </header>
 
@@ -783,7 +767,6 @@
           "btnAtualizarMensagens",
         ),
         decisaoAtual: document.getElementById("decisaoAtual"),
-        btnSair: document.getElementById("btnSair"),
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
@@ -826,7 +809,6 @@
         const nomes = {
           PENDENTE: "Pendente",
           ACEITOU: "Parceria aceita",
-          DUVIDAS: "Ainda possui dúvidas",
           RECUSOU: "Parceria recusada",
         };
         return nomes[valor] || valor || "Pendente";
@@ -919,7 +901,7 @@
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
-          ? "Acompanhar minha proposta"
+          ? "Acompanhar meu atendimento"
           : "Acesso expirado ou inválido";
         elementos.textoErroAcesso.textContent = semToken
           ? "Informe o mesmo e-mail utilizado no cadastro. Enviaremos um link seguro para acessar seu atendimento."
@@ -1250,12 +1232,6 @@
         botao.addEventListener("click", () =>
           registrarDecisao(botao.dataset.decisao),
         );
-      });
-
-      elementos.btnSair.addEventListener("click", () => {
-        localStorage.removeItem(STORAGE_KEY);
-        token = null;
-        window.location.href = "index.html";
       });
 
       iniciar();
