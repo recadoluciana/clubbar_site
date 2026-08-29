@@ -515,6 +515,18 @@
         border-color: rgba(49, 182, 106, 0.55);
       }
 
+      .form-control {
+        width: 100%;
+        min-height: 44px;
+        margin: 8px 0 14px;
+        padding: 0 12px;
+        border: 1px solid #383838;
+        border-radius: 12px;
+        color: #fff;
+        background: #171717;
+        font: inherit;
+      }
+
       .decision-button.analyzing {
         color: #211700;
         border-color: #e4ac00;
@@ -792,6 +804,9 @@
               </div>
             </header>
             <div class="panel-body">
+              <label for="estabelecimentoDecisao"><strong>Estabelecimento</strong></label>
+              <select id="estabelecimentoDecisao" class="form-control"></select>
+              <div id="contratoEstabelecimento"></div>
               <p class="decision-copy">
                 Depois de conhecer o produto, as propostas e o contrato,
                 informe à nossa equipe como deseja prosseguir.
@@ -819,6 +834,37 @@
                   Não tenho interesse
                 </button>
               </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <header class="panel-head">
+              <div>
+                <h2>Novo estabelecimento</h2>
+                <p>Cadastre outra unidade para negociar separadamente.</p>
+              </div>
+            </header>
+            <div class="panel-body">
+              <form id="formEstabelecimento">
+                <input class="form-control" id="novoEstabelecimentoNome" placeholder="Nome do estabelecimento" required />
+                <select class="form-control" id="novoEstabelecimentoTipo" required>
+                  <option value="">Tipo de estabelecimento</option>
+                  <option value="BAR">Bar</option>
+                  <option value="CASA_NOTURNA">Casa noturna</option>
+                  <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
+                  <option value="CASA_EVENTOS">Casa de eventos</option>
+                </select>
+                <select class="form-control" id="novoEstabelecimentoVenda" required>
+                  <option value="AMBOS">Produtos e ingressos</option>
+                  <option value="PRODUTOS">Produtos</option>
+                  <option value="INGRESSOS">Ingressos</option>
+                </select>
+                <input class="form-control" id="novoEstabelecimentoDocumento" placeholder="CPF/CNPJ (opcional)" />
+                <select class="form-control" id="novoEstabelecimentoCidade" required>
+                  <option value="">Carregando cidades...</option>
+                </select>
+                <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
+              </form>
             </div>
           </section>
         </aside>
@@ -849,6 +895,18 @@
           "btnAtualizarMensagens",
         ),
         decisaoAtual: document.getElementById("decisaoAtual"),
+        estabelecimentoDecisao: document.getElementById(
+          "estabelecimentoDecisao",
+        ),
+        contratoEstabelecimento: document.getElementById(
+          "contratoEstabelecimento",
+        ),
+        formEstabelecimento: document.getElementById("formEstabelecimento"),
+        novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
+        novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
+        novoEstabelecimentoVenda: document.getElementById("novoEstabelecimentoVenda"),
+        novoEstabelecimentoDocumento: document.getElementById("novoEstabelecimentoDocumento"),
+        novoEstabelecimentoCidade: document.getElementById("novoEstabelecimentoCidade"),
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
@@ -876,6 +934,7 @@
 
       let token = obterToken();
       let resumoAtual = null;
+      let estabelecimentoSelecionadoId = null;
 
       function nomeStatus(valor) {
         const nomes = {
@@ -1012,29 +1071,93 @@
 
         elementos.saudacao.textContent =
           `Olá, ${resumo.nmresponsavel || "parceiro"}!`;
-        elementos.statusLead.textContent = nomeStatus(resumo.status);
         elementos.qtdMensagens.textContent = resumo.mensagens_nao_lidas ?? 0;
         elementos.qtdAgendamentos.textContent =
           resumo.agendamentos_pendentes ?? 0;
         elementos.qtdMateriais.textContent = resumo.materiais ?? 0;
-        elementos.decisaoAtual.textContent = nomeDecisao(resumo.decisao);
+        const estabelecimentos = resumo.estabelecimentos || [];
+        if (
+          !estabelecimentoSelecionadoId ||
+          !estabelecimentos.some(
+            (item) =>
+              item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+          )
+        ) {
+          estabelecimentoSelecionadoId =
+            estabelecimentos[0]?.leadestabelecimento_id ?? null;
+        }
+        elementos.estabelecimentoDecisao.replaceChildren();
+        estabelecimentos.forEach((item) => {
+          const opcao = document.createElement("option");
+          opcao.value = item.leadestabelecimento_id;
+          opcao.textContent = item.nmestabelecimento;
+          opcao.selected =
+            item.leadestabelecimento_id === estabelecimentoSelecionadoId;
+          elementos.estabelecimentoDecisao.append(opcao);
+        });
+        const estabelecimento =
+          estabelecimentos.find(
+            (item) =>
+              item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+          ) || {
+            status: resumo.status,
+            decisao: resumo.decisao,
+          };
+        elementos.contratoEstabelecimento.replaceChildren();
+        const contrato = estabelecimento.contratos?.[0];
+        if (contrato) {
+          const cardContrato = document.createElement("div");
+          cardContrato.className = "empty";
+          const tituloContrato = document.createElement("strong");
+          tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
+          cardContrato.append(tituloContrato);
+          if (contrato.urlcontrato) {
+            const linkContrato = document.createElement("a");
+            linkContrato.className = "material-link";
+            linkContrato.href = new URL(
+              contrato.urlcontrato,
+              CLUBBAR_CONFIG.API_BASE_URL,
+            ).href;
+            linkContrato.target = "_blank";
+            linkContrato.rel = "noopener";
+            linkContrato.textContent = "Ler contrato";
+            cardContrato.append(document.createElement("br"), linkContrato);
+          }
+          if (contrato.status === "ENVIADO") {
+            const aceitarContrato = document.createElement("button");
+            aceitarContrato.type = "button";
+            aceitarContrato.className = "decision-button accept";
+            aceitarContrato.textContent = "Aceitar contrato";
+            aceitarContrato.addEventListener("click", () =>
+              registrarAceiteContrato(contrato.contratolead_id),
+            );
+            cardContrato.append(document.createElement("br"), aceitarContrato);
+          }
+          elementos.contratoEstabelecimento.append(cardContrato);
+        } else {
+          elementos.contratoEstabelecimento.append(
+            criarVazio("Contrato ainda não disponibilizado para esta unidade."),
+          );
+        }
+        elementos.statusLead.textContent = nomeStatus(estabelecimento.status);
+        elementos.decisaoAtual.textContent = nomeDecisao(estabelecimento.decisao);
         elementos.decisaoAtual.className = "decision-status";
         elementos.decisaoAtual.classList.add(
-          resumo.decisao === "PENDENTE"
+          estabelecimento.decisao === "PENDENTE"
             ? "pending"
-            : resumo.decisao === "ANALISANDO"
+            : estabelecimento.decisao === "ANALISANDO"
               ? "analyzing"
-              : resumo.decisao === "ACEITOU"
+              : estabelecimento.decisao === "ACEITOU"
             ? "accepted"
-            : resumo.decisao === "RECUSOU"
+            : estabelecimento.decisao === "RECUSOU"
               ? "declined"
               : "pending",
         );
 
         document.querySelectorAll("[data-decisao]").forEach((botao) => {
           botao.disabled =
-            resumo.status === "CONVERTIDO" ||
-            botao.dataset.decisao === resumo.decisao;
+            estabelecimento.status === "CONVERTIDO" ||
+            botao.dataset.decisao === estabelecimento.decisao;
         });
       }
 
@@ -1254,10 +1377,70 @@
         try {
           await api("/portal-parceiro/decisao", {
             method: "PATCH",
-            body: JSON.stringify({ decisao }),
+            body: JSON.stringify({
+              leadestabelecimento_id: estabelecimentoSelecionadoId,
+              decisao,
+            }),
           });
           await carregarResumo();
           mostrarToast("Sua decisão foi registrada.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function registrarAceiteContrato(contratoId) {
+        if (!window.confirm("Confirma o aceite deste contrato?")) return;
+        try {
+          await api(`/portal-parceiro/contratos/${contratoId}/aceitar`, {
+            method: "PATCH",
+          });
+          await carregarResumo();
+          mostrarToast("Contrato aceito com sucesso.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function carregarCidadesEstabelecimento() {
+        try {
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/cidades`);
+          const cidades = await resposta.json();
+          if (!resposta.ok) throw new Error("Não foi possível carregar as cidades.");
+          elementos.novoEstabelecimentoCidade.innerHTML =
+            '<option value="">Selecione a cidade</option>';
+          cidades.forEach((cidade) => {
+            const opcao = document.createElement("option");
+            opcao.value = cidade.cidade_id;
+            opcao.dataset.estado = cidade.estado_id;
+            opcao.textContent = cidade.label;
+            elementos.novoEstabelecimentoCidade.append(opcao);
+          });
+        } catch (_) {
+          elementos.novoEstabelecimentoCidade.innerHTML =
+            '<option value="">Erro ao carregar cidades</option>';
+        }
+      }
+
+      async function cadastrarNovoEstabelecimento(evento) {
+        evento.preventDefault();
+        const opcaoCidade = elementos.novoEstabelecimentoCidade.selectedOptions[0];
+        if (!opcaoCidade?.value) return;
+        try {
+          await api("/portal-parceiro/estabelecimentos", {
+            method: "POST",
+            body: JSON.stringify({
+              nmestabelecimento: elementos.novoEstabelecimentoNome.value.trim(),
+              tipo: elementos.novoEstabelecimentoTipo.value,
+              tipovenda: elementos.novoEstabelecimentoVenda.value,
+              cpfcnpj: elementos.novoEstabelecimentoDocumento.value.trim() || null,
+              cidade_id: Number(opcaoCidade.value),
+              estado_id: Number(opcaoCidade.dataset.estado),
+            }),
+          });
+          elementos.formEstabelecimento.reset();
+          await carregarResumo();
+          mostrarToast("Estabelecimento cadastrado para negociação.");
         } catch (erro) {
           mostrarToast(erro.message, true);
         }
@@ -1287,6 +1470,10 @@
       }
 
       elementos.formMensagem.addEventListener("submit", enviarMensagem);
+      elementos.formEstabelecimento.addEventListener(
+        "submit",
+        cadastrarNovoEstabelecimento,
+      );
 
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
@@ -1331,10 +1518,18 @@
         );
       });
 
+      elementos.estabelecimentoDecisao.addEventListener("change", async () => {
+        estabelecimentoSelecionadoId = Number(
+          elementos.estabelecimentoDecisao.value,
+        );
+        await carregarResumo();
+      });
+
       elementos.btnAtualizarPagina.addEventListener("click", () =>
         window.location.reload(),
       );
 
+      carregarCidadesEstabelecimento();
       iniciar();
     </script>
   </body>
