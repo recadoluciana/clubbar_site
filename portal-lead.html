@@ -63,9 +63,9 @@
       .topbar {
         min-height: 74px;
         padding: 8px max(18px, 6vw);
-        display: flex;
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
         align-items: center;
-        justify-content: space-between;
         gap: 18px;
         background: #000;
         border-bottom: 1px solid #222;
@@ -75,27 +75,27 @@
         width: auto;
         height: 58px;
         object-fit: contain;
+        justify-self: center;
       }
 
-      .topbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .btn-site {
-        padding: 10px 15px;
-        border: 1px solid var(--gold);
-        border-radius: 999px;
-        color: #000;
-        background: var(--gold);
-        font-size: 13px;
-        font-weight: 850;
+      .btn-top-back {
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        justify-self: start;
+        border: 1px solid #454545;
+        border-radius: 50%;
+        color: #fff;
+        background: #1b1b1b;
+        font-size: 22px;
+        line-height: 1;
         text-decoration: none;
       }
 
-      .btn-site:hover {
-        background: var(--gold-dark);
+      .btn-top-back:hover {
+        color: var(--gold);
+        border-color: var(--gold);
       }
 
       .btn-page-refresh {
@@ -103,17 +103,19 @@
         height: 38px;
         display: inline-grid;
         place-items: center;
-        border: 1px solid #454545;
+        justify-self: end;
+        border: 1px solid var(--gold);
         border-radius: 50%;
-        color: #fff;
-        background: #1b1b1b;
+        color: #000;
+        background: var(--gold);
         font-size: 20px;
         line-height: 1;
       }
 
       .btn-page-refresh:hover {
-        color: var(--gold);
-        border-color: var(--gold);
+        color: #000;
+        border-color: var(--gold-dark);
+        background: var(--gold-dark);
       }
 
       .page {
@@ -682,11 +684,9 @@
 
   <body>
     <header class="topbar">
+      <a class="btn-top-back" href="index.html" aria-label="Voltar" title="Voltar">←</a>
       <img src="assets/images/logo.png" alt="Clubbar" />
-      <div class="topbar-actions">
-        <a class="btn-site" href="index.html">← Voltar</a>
-        <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
-      </div>
+      <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
     </header>
 
     <section class="screen-state" id="telaCarregando">

@@ -367,7 +367,7 @@
       }
       @media (max-width: 680px) {
         header {
-          justify-content: flex-end;
+          justify-content: center;
           padding-inline: 14px;
         }
         header img {
@@ -513,10 +513,18 @@
           </div>
           <div class="grid">
             <div class="group">
+              <label for="estado_id"
+                >Estado <span class="required">*</span></label
+              ><select id="estado_id">
+                <option value="">Carregando estados...</option>
+              </select>
+              <div class="error" id="erro-estado_id"></div>
+            </div>
+            <div class="group">
               <label for="cidade_id"
                 >Cidade <span class="required">*</span></label
-              ><select id="cidade_id">
-                <option value="">Carregando cidades...</option>
+              ><select id="cidade_id" disabled>
+                <option value="">Selecione primeiro o estado</option>
               </select>
               <div class="error" id="erro-cidade_id"></div>
             </div>
@@ -552,6 +560,7 @@
     <script>
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
+        estado = document.getElementById("estado_id"),
         cidade = document.getElementById("cidade_id"),
         tel = document.getElementById("telefone"),
         portalLoading = document.getElementById("portalLoading"),
@@ -564,6 +573,7 @@
         "tipovenda",
         "telefone",
         "email",
+        "estado_id",
         "cidade_id",
       ];
       const nums = (v) => v.replace(/\D/g, "");
@@ -634,12 +644,58 @@
           }
         }, 1000);
       }
-      async function loadCities() {
+      const ordenarPorNome = (itens, campo) =>
+        [...itens].sort((a, b) =>
+          String(a[campo] || "").localeCompare(String(b[campo] || ""), "pt-BR", {
+            sensitivity: "base",
+          }),
+        );
+      function adicionarOpcao(select, valor, texto) {
+        const opcao = document.createElement("option");
+        opcao.value = valor;
+        opcao.textContent = texto;
+        select.appendChild(opcao);
+      }
+      async function loadStates() {
+        estado.disabled = true;
+        estado.innerHTML = '<option value="">Carregando estados...</option>';
         cidade.disabled = true;
-        cidade.innerHTML = '<option value="">Carregando cidades...</option>';
+        cidade.innerHTML = '<option value="">Selecione primeiro o estado</option>';
         try {
           const r = await fetch(
-              `${CLUBBAR_CONFIG.API_BASE_URL}/cidades`,
+              `${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`,
+            ),
+            d = await json(r);
+          if (!r.ok)
+            throw new Error(
+              d.detail || "Não foi possível carregar os estados.",
+            );
+          estado.innerHTML = '<option value="">Selecione o estado</option>';
+          ordenarPorNome(d, "nmestado").forEach((x) =>
+            adicionarOpcao(
+              estado,
+              x.estado_id,
+              x.sgestado ? `${x.nmestado} (${x.sgestado})` : x.nmestado,
+            ),
+          );
+          estado.disabled = false;
+        } catch (e) {
+          estado.innerHTML =
+            '<option value="">Erro ao carregar estados</option>';
+          toast(e.message, "err");
+        }
+      }
+      async function loadCities(estadoId) {
+        cidade.disabled = true;
+        cidade.innerHTML = '<option value="">Carregando cidades...</option>';
+        if (!estadoId) {
+          cidade.innerHTML =
+            '<option value="">Selecione primeiro o estado</option>';
+          return;
+        }
+        try {
+          const r = await fetch(
+              `${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`,
             ),
             d = await json(r);
           if (!r.ok)
@@ -647,11 +703,8 @@
               d.detail || "Não foi possível carregar as cidades.",
             );
           cidade.innerHTML = '<option value="">Selecione a cidade</option>';
-          d.forEach((x) =>
-            cidade.insertAdjacentHTML(
-              "beforeend",
-              `<option value="${x.cidade_id}" data-estado="${x.estado_id}">${x.label}</option>`,
-            ),
+          ordenarPorNome(d, "nmcidade").forEach((x) =>
+            adicionarOpcao(cidade, x.cidade_id, x.nmcidade),
           );
           cidade.disabled = false;
         } catch (e) {
@@ -695,6 +748,10 @@
           fail("email", "Informe um e-mail válido.");
           ok = false;
         }
+        if (!estado.value) {
+          fail("estado_id", "Selecione o estado.");
+          ok = false;
+        }
         if (!cidade.value) {
           fail("cidade_id", "Selecione a cidade.");
           ok = false;
@@ -704,6 +761,11 @@
       tel.addEventListener("input", () => {
         tel.value = mask(tel.value);
         clear("telefone");
+      });
+      estado.addEventListener("change", async () => {
+        clear("estado_id");
+        clear("cidade_id");
+        await loadCities(estado.value);
       });
       cidade.addEventListener("change", () => clear("cidade_id"));
       document
@@ -738,7 +800,7 @@
             .value,
           telefone: nums(tel.value),
           email: document.getElementById("email").value.trim().toLowerCase(),
-          estado_id: Number(cidade.selectedOptions[0].dataset.estado),
+          estado_id: Number(estado.value),
           cidade_id: Number(cidade.value),
         };
         try {
@@ -773,7 +835,7 @@
           }
         }
       });
-      loadCities();
+      loadStates();
     </script>
   </body>
 </html>
