@@ -135,6 +135,39 @@
       .group {
         margin-bottom: 18px;
       }
+      .estabelecimento-card {
+        margin: 8px 0 20px;
+        padding: 20px;
+        border: 1px solid #383838;
+        border-radius: 18px;
+        background: #101010;
+      }
+      .estabelecimento-head {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .estabelecimento-head h3 { color: var(--gold); }
+      .btn-remover-estabelecimento,
+      .btn-adicionar-estabelecimento {
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 800;
+      }
+      .btn-remover-estabelecimento {
+        border: 1px solid #d85d5d;
+        background: transparent;
+        color: #ff8585;
+      }
+      .btn-adicionar-estabelecimento {
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px dashed var(--gold);
+        background: rgba(245, 197, 66, .08);
+        color: var(--gold);
+      }
       label {
         display: block;
         margin-bottom: 8px;
@@ -441,29 +474,16 @@
               <div class="error" id="erro-nmresponsavel"></div>
             </div>
             <div class="group">
-              <label for="nmestabelecimento"
-                >Nome do estabelecimento <span class="required">*</span></label
+              <label for="nmorganizacao">Nome do grupo ou empresa</label
               ><input
-                id="nmestabelecimento"
+                id="nmorganizacao"
                 maxlength="160"
                 autocomplete="organization"
-                placeholder="Ex.: Bar do João"
+                placeholder="Ex.: Grupo Binatto (opcional)"
               />
-              <div class="error" id="erro-nmestabelecimento"></div>
             </div>
           </div>
           <div class="grid">
-            <div class="group">
-              <label for="tipo">Tipo <span class="required">*</span></label
-              ><select id="tipo">
-                <option value="">Selecione</option>
-                <option value="BAR">Bar</option>
-                <option value="CASA_NOTURNA">Casa noturna</option>
-                <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
-                <option value="CASA_EVENTOS">Casa de eventos</option>
-              </select>
-              <div class="error" id="erro-tipo"></div>
-            </div>
             <div class="group">
               <label for="telefone"
                 >Celular ou telefone <span class="required">*</span></label
@@ -477,58 +497,14 @@
               />
               <div class="error" id="erro-telefone"></div>
             </div>
-          </div>
-          <fieldset class="choice-group" id="tipovenda">
-            <legend>
-              O que você deseja vender pelo Clubbar?
-              <span class="required">*</span>
-            </legend>
-            <div class="choice-grid">
-              <label class="choice-card"
-                ><input type="radio" name="tipovenda" value="PRODUTOS" /><span
-                  >Somente produtos</span
-                ></label
-              ><label class="choice-card"
-                ><input type="radio" name="tipovenda" value="INGRESSOS" /><span
-                  >Somente ingressos</span
-                ></label
-              ><label class="choice-card"
-                ><input type="radio" name="tipovenda" value="AMBOS" /><span
-                  >Produtos e ingressos</span
-                ></label
-              >
-            </div>
-            <div class="error" id="erro-tipovenda"></div>
-          </fieldset>
-          <div class="group">
-            <label for="email">E-mail <span class="required">*</span></label
-            ><input
-              type="email"
-              id="email"
-              maxlength="160"
-              autocomplete="email"
-              placeholder="contato@estabelecimento.com.br"
-            />
-            <div class="error" id="erro-email"></div>
-          </div>
-          <div class="grid">
             <div class="group">
-              <label for="estado_id"
-                >Estado <span class="required">*</span></label
-              ><select id="estado_id">
-                <option value="">Carregando estados...</option>
-              </select>
-              <div class="error" id="erro-estado_id"></div>
-            </div>
-            <div class="group">
-              <label for="cidade_id"
-                >Cidade <span class="required">*</span></label
-              ><select id="cidade_id" disabled>
-                <option value="">Selecione primeiro o estado</option>
-              </select>
-              <div class="error" id="erro-cidade_id"></div>
+              <label for="email">E-mail <span class="required">*</span></label
+              ><input type="email" id="email" maxlength="160" autocomplete="email" placeholder="seuemail@exemplo.com" />
+              <div class="error" id="erro-email"></div>
             </div>
           </div>
+          <div id="estabelecimentos"></div>
+          <button class="btn-adicionar-estabelecimento" id="btnAdicionarEstabelecimento" type="button">＋ Adicionar outro estabelecimento</button>
           <button class="btn" id="btnEnviar" type="submit">
             Quero conhecer o Clubbar
           </button>
@@ -560,22 +536,15 @@
     <script>
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
-        estado = document.getElementById("estado_id"),
-        cidade = document.getElementById("cidade_id"),
+        listaEstabelecimentos = document.getElementById("estabelecimentos"),
+        btnAdicionarEstabelecimento = document.getElementById("btnAdicionarEstabelecimento"),
         tel = document.getElementById("telefone"),
         portalLoading = document.getElementById("portalLoading"),
         portalLoadingTempo = document.getElementById("portalLoadingTempo");
       let redirecionando = false;
-      const ids = [
-        "nmresponsavel",
-        "nmestabelecimento",
-        "tipo",
-        "tipovenda",
-        "telefone",
-        "email",
-        "estado_id",
-        "cidade_id",
-      ];
+      let proximoEstabelecimento = 1;
+      let estadosCache = [];
+      const ids = ["nmresponsavel", "telefone", "email"];
       const nums = (v) => v.replace(/\D/g, "");
       function mask(v) {
         const n = nums(v).slice(0, 11);
@@ -657,10 +626,6 @@
         select.appendChild(opcao);
       }
       async function loadStates() {
-        estado.disabled = true;
-        estado.innerHTML = '<option value="">Carregando estados...</option>';
-        cidade.disabled = true;
-        cidade.innerHTML = '<option value="">Selecione primeiro o estado</option>';
         try {
           const r = await fetch(
               `${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`,
@@ -670,22 +635,20 @@
             throw new Error(
               d.detail || "Não foi possível carregar os estados.",
             );
-          estado.innerHTML = '<option value="">Selecione o estado</option>';
-          ordenarPorNome(d, "nmestado").forEach((x) =>
-            adicionarOpcao(
-              estado,
-              x.estado_id,
-              x.sgestado ? `${x.nmestado} (${x.sgestado})` : x.nmestado,
-            ),
-          );
-          estado.disabled = false;
+          estadosCache = ordenarPorNome(d, "nmestado");
         } catch (e) {
-          estado.innerHTML =
-            '<option value="">Erro ao carregar estados</option>';
           toast(e.message, "err");
         }
       }
-      async function loadCities(estadoId) {
+      function preencherEstados(select) {
+        select.innerHTML = '<option value="">Selecione o estado</option>';
+        estadosCache.forEach((x) => adicionarOpcao(
+          select,
+          x.estado_id,
+          x.sgestado ? `${x.nmestado} (${x.sgestado})` : x.nmestado,
+        ));
+      }
+      async function loadCities(estadoId, cidade) {
         cidade.disabled = true;
         cidade.innerHTML = '<option value="">Carregando cidades...</option>';
         if (!estadoId) {
@@ -713,31 +676,73 @@
           toast(e.message, "err");
         }
       }
+      function criarEstabelecimento() {
+        const indice = proximoEstabelecimento++;
+        const card = document.createElement("section");
+        card.className = "estabelecimento-card";
+        card.dataset.indice = indice;
+        card.innerHTML = `
+          <div class="estabelecimento-head"><h3>Estabelecimento ${listaEstabelecimentos.children.length + 1}</h3><button class="btn-remover-estabelecimento" type="button">Remover</button></div>
+          <div class="grid">
+            <div class="group"><label>Nome <span class="required">*</span></label><input data-campo="nmestabelecimento" maxlength="160" placeholder="Ex.: Adega Bar"></div>
+            <div class="group"><label>Tipo <span class="required">*</span></label><select data-campo="tipo"><option value="">Selecione</option><option value="BAR">Bar</option><option value="CASA_NOTURNA">Casa noturna</option><option value="PRODUTOR_EVENTOS">Produtor de eventos</option><option value="CASA_EVENTOS">Casa de eventos</option></select></div>
+          </div>
+          <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
+          <div class="grid">
+            <div class="group"><label>CPF/CNPJ</label><input data-campo="cpfcnpj" inputmode="numeric" maxlength="18" placeholder="Opcional"></div>
+            <div class="group"><label>Telefone do estabelecimento</label><input data-campo="telefone" inputmode="numeric" maxlength="15" placeholder="Opcional; usa o telefone do responsável se vazio"></div>
+          </div>
+          <div class="group"><label>E-mail do estabelecimento</label><input data-campo="email" type="email" maxlength="160" placeholder="Opcional; usa o e-mail do responsável se vazio"></div>
+          <details><summary style="margin-bottom:14px;color:var(--gold);cursor:pointer;font-weight:800">Adicionar endereço (opcional)</summary>
+            <div class="grid"><div class="group"><label>CEP</label><input data-campo="cep" inputmode="numeric" maxlength="9"></div><div class="group"><label>Endereço</label><input data-campo="endereco" maxlength="255"></div></div>
+            <div class="grid"><div class="group"><label>Número</label><input data-campo="numero" maxlength="20"></div><div class="group"><label>Bairro</label><input data-campo="bairro" maxlength="120"></div></div>
+            <div class="group"><label>Complemento</label><input data-campo="complemento" maxlength="120"></div>
+          </details>
+          <div class="grid">
+            <div class="group"><label>Estado <span class="required">*</span></label><select data-campo="estado_id"></select></div>
+            <div class="group"><label>Cidade <span class="required">*</span></label><select data-campo="cidade_id" disabled><option value="">Selecione primeiro o estado</option></select></div>
+          </div>
+          <div class="error" data-error></div>`;
+        const estadoSelect = card.querySelector('[data-campo="estado_id"]');
+        const cidadeSelect = card.querySelector('[data-campo="cidade_id"]');
+        preencherEstados(estadoSelect);
+        estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
+        card.querySelector('[data-campo="telefone"]').addEventListener("input", (e) => { e.target.value = mask(e.target.value); });
+        card.querySelector(".btn-remover-estabelecimento").addEventListener("click", () => {
+          if (listaEstabelecimentos.children.length === 1) {
+            toast("É necessário manter pelo menos um estabelecimento.", "err");
+            return;
+          }
+          card.remove();
+          [...listaEstabelecimentos.children].forEach((item, i) => item.querySelector("h3").textContent = `Estabelecimento ${i + 1}`);
+        });
+        listaEstabelecimentos.appendChild(card);
+      }
+      function dadosEstabelecimentos() {
+        return [...listaEstabelecimentos.querySelectorAll(".estabelecimento-card")].map((card) => ({
+          nmestabelecimento: card.querySelector('[data-campo="nmestabelecimento"]').value.trim(),
+          tipo: card.querySelector('[data-campo="tipo"]').value,
+          tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
+          cpfcnpj: nums(card.querySelector('[data-campo="cpfcnpj"]').value) || null,
+          telefone: nums(card.querySelector('[data-campo="telefone"]').value) || null,
+          email: card.querySelector('[data-campo="email"]').value.trim().toLowerCase() || null,
+          cep: nums(card.querySelector('[data-campo="cep"]').value) || null,
+          endereco: card.querySelector('[data-campo="endereco"]').value.trim() || null,
+          numero: card.querySelector('[data-campo="numero"]').value.trim() || null,
+          bairro: card.querySelector('[data-campo="bairro"]').value.trim() || null,
+          complemento: card.querySelector('[data-campo="complemento"]').value.trim() || null,
+          estado_id: Number(card.querySelector('[data-campo="estado_id"]').value),
+          cidade_id: Number(card.querySelector('[data-campo="cidade_id"]').value),
+        }));
+      }
       function validate() {
         clearAll();
         let ok = true;
         const nr = document.getElementById("nmresponsavel").value.trim(),
-          ne = document.getElementById("nmestabelecimento").value.trim(),
-          tipo = document.getElementById("tipo").value,
-          tipovenda = document.querySelector(
-            'input[name="tipovenda"]:checked',
-          )?.value,
           t = nums(tel.value),
           email = document.getElementById("email").value.trim().toLowerCase();
         if (nr.length < 3) {
           fail("nmresponsavel", "Informe pelo menos 3 caracteres.");
-          ok = false;
-        }
-        if (ne.length < 2) {
-          fail("nmestabelecimento", "Informe o estabelecimento.");
-          ok = false;
-        }
-        if (!tipo) {
-          fail("tipo", "Selecione o tipo.");
-          ok = false;
-        }
-        if (!tipovenda) {
-          fail("tipovenda", "Selecione o que deseja vender.");
           ok = false;
         }
         if (![10, 11].includes(t.length)) {
@@ -748,39 +753,31 @@
           fail("email", "Informe um e-mail válido.");
           ok = false;
         }
-        if (!estado.value) {
-          fail("estado_id", "Selecione o estado.");
-          ok = false;
-        }
-        if (!cidade.value) {
-          fail("cidade_id", "Selecione a cidade.");
-          ok = false;
-        }
+        const dados = dadosEstabelecimentos();
+        dados.forEach((item, indice) => {
+          const card = listaEstabelecimentos.children[indice];
+          const erros = [];
+          card.querySelectorAll("input,select").forEach((campo) => campo.classList.remove("invalid"));
+          if (item.nmestabelecimento.length < 2) erros.push("informe o nome");
+          if (!item.tipo) erros.push("selecione o tipo");
+          if (!item.tipovenda) erros.push("selecione o tipo de venda");
+          if (!item.estado_id) erros.push("selecione o estado");
+          if (!item.cidade_id) erros.push("selecione a cidade");
+          if (item.email && !validEmail(item.email)) erros.push("informe um e-mail válido");
+          if (item.telefone && ![10, 11].includes(item.telefone.length)) erros.push("informe um telefone válido");
+          card.querySelector("[data-error]").textContent = erros.length ? `Revise este estabelecimento: ${erros.join(", ")}.` : "";
+          if (erros.length) ok = false;
+        });
         return ok;
       }
       tel.addEventListener("input", () => {
         tel.value = mask(tel.value);
         clear("telefone");
       });
-      estado.addEventListener("change", async () => {
-        clear("estado_id");
-        clear("cidade_id");
-        await loadCities(estado.value);
-      });
-      cidade.addEventListener("change", () => clear("cidade_id"));
-      document
-        .querySelectorAll('input[name="tipovenda"]')
-        .forEach((input) =>
-          input.addEventListener("change", () => clear("tipovenda")),
-        );
-      [
-        "nmresponsavel",
-        "nmestabelecimento",
-        "tipo",
-        "email",
-      ].forEach((id) =>
+      ["nmresponsavel", "email"].forEach((id) =>
         document.getElementById(id).addEventListener("input", () => clear(id)),
       );
+      btnAdicionarEstabelecimento.addEventListener("click", criarEstabelecimento);
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!validate()) {
@@ -792,16 +789,10 @@
         btn.innerHTML = '<span class="spinner"></span>Enviando cadastro...';
         const body = {
           nmresponsavel: document.getElementById("nmresponsavel").value.trim(),
-          nmestabelecimento: document
-            .getElementById("nmestabelecimento")
-            .value.trim(),
-          tipo: document.getElementById("tipo").value,
-          tipovenda: document.querySelector('input[name="tipovenda"]:checked')
-            .value,
+          nmorganizacao: document.getElementById("nmorganizacao").value.trim() || null,
           telefone: nums(tel.value),
           email: document.getElementById("email").value.trim().toLowerCase(),
-          estado_id: Number(estado.value),
-          cidade_id: Number(cidade.value),
+          estabelecimentos: dadosEstabelecimentos(),
         };
         try {
           const r = await fetch(
@@ -835,7 +826,7 @@
           }
         }
       });
-      loadStates();
+      loadStates().then(criarEstabelecimento);
     </script>
   </body>
 </html>
