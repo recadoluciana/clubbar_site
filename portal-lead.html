@@ -98,6 +98,24 @@
         background: var(--gold-dark);
       }
 
+      .btn-page-refresh {
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        border: 1px solid #454545;
+        border-radius: 50%;
+        color: #fff;
+        background: #1b1b1b;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .btn-page-refresh:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+      }
+
       .page {
         width: min(1180px, calc(100% - 28px));
         margin: 0 auto;
@@ -328,6 +346,42 @@
         color: var(--gold);
         border-color: var(--gold);
         background: #181818;
+      }
+
+      .decision-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .decision-status {
+        padding: 6px 11px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .decision-status.pending {
+        color: #211700;
+        border-color: #e4ac00;
+        background: #ffc107;
+      }
+
+      .decision-status.accepted {
+        color: #fff;
+        border-color: #279758;
+        background: #31a967;
+      }
+
+      .decision-status.declined {
+        color: #fff;
+        border-color: #b92935;
+        background: #d83b47;
       }
 
       .list {
@@ -604,7 +658,8 @@
     <header class="topbar">
       <img src="assets/images/logo.png" alt="Clubbar" />
       <div class="topbar-actions">
-        <a class="btn-site" href="index.html">← Voltar ao site</a>
+        <a class="btn-site" href="index.html">← Voltar</a>
+        <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
       </div>
     </header>
 
@@ -628,7 +683,7 @@
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Enviar novo link por e-mail</button>
         </form>
-        <a class="btn-secondary" href="index.html">← Voltar ao site</a>
+        <a class="btn-secondary" href="index.html">← Voltar</a>
       </div>
     </section>
 
@@ -717,9 +772,9 @@
 
           <section class="panel">
             <header class="panel-head">
-              <div>
+              <div class="decision-title">
                 <h2>Sua decisão</h2>
-                <p id="decisaoAtual">Decisão atual: pendente</p>
+                <span class="decision-status pending" id="decisaoAtual">Pendente</span>
               </div>
             </header>
             <div class="panel-body">
@@ -776,6 +831,7 @@
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
+        btnAtualizarPagina: document.getElementById("btnAtualizarPagina"),
       };
 
       function obterToken() {
@@ -815,7 +871,7 @@
         const nomes = {
           PENDENTE: "Pendente",
           ACEITOU: "Parceria aceita",
-          RECUSOU: "Parceria recusada",
+          RECUSOU: "Recusou parceria",
         };
         return nomes[valor] || valor || "Pendente";
       }
@@ -938,8 +994,15 @@
         elementos.qtdAgendamentos.textContent =
           resumo.agendamentos_pendentes ?? 0;
         elementos.qtdMateriais.textContent = resumo.materiais ?? 0;
-        elementos.decisaoAtual.textContent =
-          `Decisão atual: ${nomeDecisao(resumo.decisao)}`;
+        elementos.decisaoAtual.textContent = nomeDecisao(resumo.decisao);
+        elementos.decisaoAtual.className = "decision-status";
+        elementos.decisaoAtual.classList.add(
+          resumo.decisao === "ACEITOU"
+            ? "accepted"
+            : resumo.decisao === "RECUSOU"
+              ? "declined"
+              : "pending",
+        );
 
         document.querySelectorAll("[data-decisao]").forEach((botao) => {
           botao.disabled =
@@ -1239,6 +1302,10 @@
           registrarDecisao(botao.dataset.decisao),
         );
       });
+
+      elementos.btnAtualizarPagina.addEventListener("click", () =>
+        window.location.reload(),
+      );
 
       iniciar();
     </script>
