@@ -349,8 +349,10 @@
       }
 
       .decision-title {
+        width: 100%;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 10px;
         flex-wrap: wrap;
       }
@@ -367,6 +369,12 @@
       }
 
       .decision-status.pending {
+        color: #fff;
+        border-color: #2378cf;
+        background: #3287df;
+      }
+
+      .decision-status.analyzing {
         color: #211700;
         border-color: #e4ac00;
         background: #ffc107;
@@ -507,7 +515,7 @@
         border-color: rgba(49, 182, 106, 0.55);
       }
 
-      .decision-button.pending {
+      .decision-button.analyzing {
         color: #211700;
         border-color: #e4ac00;
         background: #ffc107;
@@ -780,7 +788,7 @@
             <header class="panel-head">
               <div class="decision-title">
                 <h2>Sua decisão</h2>
-                <span class="decision-status pending" id="decisaoAtual">Em análise</span>
+                <span class="decision-status pending" id="decisaoAtual">Pendente</span>
               </div>
             </header>
             <div class="panel-body">
@@ -790,8 +798,8 @@
               </p>
               <div class="decision-actions">
                 <button
-                  class="decision-button pending"
-                  data-decisao="PENDENTE"
+                  class="decision-button analyzing"
+                  data-decisao="ANALISANDO"
                   type="button"
                 >
                   Ainda estou analisando
@@ -882,7 +890,8 @@
 
       function nomeDecisao(valor) {
         const nomes = {
-          PENDENTE: "Em análise",
+          PENDENTE: "Pendente",
+          ANALISANDO: "Em análise",
           ACEITOU: "Parceria aceita",
           RECUSOU: "Recusou parceria",
         };
@@ -1010,7 +1019,11 @@
         elementos.decisaoAtual.textContent = nomeDecisao(resumo.decisao);
         elementos.decisaoAtual.className = "decision-status";
         elementos.decisaoAtual.classList.add(
-          resumo.decisao === "ACEITOU"
+          resumo.decisao === "PENDENTE"
+            ? "pending"
+            : resumo.decisao === "ANALISANDO"
+              ? "analyzing"
+              : resumo.decisao === "ACEITOU"
             ? "accepted"
             : resumo.decisao === "RECUSOU"
               ? "declined"
@@ -1230,7 +1243,7 @@
 
       async function registrarDecisao(decisao) {
         const textos = {
-          PENDENTE: "continuar analisando a parceria",
+          ANALISANDO: "continuar analisando a parceria",
           ACEITOU: "aceitar a parceria",
           RECUSOU: "recusar a parceria",
         };
