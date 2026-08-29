@@ -508,10 +508,12 @@
       .toast {
         position: fixed;
         z-index: 9999;
-        top: 18px;
-        right: 18px;
+        top: 88px;
+        left: 50%;
         width: min(390px, calc(100% - 28px));
         padding: 16px 18px;
+        transform: translateX(-50%);
+        text-align: center;
         border: 1px solid var(--gold);
         border-radius: 16px;
         color: #fff;
@@ -541,6 +543,10 @@
 
         .topbar img {
           height: 48px;
+        }
+
+        .toast {
+          top: 78px;
         }
 
         .page {
