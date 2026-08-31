@@ -14,7 +14,7 @@ const CLUBBAR_CONFIG = CLUBBAR_EM_DESENVOLVIMENTO
       AMBIENTE: 'DESENVOLVIMENTO',
     }
   : {
-      API_BASE_URL: 'https://api.clubbar.com.br',
+      API_BASE_URL: 'https://apiclubbar-production.up.railway.app',
       ADMIN_URL: 'https://admin.clubbar.com.br',
       PARTNER_URL: 'https://parceiro.clubbar.com.br',
       CLIENTE_URL: 'https://app.clubbar.com.br',
