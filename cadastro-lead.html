@@ -127,6 +127,39 @@
         font-size: 13px;
         line-height: 1.55;
       }
+      .summary-lines {
+        display: grid;
+        gap: 10px;
+      }
+      .summary-line {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: #d7d7d7;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .summary-icon {
+        flex: 0 0 24px;
+        display: grid;
+        place-items: center;
+        color: var(--gold);
+        font-size: 18px;
+      }
+      .no-monthly-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 14px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #1976d2;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        box-shadow: 0 8px 22px rgba(25, 118, 210, 0.28);
+      }
       .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -444,9 +477,6 @@
     <main>
       <section class="box">
         <div class="head">
-          <div class="icon">
-            <img src="assets/images/coruja.png" alt="Coruja mascote do Clubbar" />
-          </div>
           <h1>Venha ser nosso parceiro...</h1>
           <p>
             Conte um pouco sobre seu estabelecimento. Nossa equipe entrará em
@@ -456,10 +486,17 @@
         <form id="formParceiro" novalidate>
           <div class="summary">
             <strong>Plano único Clubbar</strong>
-            <p>
-              5% sobre a venda de produtos e taxa de conveniência de 5% nos
-              ingressos, cobrada diretamente do cliente.
-            </p>
+            <div class="summary-lines">
+              <div class="summary-line">
+                <span class="summary-icon" aria-hidden="true">✓</span>
+                <span>5% sobre a venda de produtos descontadas do parceiro.</span>
+              </div>
+              <div class="summary-line">
+                <span class="summary-icon" aria-hidden="true">✓</span>
+                <span>Taxa de conveniência de 5% nos ingressos, cobrada diretamente do cliente no momento do pagamento.</span>
+              </div>
+            </div>
+            <span class="no-monthly-badge">★ SEM MENSALIDADE</span>
           </div>
           <div class="grid">
             <div class="group">
@@ -506,12 +543,8 @@
           <div id="estabelecimentos"></div>
           <button class="btn-adicionar-estabelecimento" id="btnAdicionarEstabelecimento" type="button">＋ Adicionar outro estabelecimento</button>
           <button class="btn" id="btnEnviar" type="submit">
-            Quero conhecer o Clubbar
+            Confirmar cadastro
           </button>
-          <p style="text-align:center;margin-top:14px">
-            Já se cadastrou?
-            <a href="portal-lead.html" style="font-weight:800;color:#1976d2">Acompanhar meu atendimento</a>
-          </p>
         </form>
       </section>
     </main>
@@ -688,12 +721,7 @@
             <div class="group"><label>Tipo <span class="required">*</span></label><select data-campo="tipo"><option value="">Selecione</option><option value="BAR">Bar</option><option value="CASA_NOTURNA">Casa noturna</option><option value="PRODUTOR_EVENTOS">Produtor de eventos</option><option value="CASA_EVENTOS">Casa de eventos</option></select></div>
           </div>
           <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
-          <div class="grid">
-            <div class="group"><label>CPF/CNPJ</label><input data-campo="cpfcnpj" inputmode="numeric" maxlength="18" placeholder="Opcional"></div>
-            <div class="group"><label>Telefone do estabelecimento</label><input data-campo="telefone" inputmode="numeric" maxlength="15" placeholder="Opcional; usa o telefone do responsável se vazio"></div>
-          </div>
-          <div class="group"><label>E-mail do estabelecimento</label><input data-campo="email" type="email" maxlength="160" placeholder="Opcional; usa o e-mail do responsável se vazio"></div>
-          <details><summary style="margin-bottom:14px;color:var(--gold);cursor:pointer;font-weight:800">Adicionar endereço (opcional)</summary>
+          <details><summary style="margin-bottom:14px;color:var(--gold);cursor:pointer;font-weight:800">Adicionar endereço</summary>
             <div class="grid"><div class="group"><label>CEP</label><input data-campo="cep" inputmode="numeric" maxlength="9"></div><div class="group"><label>Endereço</label><input data-campo="endereco" maxlength="255"></div></div>
             <div class="grid"><div class="group"><label>Número</label><input data-campo="numero" maxlength="20"></div><div class="group"><label>Bairro</label><input data-campo="bairro" maxlength="120"></div></div>
             <div class="group"><label>Complemento</label><input data-campo="complemento" maxlength="120"></div>
@@ -707,7 +735,6 @@
         const cidadeSelect = card.querySelector('[data-campo="cidade_id"]');
         preencherEstados(estadoSelect);
         estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
-        card.querySelector('[data-campo="telefone"]').addEventListener("input", (e) => { e.target.value = mask(e.target.value); });
         card.querySelector(".btn-remover-estabelecimento").addEventListener("click", () => {
           if (listaEstabelecimentos.children.length === 1) {
             toast("É necessário manter pelo menos um estabelecimento.", "err");
@@ -723,9 +750,9 @@
           nmestabelecimento: card.querySelector('[data-campo="nmestabelecimento"]').value.trim(),
           tipo: card.querySelector('[data-campo="tipo"]').value,
           tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
-          cpfcnpj: nums(card.querySelector('[data-campo="cpfcnpj"]').value) || null,
-          telefone: nums(card.querySelector('[data-campo="telefone"]').value) || null,
-          email: card.querySelector('[data-campo="email"]').value.trim().toLowerCase() || null,
+          cpfcnpj: null,
+          telefone: null,
+          email: null,
           cep: nums(card.querySelector('[data-campo="cep"]').value) || null,
           endereco: card.querySelector('[data-campo="endereco"]').value.trim() || null,
           numero: card.querySelector('[data-campo="numero"]').value.trim() || null,
