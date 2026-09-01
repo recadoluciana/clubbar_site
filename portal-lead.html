@@ -84,18 +84,18 @@
         display: inline-grid;
         place-items: center;
         justify-self: start;
-        border: 1px solid #454545;
+        border: 1px solid var(--gold);
         border-radius: 50%;
-        color: #fff;
-        background: #1b1b1b;
+        color: #000;
+        background: var(--gold);
         font-size: 22px;
         line-height: 1;
         text-decoration: none;
       }
 
       .btn-top-back:hover {
-        color: var(--gold);
-        border-color: var(--gold);
+        color: #000;
+        filter: brightness(1.08);
       }
 
       .btn-page-refresh {
@@ -673,6 +673,18 @@
         font-size: 21px;
       }
 
+      .btn-panel-refresh {
+        min-height: 38px;
+        padding: 8px 12px;
+        flex: 0 0 auto;
+        border: 1px solid var(--gold);
+        border-radius: 11px;
+        color: #000;
+        background: var(--gold);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
       .contract-flow {
         margin: 14px 0;
         padding: 16px;
@@ -695,6 +707,7 @@
         padding: 24px 15px;
         background: var(--bg);
         backdrop-filter: none;
+        place-items: start center;
       }
 
       body.pagina-detalhe .modal-card {
@@ -895,21 +908,20 @@
 
     <section class="modal hidden" id="modalMensagens" role="dialog" aria-modal="true" aria-labelledby="tituloMensagens">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens</h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens</h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div><button class="btn-panel-refresh" id="btnAtualizarMensagens" type="button">↻ Atualizar</button></header>
         <div class="panel-body">
           <div class="messages" id="listaMensagens"></div>
           <form class="message-form" id="formMensagem">
             <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
             <button class="btn-primary" id="btnEnviarMensagem" type="submit">Enviar mensagem</button>
           </form>
-          <button class="btn-refresh" id="btnAtualizarMensagens" type="button" style="margin-top:10px">Atualizar mensagens</button>
         </div>
       </div>
     </section>
 
     <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloAgendamentos">Agendamentos</h2><p>Todos os horários propostos e respondidos.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <header class="panel-head"><div><h2 id="tituloAgendamentos">Agendamentos</h2><p>Todos os horários propostos e respondidos.</p></div><button class="btn-panel-refresh" id="btnAtualizarAgendamentos" type="button">↻ Atualizar</button></header>
         <div class="panel-body"><div class="list" id="listaAgendamentos"></div></div>
       </div>
     </section>
@@ -971,6 +983,9 @@
         btnEnviarMensagem: document.getElementById("btnEnviarMensagem"),
         btnAtualizarMensagens: document.getElementById(
           "btnAtualizarMensagens",
+        ),
+        btnAtualizarAgendamentos: document.getElementById(
+          "btnAtualizarAgendamentos",
         ),
         estabelecimentoDecisao: document.getElementById(
           "estabelecimentoDecisao",
@@ -1637,6 +1652,18 @@
           mostrarToast(erro.message, true);
         } finally {
           elementos.btnAtualizarMensagens.disabled = false;
+        }
+      });
+
+      elementos.btnAtualizarAgendamentos.addEventListener("click", async () => {
+        elementos.btnAtualizarAgendamentos.disabled = true;
+        try {
+          await carregarAgendamentos();
+          await carregarResumo();
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnAtualizarAgendamentos.disabled = false;
         }
       });
 
