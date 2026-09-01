@@ -759,10 +759,6 @@
           font-size: 23px;
         }
 
-        .status-badge {
-          display: none;
-        }
-
         .stats {
           grid-template-columns: 1fr;
           gap: 8px;
@@ -834,7 +830,6 @@
             materiais enviados pela equipe Clubbar.
           </p>
         </div>
-        <span class="status-badge" id="statusLead">Novo</span>
       </section>
 
       <section class="stats">
@@ -853,18 +848,18 @@
       </section>
 
       <section class="panel decision-panel">
-            <header class="panel-head">
-              <div class="decision-title">
-                <h2>Sua decisão</h2>
-                <span class="decision-status pending" id="decisaoAtual">Pendente</span>
-              </div>
-            </header>
             <div class="panel-body">
               <div class="estabelecimento-title">
                 <label for="estabelecimentoDecisao"><strong>Estabelecimento</strong></label>
                 <button class="btn-inline" type="button" data-pagina="estabelecimento">＋ Novo estabelecimento</button>
               </div>
               <select id="estabelecimentoDecisao" class="form-control"></select>
+              <div class="decision-title" style="margin-top:18px">
+                <h2>Sua decisão</h2>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <span class="status-badge" id="statusLead">Novo</span>
+                </div>
+              </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
               <p class="decision-copy">
                 Depois de conhecer o produto, as propostas e o contrato,
@@ -873,7 +868,7 @@
               <div class="decision-actions">
                 <button
                   class="decision-button analyzing"
-                  data-decisao="ANALISANDO"
+                  data-status="NEGOCIANDO"
                   type="button"
                 >
                   Analisando parceria
@@ -887,7 +882,7 @@
                 </button>
                 <button
                   class="decision-button decline"
-                  data-decisao="RECUSOU"
+                  data-status="RECUSOU_PARCERIA"
                   type="button"
                 >
                   Não tenho interesse
@@ -977,7 +972,6 @@
         btnAtualizarMensagens: document.getElementById(
           "btnAtualizarMensagens",
         ),
-        decisaoAtual: document.getElementById("decisaoAtual"),
         estabelecimentoDecisao: document.getElementById(
           "estabelecimentoDecisao",
         ),
@@ -1045,16 +1039,6 @@
           RECUSOU_PARCERIA: "Recusou parceria",
         };
         return nomes[valor] || valor || "Não informado";
-      }
-
-      function nomeDecisao(valor) {
-        const nomes = {
-          PENDENTE: "Pendente",
-          ANALISANDO: "Em análise",
-          ACEITOU: "Parceria aceita",
-          RECUSOU: "Recusou parceria",
-        };
-        return nomes[valor] || valor || "Pendente";
       }
 
       function nomeTipoAgendamento(valor) {
@@ -1220,10 +1204,7 @@
           estabelecimentos.find(
             (item) =>
               item.leadestabelecimento_id === estabelecimentoSelecionadoId,
-          ) || {
-            status: resumo.status,
-            decisao: resumo.decisao,
-          };
+          ) || { status: "NOVO", contratos: [] };
         elementos.contratoEstabelecimento.replaceChildren();
         const contrato = estabelecimento.contratos?.[0];
         elementos.contratoEstabelecimento.classList.toggle(
@@ -1268,7 +1249,7 @@
               : "Confirme o aceite do contrato para continuar";
           confirmarParceria.disabled = contrato.status !== "ACEITO";
           confirmarParceria.addEventListener("click", () =>
-            registrarDecisao("ACEITOU"),
+            registrarStatus("ACEITOU_PARCERIA"),
           );
           cardContrato.append(confirmarParceria);
           elementos.contratoEstabelecimento.append(cardContrato);
@@ -1278,28 +1259,15 @@
           );
         }
         elementos.statusLead.textContent = nomeStatus(estabelecimento.status);
-        elementos.decisaoAtual.textContent = nomeDecisao(estabelecimento.decisao);
-        elementos.decisaoAtual.className = "decision-status";
-        elementos.decisaoAtual.classList.add(
-          estabelecimento.decisao === "PENDENTE"
-            ? "pending"
-            : estabelecimento.decisao === "ANALISANDO"
-              ? "analyzing"
-              : estabelecimento.decisao === "ACEITOU"
-            ? "accepted"
-            : estabelecimento.decisao === "RECUSOU"
-              ? "declined"
-              : "pending",
-        );
 
-        document.querySelectorAll("[data-decisao]").forEach((botao) => {
+        document.querySelectorAll("[data-status]").forEach((botao) => {
           botao.disabled =
             estabelecimento.status === "CONVERTIDO" ||
-            botao.dataset.decisao === estabelecimento.decisao;
+            botao.dataset.status === estabelecimento.status;
         });
         elementos.btnAceitarParceria.disabled =
           estabelecimento.status === "CONVERTIDO" ||
-          estabelecimento.decisao === "ACEITOU";
+          estabelecimento.status === "ACEITOU_PARCERIA";
       }
 
       async function carregarMensagens() {
@@ -1524,21 +1492,21 @@
         }
       }
 
-      async function registrarDecisao(decisao) {
+      async function registrarStatus(status) {
         const textos = {
-          ANALISANDO: "continuar analisando a parceria",
-          ACEITOU: "aceitar a parceria",
-          RECUSOU: "recusar a parceria",
+          NEGOCIANDO: "continuar analisando a parceria",
+          ACEITOU_PARCERIA: "aceitar a parceria",
+          RECUSOU_PARCERIA: "recusar a parceria",
         };
 
-        if (!window.confirm(`Deseja realmente ${textos[decisao]}?`)) return;
+        if (!window.confirm(`Deseja realmente ${textos[status]}?`)) return;
 
         try {
-          await api("/portal-parceiro/decisao", {
+          await api("/portal-parceiro/status", {
             method: "PATCH",
             body: JSON.stringify({
               leadestabelecimento_id: estabelecimentoSelecionadoId,
-              decisao,
+              status,
             }),
           });
           await carregarResumo();
@@ -1696,9 +1664,9 @@
 
       elementos.btnAceitarParceria.addEventListener("click", iniciarAceiteParceria);
 
-      document.querySelectorAll("[data-decisao]").forEach((botao) => {
+      document.querySelectorAll("[data-status]").forEach((botao) => {
         botao.addEventListener("click", () =>
-          registrarDecisao(botao.dataset.decisao),
+          registrarStatus(botao.dataset.status),
         );
       });
 
