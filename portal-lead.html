@@ -689,6 +689,38 @@
         overflow: hidden;
       }
 
+      body.pagina-detalhe .modal {
+        position: static;
+        min-height: calc(100vh - 74px);
+        padding: 24px 15px;
+        background: var(--bg);
+        backdrop-filter: none;
+      }
+
+      body.pagina-detalhe .modal-card {
+        max-height: none;
+      }
+
+      .estabelecimento-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .estabelecimento-title label { margin: 0; }
+
+      .btn-inline {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--gold);
+        border-radius: 10px;
+        color: #17120a;
+        background: var(--gold);
+        font-weight: 900;
+      }
+
       @media (max-width: 850px) {
         .layout {
           grid-template-columns: 1fr;
@@ -762,7 +794,7 @@
 
   <body>
     <header class="topbar">
-      <a class="btn-top-back" href="index.html" aria-label="Voltar" title="Voltar">←</a>
+      <a class="btn-top-back" id="btnVoltarTopo" href="index.html" aria-label="Voltar" title="Voltar">←</a>
       <img src="assets/images/logo.png" alt="Clubbar" />
       <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
     </header>
@@ -785,7 +817,8 @@
         </p>
         <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <button class="btn-primary" id="btnNovoAcesso" type="submit">Enviar novo link por e-mail</button>
+          <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <button class="btn-primary" id="btnNovoAcesso" type="submit">Entrar no atendimento</button>
         </form>
         <a class="btn-secondary" href="index.html">← Voltar</a>
       </div>
@@ -805,15 +838,15 @@
       </section>
 
       <section class="stats">
-        <button class="stat" type="button" data-abrir-modal="modalMensagens">
+        <button class="stat" type="button" data-pagina="mensagens">
           <strong id="qtdMensagens">0</strong>
           <span>Mensagens recebidas</span>
         </button>
-        <button class="stat" type="button" data-abrir-modal="modalAgendamentos">
+        <button class="stat" type="button" data-pagina="agendamentos">
           <strong id="qtdAgendamentos">0</strong>
           <span>Agendamentos</span>
         </button>
-        <button class="stat" type="button" data-abrir-modal="modalMateriais">
+        <button class="stat" type="button" data-pagina="materiais">
           <strong id="qtdMateriais">0</strong>
           <span>Materiais</span>
         </button>
@@ -827,7 +860,10 @@
               </div>
             </header>
             <div class="panel-body">
-              <label for="estabelecimentoDecisao"><strong>Estabelecimento</strong></label>
+              <div class="estabelecimento-title">
+                <label for="estabelecimentoDecisao"><strong>Estabelecimento</strong></label>
+                <button class="btn-inline" type="button" data-pagina="estabelecimento">＋ Novo estabelecimento</button>
+              </div>
               <select id="estabelecimentoDecisao" class="form-control"></select>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
               <p class="decision-copy">
@@ -860,9 +896,6 @@
             </div>
       </section>
 
-      <div class="portal-actions">
-        <button class="btn-primary" type="button" data-abrir-modal="modalEstabelecimento">＋ Novo estabelecimento</button>
-      </div>
     </main>
 
     <section class="modal hidden" id="modalMensagens" role="dialog" aria-modal="true" aria-labelledby="tituloMensagens">
@@ -960,9 +993,23 @@
         novoEstabelecimentoCidade: document.getElementById("novoEstabelecimentoCidade"),
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
+        telefoneNovoAcesso: document.getElementById("telefoneNovoAcesso"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
         btnAtualizarPagina: document.getElementById("btnAtualizarPagina"),
+        btnVoltarTopo: document.getElementById("btnVoltarTopo"),
       };
+
+      const paginaAtual = new URLSearchParams(window.location.search).get("tela");
+      const modaisPorPagina = {
+        mensagens: "modalMensagens",
+        agendamentos: "modalAgendamentos",
+        materiais: "modalMateriais",
+        estabelecimento: "modalEstabelecimento",
+      };
+      if (paginaAtual && modaisPorPagina[paginaAtual]) {
+        document.body.classList.add("pagina-detalhe");
+        elementos.btnVoltarTopo.href = "portal-lead.html";
+      }
 
       function obterToken() {
         const parametros = new URLSearchParams(
@@ -1098,16 +1145,20 @@
         elementos.telaErro.classList.remove("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
           ? "Acompanhar meu atendimento"
-          : "Acesso expirado ou inválido";
+          : "Entre novamente";
         elementos.textoErroAcesso.textContent = semToken
-          ? "Informe o mesmo e-mail utilizado no cadastro. Enviaremos um link seguro para acessar seu atendimento."
-          : mensagem + " Solicite abaixo um novo link de acesso.";
+          ? "Informe o mesmo e-mail e telefone utilizados no cadastro."
+          : mensagem + " Informe seus dados para entrar novamente.";
       }
 
       function mostrarPortal() {
         elementos.telaCarregando.classList.add("hidden");
         elementos.telaErro.classList.add("hidden");
         elementos.conteudoPortal.classList.remove("hidden");
+        if (paginaAtual && modaisPorPagina[paginaAtual]) {
+          elementos.conteudoPortal.classList.add("hidden");
+          abrirModal(modaisPorPagina[paginaAtual]);
+        }
       }
 
       function criarVazio(texto) {
@@ -1121,11 +1172,15 @@
         const modal = document.getElementById(id);
         if (!modal) return;
         modal.classList.remove("hidden");
-        document.body.classList.add("modal-open");
+        if (!paginaAtual) document.body.classList.add("modal-open");
         modal.querySelector(".modal-close")?.focus();
       }
 
       function fecharModal(modal) {
+        if (paginaAtual) {
+          window.location.href = "portal-lead.html";
+          return;
+        }
         modal?.classList.add("hidden");
         if (!document.querySelector(".modal:not(.hidden)")) {
           document.body.classList.remove("modal-open");
@@ -1555,10 +1610,6 @@
         if (!token) {
           mostrarErroAcesso("", true);
           return;
-          mostrarErroAcesso(
-            "O link de acesso não contém um token válido. Solicite um novo link à equipe Clubbar.",
-          );
-          return;
         }
 
         try {
@@ -1583,25 +1634,29 @@
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
         elementos.btnNovoAcesso.disabled = true;
-        elementos.btnNovoAcesso.textContent = "Enviando...";
+        elementos.btnNovoAcesso.textContent = "Entrando...";
         try {
           const resposta = await fetch(
-            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/solicitar-acesso`,
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/entrar`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: elementos.emailNovoAcesso.value.trim().toLowerCase() }),
+              body: JSON.stringify({
+                email: elementos.emailNovoAcesso.value.trim().toLowerCase(),
+                telefone: elementos.telefoneNovoAcesso.value.trim(),
+              }),
             },
           );
           const dados = await resposta.json();
-          if (!resposta.ok) throw new Error(dados.detail || "Não foi possível solicitar o acesso.");
-          mostrarToast(dados.mensagem);
-          elementos.formNovoAcesso.reset();
+          if (!resposta.ok) throw new Error(dados.detail || "Não foi possível entrar.");
+          token = dados.acesso;
+          localStorage.setItem(STORAGE_KEY, token);
+          await iniciar();
         } catch (erro) {
           mostrarToast(erro.message, true);
         } finally {
           elementos.btnNovoAcesso.disabled = false;
-          elementos.btnNovoAcesso.textContent = "Enviar novo link por e-mail";
+          elementos.btnNovoAcesso.textContent = "Entrar no atendimento";
         }
       });
 
@@ -1617,8 +1672,10 @@
         }
       });
 
-      document.querySelectorAll("[data-abrir-modal]").forEach((botao) => {
-        botao.addEventListener("click", () => abrirModal(botao.dataset.abrirModal));
+      document.querySelectorAll("[data-pagina]").forEach((botao) => {
+        botao.addEventListener("click", () => {
+          window.location.href = `portal-lead.html?tela=${botao.dataset.pagina}`;
+        });
       });
 
       document.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
