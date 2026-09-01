@@ -847,8 +847,8 @@
 
       <section class="stats">
         <button class="stat" type="button" data-pagina="mensagens">
-          <strong id="qtdMensagens">0</strong>
-          <span>Mensagens recebidas</span>
+          <strong id="qtdMensagens">0 / 0</strong>
+          <span>Mensagens recebidas / enviadas</span>
         </button>
         <button class="stat" type="button" data-pagina="agendamentos">
           <strong id="qtdAgendamentos">0</strong>
@@ -1192,7 +1192,8 @@
 
         elementos.saudacao.textContent =
           `Olá, ${resumo.nmresponsavel || "parceiro"}!`;
-        elementos.qtdMensagens.textContent = resumo.mensagens_recebidas ?? 0;
+        elementos.qtdMensagens.textContent =
+          `${resumo.mensagens_recebidas ?? 0} / ${resumo.mensagens_enviadas ?? 0}`;
         elementos.qtdAgendamentos.textContent = resumo.agendamentos ?? 0;
         elementos.qtdMateriais.textContent = resumo.materiais ?? 0;
         const estabelecimentos = resumo.estabelecimentos || [];
