@@ -287,28 +287,72 @@
         border-radius: 16px;
         line-height: 1.5;
         word-break: break-word;
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        column-gap: 10px;
+        align-items: start;
+        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.18);
       }
 
       .message.clubbar {
         align-self: flex-start;
-        border: 1px solid #333;
+        border: 1px solid rgba(88, 190, 255, 0.42);
         border-bottom-left-radius: 5px;
-        background: #202020;
+        color: #eaf8ff;
+        background: linear-gradient(135deg, #123247, #184d68);
       }
 
       .message.lead {
         align-self: flex-end;
-        border: 1px solid rgba(245, 197, 66, 0.4);
+        grid-template-columns: minmax(0, 1fr) 34px;
+        border: 1px solid rgba(245, 197, 66, 0.62);
         border-bottom-right-radius: 5px;
         color: #141414;
-        background: #ffe792;
+        background: linear-gradient(135deg, #ffe792, #f5c542);
+        text-align: right;
+      }
+
+      .message-content {
+        min-width: 0;
+      }
+
+      .message.lead .message-content {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .message-avatar {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+        font-size: 19px;
+        line-height: 1;
+      }
+
+      .message-avatar img {
+        width: 29px;
+        height: 29px;
+        object-fit: contain;
+      }
+
+      .message.lead .message-avatar {
+        grid-column: 2;
+        grid-row: 1;
+        color: #fff;
+        background: #7653d6;
       }
 
       .message small {
         display: block;
         margin-top: 6px;
-        opacity: 0.68;
+        opacity: 0.78;
         font-size: 10px;
+        font-weight: 700;
       }
 
       .message-form {
@@ -1319,18 +1363,34 @@
 
         mensagens.forEach((item) => {
           const caixa = document.createElement("article");
-          caixa.className =
-            `message ${item.origem === "LEAD" ? "lead" : "clubbar"}`;
+          const enviadaPeloLead = item.origem === "LEAD";
+          caixa.className = `message ${enviadaPeloLead ? "lead" : "clubbar"}`;
+
+          const avatar = document.createElement("span");
+          avatar.className = "message-avatar";
+          avatar.setAttribute("aria-hidden", "true");
+          if (enviadaPeloLead) {
+            avatar.textContent = "👤";
+          } else {
+            const cora = document.createElement("img");
+            cora.src = "assets/images/coruja.png";
+            cora.alt = "";
+            avatar.append(cora);
+          }
+
+          const conteudo = document.createElement("div");
+          conteudo.className = "message-content";
 
           const texto = document.createElement("div");
           texto.textContent = item.mensagem;
 
           const data = document.createElement("small");
           data.textContent =
-            `${item.origem === "LEAD" ? "Você" : "Clubbar"} • ` +
+            `${enviadaPeloLead ? "Você" : "Cora • Clubbar"} • ` +
             formatarData(item.dtcriacao);
 
-          caixa.append(texto, data);
+          conteudo.append(texto, data);
+          caixa.append(avatar, conteudo);
           elementos.listaMensagens.append(caixa);
         });
 
