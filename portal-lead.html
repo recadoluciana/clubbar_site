@@ -182,10 +182,29 @@
       }
 
       .stat {
+        width: 100%;
         padding: 18px;
+        text-align: left;
+        color: inherit;
         border: 1px solid var(--line);
         border-radius: 18px;
         background: var(--card);
+      }
+
+      .stat:hover,
+      .stat:focus-visible {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+        outline: none;
+      }
+
+      .stat::after {
+        content: "Abrir →";
+        display: block;
+        margin-top: 10px;
+        color: #ddd;
+        font-size: 11px;
+        font-weight: 800;
       }
 
       .stat strong {
@@ -611,6 +630,65 @@
         display: none !important;
       }
 
+      .portal-actions {
+        margin-top: 18px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .decision-panel {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+
+      .modal {
+        position: fixed;
+        z-index: 5000;
+        inset: 0;
+        padding: 22px;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.82);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-card {
+        width: min(760px, 100%);
+        max-height: calc(100vh - 44px);
+        overflow: auto;
+        border: 1px solid #3b3b3b;
+        border-radius: 22px;
+        background: var(--card);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65);
+      }
+
+      .modal-close {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #444;
+        border-radius: 50%;
+        color: #fff;
+        background: #202020;
+        font-size: 21px;
+      }
+
+      .contract-flow {
+        margin: 14px 0;
+        padding: 16px;
+        border: 1px solid rgba(49, 182, 106, 0.4);
+        border-radius: 15px;
+        background: rgba(49, 182, 106, 0.07);
+      }
+
+      .contract-flow .empty {
+        padding: 8px 0 14px;
+      }
+
+      body.modal-open {
+        overflow: hidden;
+      }
+
       @media (max-width: 850px) {
         .layout {
           grid-template-columns: 1fr;
@@ -727,76 +805,21 @@
       </section>
 
       <section class="stats">
-        <article class="stat">
+        <button class="stat" type="button" data-abrir-modal="modalMensagens">
           <strong id="qtdMensagens">0</strong>
-          <span>Mensagens não lidas</span>
-        </article>
-        <article class="stat">
+          <span>Mensagens recebidas</span>
+        </button>
+        <button class="stat" type="button" data-abrir-modal="modalAgendamentos">
           <strong id="qtdAgendamentos">0</strong>
-          <span>Agendamentos pendentes</span>
-        </article>
-        <article class="stat">
+          <span>Agendamentos</span>
+        </button>
+        <button class="stat" type="button" data-abrir-modal="modalMateriais">
           <strong id="qtdMateriais">0</strong>
-          <span>Materiais disponíveis</span>
-        </article>
+          <span>Materiais</span>
+        </button>
       </section>
 
-      <div class="layout">
-        <div class="column">
-          <section class="panel">
-            <header class="panel-head">
-              <div>
-                <h2>Agendamentos</h2>
-                <p>Confirme ou recuse os horários propostos.</p>
-              </div>
-            </header>
-            <div class="panel-body">
-              <div class="list" id="listaAgendamentos"></div>
-            </div>
-          </section>
-
-          <section class="panel">
-            <header class="panel-head">
-              <div>
-                <h2>Mensagens</h2>
-                <p>Converse diretamente com a equipe Clubbar.</p>
-              </div>
-              <button class="btn-refresh" id="btnAtualizarMensagens">
-                Atualizar
-              </button>
-            </header>
-            <div class="panel-body">
-              <div class="messages" id="listaMensagens"></div>
-
-              <form class="message-form" id="formMensagem">
-                <textarea
-                  id="novaMensagem"
-                  maxlength="3000"
-                  placeholder="Digite sua mensagem..."
-                  required
-                ></textarea>
-                <button class="btn-primary" id="btnEnviarMensagem" type="submit">
-                  Enviar mensagem
-                </button>
-              </form>
-            </div>
-          </section>
-        </div>
-
-        <aside class="column">
-          <section class="panel">
-            <header class="panel-head">
-              <div>
-                <h2>Materiais</h2>
-                <p>Apresentações, propostas e contratos.</p>
-              </div>
-            </header>
-            <div class="panel-body">
-              <div class="list" id="listaMateriais"></div>
-            </div>
-          </section>
-
-          <section class="panel">
+      <section class="panel decision-panel">
             <header class="panel-head">
               <div class="decision-title">
                 <h2>Sua decisão</h2>
@@ -806,7 +829,7 @@
             <div class="panel-body">
               <label for="estabelecimentoDecisao"><strong>Estabelecimento</strong></label>
               <select id="estabelecimentoDecisao" class="form-control"></select>
-              <div id="contratoEstabelecimento"></div>
+              <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
               <p class="decision-copy">
                 Depois de conhecer o produto, as propostas e o contrato,
                 informe à nossa equipe como deseja prosseguir.
@@ -821,7 +844,7 @@
                 </button>
                 <button
                   class="decision-button accept"
-                  data-decisao="ACEITOU"
+                  id="btnAceitarParceria"
                   type="button"
                 >
                   Aceitar parceria
@@ -835,16 +858,45 @@
                 </button>
               </div>
             </div>
-          </section>
+      </section>
 
-          <section class="panel">
-            <header class="panel-head">
-              <div>
-                <h2>Novo estabelecimento</h2>
-                <p>Cadastre outra unidade para negociar separadamente.</p>
-              </div>
-            </header>
-            <div class="panel-body">
+      <div class="portal-actions">
+        <button class="btn-primary" type="button" data-abrir-modal="modalEstabelecimento">＋ Novo estabelecimento</button>
+      </div>
+    </main>
+
+    <section class="modal hidden" id="modalMensagens" role="dialog" aria-modal="true" aria-labelledby="tituloMensagens">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens</h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <div class="panel-body">
+          <div class="messages" id="listaMensagens"></div>
+          <form class="message-form" id="formMensagem">
+            <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
+            <button class="btn-primary" id="btnEnviarMensagem" type="submit">Enviar mensagem</button>
+          </form>
+          <button class="btn-refresh" id="btnAtualizarMensagens" type="button" style="margin-top:10px">Atualizar mensagens</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloAgendamentos">Agendamentos</h2><p>Todos os horários propostos e respondidos.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <div class="panel-body"><div class="list" id="listaAgendamentos"></div></div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="tituloMateriais">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloMateriais">Materiais</h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <div class="panel-body"><div class="list" id="listaMateriais"></div></div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalEstabelecimento" role="dialog" aria-modal="true" aria-labelledby="tituloEstabelecimento">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloEstabelecimento">Novo estabelecimento</h2><p>Cadastre outra unidade para negociar separadamente.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <div class="panel-body">
               <form id="formEstabelecimento">
                 <input class="form-control" id="novoEstabelecimentoNome" placeholder="Nome do estabelecimento" required />
                 <select class="form-control" id="novoEstabelecimentoTipo" required>
@@ -866,10 +918,8 @@
                 <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
               </form>
             </div>
-          </section>
-        </aside>
       </div>
-    </main>
+    </section>
 
     <script src="js/config.js"></script>
     <script>
@@ -901,6 +951,7 @@
         contratoEstabelecimento: document.getElementById(
           "contratoEstabelecimento",
         ),
+        btnAceitarParceria: document.getElementById("btnAceitarParceria"),
         formEstabelecimento: document.getElementById("formEstabelecimento"),
         novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
         novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
@@ -935,6 +986,7 @@
       let token = obterToken();
       let resumoAtual = null;
       let estabelecimentoSelecionadoId = null;
+      let fluxoAceiteAberto = false;
 
       function nomeStatus(valor) {
         const nomes = {
@@ -1065,15 +1117,29 @@
         return vazio;
       }
 
+      function abrirModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.remove("hidden");
+        document.body.classList.add("modal-open");
+        modal.querySelector(".modal-close")?.focus();
+      }
+
+      function fecharModal(modal) {
+        modal?.classList.add("hidden");
+        if (!document.querySelector(".modal:not(.hidden)")) {
+          document.body.classList.remove("modal-open");
+        }
+      }
+
       async function carregarResumo() {
         const resumo = await api("/portal-parceiro/resumo");
         resumoAtual = resumo;
 
         elementos.saudacao.textContent =
           `Olá, ${resumo.nmresponsavel || "parceiro"}!`;
-        elementos.qtdMensagens.textContent = resumo.mensagens_nao_lidas ?? 0;
-        elementos.qtdAgendamentos.textContent =
-          resumo.agendamentos_pendentes ?? 0;
+        elementos.qtdMensagens.textContent = resumo.mensagens_recebidas ?? 0;
+        elementos.qtdAgendamentos.textContent = resumo.agendamentos ?? 0;
         elementos.qtdMateriais.textContent = resumo.materiais ?? 0;
         const estabelecimentos = resumo.estabelecimentos || [];
         if (
@@ -1105,9 +1171,12 @@
           };
         elementos.contratoEstabelecimento.replaceChildren();
         const contrato = estabelecimento.contratos?.[0];
-        if (contrato) {
+        elementos.contratoEstabelecimento.classList.toggle(
+          "hidden",
+          !fluxoAceiteAberto,
+        );
+        if (fluxoAceiteAberto && contrato) {
           const cardContrato = document.createElement("div");
-          cardContrato.className = "empty";
           const tituloContrato = document.createElement("strong");
           tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
           cardContrato.append(tituloContrato);
@@ -1120,21 +1189,35 @@
             ).href;
             linkContrato.target = "_blank";
             linkContrato.rel = "noopener";
-            linkContrato.textContent = "Ler contrato";
+            linkContrato.textContent = "Abrir e ler o contrato ↗";
             cardContrato.append(document.createElement("br"), linkContrato);
           }
           if (contrato.status === "ENVIADO") {
             const aceitarContrato = document.createElement("button");
             aceitarContrato.type = "button";
             aceitarContrato.className = "decision-button accept";
+            aceitarContrato.style.marginTop = "14px";
             aceitarContrato.textContent = "Aceitar contrato";
             aceitarContrato.addEventListener("click", () =>
               registrarAceiteContrato(contrato.contratolead_id),
             );
             cardContrato.append(document.createElement("br"), aceitarContrato);
           }
+          const confirmarParceria = document.createElement("button");
+          confirmarParceria.type = "button";
+          confirmarParceria.className = "btn-primary";
+          confirmarParceria.style.cssText = "width:100%;margin-top:12px";
+          confirmarParceria.textContent =
+            contrato.status === "ACEITO"
+              ? "Confirmar parceria"
+              : "Confirme o aceite do contrato para continuar";
+          confirmarParceria.disabled = contrato.status !== "ACEITO";
+          confirmarParceria.addEventListener("click", () =>
+            registrarDecisao("ACEITOU"),
+          );
+          cardContrato.append(confirmarParceria);
           elementos.contratoEstabelecimento.append(cardContrato);
-        } else {
+        } else if (fluxoAceiteAberto) {
           elementos.contratoEstabelecimento.append(
             criarVazio("Contrato ainda não disponibilizado para esta unidade."),
           );
@@ -1159,6 +1242,9 @@
             estabelecimento.status === "CONVERTIDO" ||
             botao.dataset.decisao === estabelecimento.decisao;
         });
+        elementos.btnAceitarParceria.disabled =
+          estabelecimento.status === "CONVERTIDO" ||
+          estabelecimento.decisao === "ACEITOU";
       }
 
       async function carregarMensagens() {
@@ -1365,6 +1451,24 @@
         });
       }
 
+      function iniciarAceiteParceria() {
+        fluxoAceiteAberto = true;
+        const estabelecimento = (resumoAtual?.estabelecimentos || []).find(
+          (item) => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+        );
+        const contrato = estabelecimento?.contratos?.[0];
+        carregarResumo().catch((erro) => mostrarToast(erro.message, true));
+        if (contrato?.urlcontrato) {
+          window.open(
+            new URL(contrato.urlcontrato, CLUBBAR_CONFIG.API_BASE_URL).href,
+            "_blank",
+            "noopener",
+          );
+        } else {
+          mostrarToast("O contrato ainda não foi disponibilizado para este estabelecimento.", true);
+        }
+      }
+
       async function registrarDecisao(decisao) {
         const textos = {
           ANALISANDO: "continuar analisando a parceria",
@@ -1440,6 +1544,7 @@
           });
           elementos.formEstabelecimento.reset();
           await carregarResumo();
+          fecharModal(document.getElementById("modalEstabelecimento"));
           mostrarToast("Estabelecimento cadastrado para negociação.");
         } catch (erro) {
           mostrarToast(erro.message, true);
@@ -1512,6 +1617,28 @@
         }
       });
 
+      document.querySelectorAll("[data-abrir-modal]").forEach((botao) => {
+        botao.addEventListener("click", () => abrirModal(botao.dataset.abrirModal));
+      });
+
+      document.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
+        botao.addEventListener("click", () => fecharModal(botao.closest(".modal")));
+      });
+
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.addEventListener("click", (evento) => {
+          if (evento.target === modal) fecharModal(modal);
+        });
+      });
+
+      document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape") {
+          fecharModal(document.querySelector(".modal:not(.hidden)"));
+        }
+      });
+
+      elementos.btnAceitarParceria.addEventListener("click", iniciarAceiteParceria);
+
       document.querySelectorAll("[data-decisao]").forEach((botao) => {
         botao.addEventListener("click", () =>
           registrarDecisao(botao.dataset.decisao),
@@ -1522,6 +1649,7 @@
         estabelecimentoSelecionadoId = Number(
           elementos.estabelecimentoDecisao.value,
         );
+        fluxoAceiteAberto = false;
         await carregarResumo();
       });
 
