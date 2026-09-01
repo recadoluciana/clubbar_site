@@ -910,6 +910,8 @@
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens</h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div><button class="btn-panel-refresh" id="btnAtualizarMensagens" type="button">↻ Atualizar</button></header>
         <div class="panel-body">
+          <label for="estabelecimentoMensagens"><strong>Estabelecimento</strong></label>
+          <select id="estabelecimentoMensagens" class="form-control" style="margin:8px 0 14px"></select>
           <div class="messages" id="listaMensagens"></div>
           <form class="message-form" id="formMensagem">
             <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
@@ -922,14 +924,14 @@
     <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloAgendamentos">Agendamentos</h2><p>Todos os horários propostos e respondidos.</p></div><button class="btn-panel-refresh" id="btnAtualizarAgendamentos" type="button">↻ Atualizar</button></header>
-        <div class="panel-body"><div class="list" id="listaAgendamentos"></div></div>
+        <div class="panel-body"><label for="estabelecimentoAgendamentos"><strong>Estabelecimento</strong></label><select id="estabelecimentoAgendamentos" class="form-control" style="margin:8px 0 14px"></select><div class="list" id="listaAgendamentos"></div></div>
       </div>
     </section>
 
     <section class="modal hidden" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="tituloMateriais">
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloMateriais">Materiais</h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
-        <div class="panel-body"><div class="list" id="listaMateriais"></div></div>
+        <div class="panel-body"><label for="estabelecimentoMateriais"><strong>Estabelecimento</strong></label><select id="estabelecimentoMateriais" class="form-control" style="margin:8px 0 14px"></select><div class="list" id="listaMateriais"></div></div>
       </div>
     </section>
 
@@ -951,6 +953,9 @@
                   <option value="PRODUTOS">Produtos</option>
                   <option value="INGRESSOS">Ingressos</option>
                 </select>
+                <input class="form-control" id="novoEstabelecimentoResponsavel" placeholder="Responsável pelo estabelecimento" required />
+                <input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" placeholder="Telefone do responsável" required />
+                <input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email" placeholder="E-mail do responsável" required />
                 <input class="form-control" id="novoEstabelecimentoDocumento" placeholder="CPF/CNPJ (opcional)" />
                 <select class="form-control" id="novoEstabelecimentoCidade" required>
                   <option value="">Carregando cidades...</option>
@@ -990,6 +995,9 @@
         estabelecimentoDecisao: document.getElementById(
           "estabelecimentoDecisao",
         ),
+        estabelecimentoMensagens: document.getElementById("estabelecimentoMensagens"),
+        estabelecimentoAgendamentos: document.getElementById("estabelecimentoAgendamentos"),
+        estabelecimentoMateriais: document.getElementById("estabelecimentoMateriais"),
         contratoEstabelecimento: document.getElementById(
           "contratoEstabelecimento",
         ),
@@ -998,6 +1006,9 @@
         novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
         novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
         novoEstabelecimentoVenda: document.getElementById("novoEstabelecimentoVenda"),
+        novoEstabelecimentoResponsavel: document.getElementById("novoEstabelecimentoResponsavel"),
+        novoEstabelecimentoTelefoneResponsavel: document.getElementById("novoEstabelecimentoTelefoneResponsavel"),
+        novoEstabelecimentoEmailResponsavel: document.getElementById("novoEstabelecimentoEmailResponsavel"),
         novoEstabelecimentoDocumento: document.getElementById("novoEstabelecimentoDocumento"),
         novoEstabelecimentoCidade: document.getElementById("novoEstabelecimentoCidade"),
         formNovoAcesso: document.getElementById("formNovoAcesso"),
@@ -1208,13 +1219,22 @@
             estabelecimentos[0]?.leadestabelecimento_id ?? null;
         }
         elementos.estabelecimentoDecisao.replaceChildren();
+        const seletoresEstabelecimento = [
+          elementos.estabelecimentoDecisao,
+          elementos.estabelecimentoMensagens,
+          elementos.estabelecimentoAgendamentos,
+          elementos.estabelecimentoMateriais,
+        ];
+        seletoresEstabelecimento.forEach((seletor) => seletor.replaceChildren());
         estabelecimentos.forEach((item) => {
-          const opcao = document.createElement("option");
-          opcao.value = item.leadestabelecimento_id;
-          opcao.textContent = item.nmestabelecimento;
-          opcao.selected =
-            item.leadestabelecimento_id === estabelecimentoSelecionadoId;
-          elementos.estabelecimentoDecisao.append(opcao);
+          seletoresEstabelecimento.forEach((seletor) => {
+            const opcao = document.createElement("option");
+            opcao.value = item.leadestabelecimento_id;
+            opcao.textContent = item.nmestabelecimento;
+            opcao.selected =
+              item.leadestabelecimento_id === estabelecimentoSelecionadoId;
+            seletor.append(opcao);
+          });
         });
         const estabelecimento =
           estabelecimentos.find(
@@ -1287,7 +1307,7 @@
       }
 
       async function carregarMensagens() {
-        const mensagens = await api("/portal-parceiro/mensagens");
+        const mensagens = await api(`/portal-parceiro/mensagens?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
         elementos.listaMensagens.replaceChildren();
 
         if (!mensagens.length) {
@@ -1327,7 +1347,7 @@
         elementos.btnEnviarMensagem.textContent = "Enviando...";
 
         try {
-          await api("/portal-parceiro/mensagens", {
+          await api(`/portal-parceiro/mensagens?leadestabelecimento_id=${estabelecimentoSelecionadoId}`, {
             method: "POST",
             body: JSON.stringify({ mensagem }),
           });
@@ -1343,7 +1363,7 @@
       }
 
       async function carregarAgendamentos() {
-        const itens = await api("/portal-parceiro/agendamentos");
+        const itens = await api(`/portal-parceiro/agendamentos?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
         elementos.listaAgendamentos.replaceChildren();
 
         if (!itens.length) {
@@ -1437,7 +1457,7 @@
       }
 
       async function carregarMateriais() {
-        const itens = await api("/portal-parceiro/materiais");
+        const itens = await api(`/portal-parceiro/materiais?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
         elementos.listaMateriais.replaceChildren();
 
         if (!itens.length) {
@@ -1576,6 +1596,9 @@
               nmestabelecimento: elementos.novoEstabelecimentoNome.value.trim(),
               tipo: elementos.novoEstabelecimentoTipo.value,
               tipovenda: elementos.novoEstabelecimentoVenda.value,
+              nmresponsavel: elementos.novoEstabelecimentoResponsavel.value.trim(),
+              telefone_responsavel: elementos.novoEstabelecimentoTelefoneResponsavel.value.trim(),
+              email_responsavel: elementos.novoEstabelecimentoEmailResponsavel.value.trim(),
               cpfcnpj: elementos.novoEstabelecimentoDocumento.value.trim() || null,
               cidade_id: Number(opcaoCidade.value),
               estado_id: Number(opcaoCidade.dataset.estado),
@@ -1597,11 +1620,11 @@
         }
 
         try {
-          await carregarMensagens();
+          await carregarResumo();
           await Promise.all([
+            carregarMensagens(),
             carregarAgendamentos(),
             carregarMateriais(),
-            carregarResumo(),
           ]);
           mostrarPortal();
         } catch (erro) {
@@ -1704,6 +1727,22 @@
         );
         fluxoAceiteAberto = false;
         await carregarResumo();
+      });
+
+      [
+        elementos.estabelecimentoMensagens,
+        elementos.estabelecimentoAgendamentos,
+        elementos.estabelecimentoMateriais,
+      ].forEach((seletor) => {
+        seletor.addEventListener("change", async () => {
+          estabelecimentoSelecionadoId = Number(seletor.value);
+          await carregarResumo();
+          await Promise.all([
+            carregarMensagens(),
+            carregarAgendamentos(),
+            carregarMateriais(),
+          ]);
+        });
       });
 
       elementos.btnAtualizarPagina.addEventListener("click", () =>
