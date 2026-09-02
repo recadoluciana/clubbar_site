@@ -741,6 +741,19 @@
         padding: 8px 0 14px;
       }
 
+      .contract-text {
+        max-height: 380px;
+        margin-top: 12px;
+        padding: 16px;
+        overflow-y: auto;
+        border: 1px solid #3a3a3a;
+        border-radius: 12px;
+        color: #e9e9e9;
+        background: #141414;
+        white-space: pre-wrap;
+        font: 13px/1.6 Arial, sans-serif;
+      }
+
       body.modal-open {
         overflow: hidden;
       }
@@ -1296,26 +1309,22 @@
           const tituloContrato = document.createElement("strong");
           tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
           cardContrato.append(tituloContrato);
-          if (contrato.urlcontrato) {
-            const linkContrato = document.createElement("a");
-            linkContrato.className = "material-link";
-            linkContrato.href = new URL(
-              contrato.urlcontrato,
-              CLUBBAR_CONFIG.API_BASE_URL,
-            ).href;
-            linkContrato.target = "_blank";
-            linkContrato.rel = "noopener";
-            linkContrato.textContent = "Abrir e ler o contrato ↗";
-            cardContrato.append(document.createElement("br"), linkContrato);
+          if (contrato.conteudocontrato) {
+            const textoContrato = document.createElement("div");
+            textoContrato.className = "contract-text";
+            textoContrato.textContent = contrato.conteudocontrato;
+            cardContrato.append(textoContrato);
           }
           if (contrato.status === "ENVIADO") {
             const aceitarContrato = document.createElement("button");
             aceitarContrato.type = "button";
             aceitarContrato.className = "decision-button accept";
             aceitarContrato.style.marginTop = "14px";
-            aceitarContrato.textContent = "Aceitar contrato";
+            aceitarContrato.textContent = "Li e aceito o contrato";
             aceitarContrato.addEventListener("click", () =>
-              registrarAceiteContrato(contrato.contratolead_id),
+              registrarAceiteContrato(
+                contrato.leadestabelecimentocontrato_id,
+              ),
             );
             cardContrato.append(document.createElement("br"), aceitarContrato);
           }
@@ -1577,13 +1586,7 @@
         );
         const contrato = estabelecimento?.contratos?.[0];
         carregarResumo().catch((erro) => mostrarToast(erro.message, true));
-        if (contrato?.urlcontrato) {
-          window.open(
-            new URL(contrato.urlcontrato, CLUBBAR_CONFIG.API_BASE_URL).href,
-            "_blank",
-            "noopener",
-          );
-        } else {
+        if (!contrato?.conteudocontrato) {
           mostrarToast("O contrato ainda não foi disponibilizado para este estabelecimento.", true);
         }
       }
