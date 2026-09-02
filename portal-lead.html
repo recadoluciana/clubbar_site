@@ -299,6 +299,24 @@
         font-size: 12px;
       }
 
+      .panel-title-select {
+        width: min(100%, 520px);
+        padding: 4px 34px 4px 0;
+        border: 0;
+        outline: 0;
+        color: #55aaff;
+        background: transparent;
+        font-size: clamp(19px, 3vw, 25px);
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .panel-title-select option {
+        color: #111;
+        background: #fff;
+        font-size: 16px;
+      }
+
       .panel-body {
         padding: 18px 20px 20px;
       }
@@ -580,19 +598,32 @@
       }
 
       .badge.pendente {
-        color: #ffe89a;
-        background: rgba(245, 197, 66, 0.13);
+        color: #b9dcff;
+        border: 1px solid rgba(69, 155, 255, 0.42);
+        background: rgba(39, 126, 229, 0.18);
       }
 
-      .badge.confirmado,
+      .badge.confirmado {
+        color: #ffe89a;
+        border: 1px solid rgba(245, 197, 66, 0.48);
+        background: rgba(245, 197, 66, 0.16);
+      }
+
+      .badge.recusado {
+        color: #ffd0a1;
+        border: 1px solid rgba(238, 137, 52, 0.48);
+        background: rgba(238, 137, 52, 0.16);
+      }
+
       .badge.realizado {
         color: #bfffd8;
+        border: 1px solid rgba(49, 182, 106, 0.42);
         background: rgba(49, 182, 106, 0.13);
       }
 
-      .badge.recusado,
       .badge.cancelado {
         color: #ffc6c6;
+        border: 1px solid rgba(224, 82, 82, 0.42);
         background: rgba(224, 82, 82, 0.13);
       }
 
@@ -1055,10 +1086,10 @@
       </div>
     </section>
 
-    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
+    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-label="Agendamentos">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloAgendamentos">Agendamentos</h2><p>Todos os horários propostos e respondidos.</p></div><button class="btn-panel-refresh" id="btnAtualizarAgendamentos" type="button">↻ Atualizar</button></header>
-        <div class="panel-body"><label for="estabelecimentoAgendamentos"><strong>Estabelecimento</strong></label><select id="estabelecimentoAgendamentos" class="form-control" style="margin:8px 0 14px"></select><div class="list" id="listaAgendamentos"></div></div>
+        <header class="panel-head"><select id="estabelecimentoAgendamentos" class="panel-title-select" aria-label="Estabelecimento"></select><button class="btn-panel-refresh" id="btnAtualizarAgendamentos" type="button">↻ Atualizar</button></header>
+        <div class="panel-body"><div class="list" id="listaAgendamentos"></div></div>
       </div>
     </section>
 
@@ -1213,7 +1244,8 @@
           REUNIAO_ONLINE: "Reunião online",
           VISITA: "Visita presencial",
         };
-        return nomes[valor] || valor;
+        const codigo = String(valor || "").split(".").pop().toUpperCase();
+        return nomes[codigo] || valor;
       }
 
       function nomeTipoMaterial(valor) {
@@ -1547,8 +1579,9 @@
           copia.append(titulo, data);
 
           const badge = document.createElement("span");
-          badge.className = `badge ${item.status.toLowerCase()}`;
-          badge.textContent = nomeStatusAgendamento(item.status);
+          const situacao = situacaoAgendamento(item.status);
+          badge.className = `badge ${situacao.classe}`;
+          badge.textContent = situacao.texto;
 
           topo.append(copia, badge);
           card.append(topo);
@@ -1586,15 +1619,15 @@
         });
       }
 
-      function nomeStatusAgendamento(valor) {
-        const nomes = {
-          PENDENTE: "Pendente",
-          CONFIRMADO: "Confirmado",
-          RECUSADO: "Recusado",
-          REALIZADO: "Realizado",
-          CANCELADO: "Cancelado",
+      function situacaoAgendamento(valor) {
+        const situacoes = {
+          PENDENTE: { texto: "Pendente", classe: "pendente" },
+          CONFIRMADO: { texto: "Confirmado", classe: "confirmado" },
+          RECUSADO: { texto: "Recusado", classe: "recusado" },
+          REALIZADO: { texto: "Realizado", classe: "realizado" },
+          CANCELADO: { texto: "Cancelado", classe: "cancelado" },
         };
-        return nomes[valor] || valor;
+        return situacoes[valor] || { texto: valor, classe: "pendente" };
       }
 
       async function responderAgendamento(id, status) {
