@@ -188,6 +188,8 @@
         border: 1px solid var(--line);
         border-radius: 18px;
         background: var(--card);
+        box-shadow: inset 0 3px 0 rgba(245, 197, 66, 0.75), 0 10px 24px rgba(0, 0, 0, 0.2);
+        transition: 0.2s ease;
       }
 
       .topbar-actions {
@@ -199,7 +201,7 @@
 
       .btn-logout {
         min-height: 38px;
-        padding: 0 13px;
+        padding: 9px 14px;
         border: 1px solid #ef6262;
         border-radius: 20px;
         color: #ffd7d7;
@@ -239,6 +241,23 @@
       .stat span {
         color: var(--muted);
         font-size: 13px;
+      }
+
+      .forgot-button {
+        margin-top: 4px;
+        border: 0;
+        color: var(--gold);
+        background: transparent;
+        font-weight: 850;
+        text-decoration: underline;
+      }
+
+      .recovery-form {
+        margin-top: 15px;
+        padding-top: 15px;
+        display: grid;
+        gap: 10px;
+        border-top: 1px solid var(--line);
       }
 
       .layout {
@@ -841,17 +860,6 @@
           height: 43px;
         }
 
-        .btn-logout {
-          width: 38px;
-          padding: 0;
-          font-size: 0;
-        }
-
-        .btn-logout::before {
-          content: "↪";
-          font-size: 20px;
-        }
-
         .toast {
           top: 78px;
         }
@@ -864,6 +872,7 @@
         .hero {
           padding: 19px;
           align-items: flex-start;
+          flex-wrap: wrap;
         }
 
         .hero-icon {
@@ -875,20 +884,35 @@
         }
 
         .stats {
-          grid-template-columns: 1fr;
-          gap: 8px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 6px;
         }
 
         .stat {
-          padding: 14px 16px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+          min-height: 105px;
+          padding: 12px 7px;
+          text-align: center;
         }
 
         .stat strong {
-          margin: 0;
-          font-size: 21px;
+          margin: 0 0 5px;
+          font-size: 19px;
+        }
+
+        .stat span {
+          display: block;
+          font-size: 10px;
+          line-height: 1.3;
+        }
+
+        .stat::after {
+          margin-top: 7px;
+          font-size: 9px;
+        }
+
+        .hero .btn-logout {
+          width: 100%;
+          margin-left: 70px;
         }
 
         .panel-head,
@@ -908,7 +932,6 @@
       <a class="btn-top-back" id="btnVoltarTopo" href="index.html" aria-label="Voltar" title="Voltar">←</a>
       <img src="assets/images/logo.png" alt="Clubbar" />
       <div class="topbar-actions">
-        <button class="btn-logout hidden" type="button" id="btnSair" aria-label="Sair deste lead" title="Sair deste lead">Sair</button>
         <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
       </div>
     </header>
@@ -933,8 +956,13 @@
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Entrar no atendimento</button>
+          <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
         </form>
-        <a class="btn-secondary" href="index.html">← Voltar</a>
+        <form class="recovery-form hidden" id="formRecuperarDados">
+          <p>Informe seu e-mail para receber os dados dos seus atendimentos.</p>
+          <input id="emailRecuperarDados" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <button class="btn-primary" id="btnEnviarRecuperacao" type="submit">Enviar meus dados</button>
+        </form>
       </div>
     </section>
 
@@ -942,12 +970,13 @@
       <section class="hero">
         <div class="hero-icon">🤝</div>
         <div class="hero-copy">
-          <h1 id="saudacao">Olá!</h1>
+          <h1 id="saudacao">Olá</h1>
           <p>
             Acompanhe seu atendimento, responda às mensagens e consulte os
             materiais enviados pela equipe Clubbar.
           </p>
         </div>
+        <button class="btn-logout hidden" type="button" id="btnSair">Sair deste atendimento</button>
       </section>
 
       <section class="stats">
@@ -1121,6 +1150,10 @@
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
         telefoneNovoAcesso: document.getElementById("telefoneNovoAcesso"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
+        btnEsqueciDados: document.getElementById("btnEsqueciDados"),
+        formRecuperarDados: document.getElementById("formRecuperarDados"),
+        emailRecuperarDados: document.getElementById("emailRecuperarDados"),
+        btnEnviarRecuperacao: document.getElementById("btnEnviarRecuperacao"),
         btnAtualizarPagina: document.getElementById("btnAtualizarPagina"),
         btnVoltarTopo: document.getElementById("btnVoltarTopo"),
       };
@@ -1310,7 +1343,7 @@
         resumoAtual = resumo;
 
         elementos.saudacao.textContent =
-          `Olá, ${resumo.nmresponsavel || "parceiro"}!`;
+          `Olá, ${resumo.nmresponsavel || "parceiro"}`;
         elementos.qtdMensagens.textContent =
           `${resumo.mensagens_recebidas ?? 0} / ${resumo.mensagens_enviadas ?? 0}`;
         elementos.qtdAgendamentos.textContent = resumo.agendamentos ?? 0;
@@ -1791,6 +1824,43 @@
         } finally {
           elementos.btnNovoAcesso.disabled = false;
           elementos.btnNovoAcesso.textContent = "Entrar no atendimento";
+        }
+      });
+
+      elementos.btnEsqueciDados.addEventListener("click", () => {
+        elementos.emailRecuperarDados.value = elementos.emailNovoAcesso.value.trim();
+        elementos.formRecuperarDados.classList.toggle("hidden");
+        if (!elementos.formRecuperarDados.classList.contains("hidden")) {
+          elementos.emailRecuperarDados.focus();
+        }
+      });
+
+      elementos.formRecuperarDados.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        elementos.btnEnviarRecuperacao.disabled = true;
+        elementos.btnEnviarRecuperacao.textContent = "Enviando...";
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/recuperar-dados`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: elementos.emailRecuperarDados.value.trim().toLowerCase(),
+              }),
+            },
+          );
+          const dados = await resposta.json();
+          if (!resposta.ok) {
+            throw new Error(dados.detail || "Não foi possível enviar os dados.");
+          }
+          mostrarToast(dados.mensagem);
+          elementos.formRecuperarDados.classList.add("hidden");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnEnviarRecuperacao.disabled = false;
+          elementos.btnEnviarRecuperacao.textContent = "Enviar meus dados";
         }
       });
 
