@@ -89,7 +89,9 @@
         color: #fff;
         background: transparent;
         font-size: 22px;
+        font-weight: 900;
         line-height: 1;
+        text-shadow: 0 0 0 currentColor;
         text-decoration: none;
       }
 
@@ -108,8 +110,10 @@
         border-radius: 50%;
         color: #fff;
         background: transparent;
-        font-size: 20px;
+        font-size: 23px;
+        font-weight: 900;
         line-height: 1;
+        text-shadow: 0 0 0 currentColor;
       }
 
       .btn-page-refresh:hover {
@@ -170,7 +174,7 @@
       .hero-establishment > label {
         display: block;
         margin-bottom: 7px;
-        color: #fff;
+        color: var(--muted);
         font-size: 13px;
         font-weight: 900;
       }
@@ -184,6 +188,16 @@
       .hero-selector-row select {
         min-width: 0;
         flex: 1;
+        height: 44px;
+        margin: 0;
+        color: var(--info);
+        font-weight: 800;
+      }
+
+      .hero-selector-row .btn-inline {
+        height: 44px;
+        min-height: 44px;
+        padding-block: 0;
       }
 
       .status-badge {
@@ -1003,7 +1017,6 @@
 
     <main class="page hidden" id="conteudoPortal">
       <section class="hero">
-        <div class="hero-icon">🤝</div>
         <div class="hero-copy">
           <h1 id="saudacao">Olá</h1>
           <p>Acompanhe o atendimento do(s) seu(s) estabelecimento(s).</p>
