@@ -56,7 +56,7 @@
       }
 
       button:disabled {
-        cursor: wait;
+        cursor: not-allowed;
         opacity: 0.65;
       }
 
@@ -176,7 +176,7 @@
         margin-bottom: 7px;
         color: var(--muted);
         font-size: 13px;
-        font-weight: 900;
+        font-weight: 400;
       }
 
       .hero-selector-row {
@@ -212,7 +212,7 @@
       }
 
       .stats {
-        margin-bottom: 20px;
+        margin: 18px 0 0;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 12px;
@@ -316,6 +316,11 @@
         font-size: 18px;
       }
 
+      .detail-lead-name {
+        margin-left: 7px;
+        color: var(--info);
+      }
+
       .panel-head p {
         margin-top: 4px;
         color: var(--muted);
@@ -338,6 +343,14 @@
         color: #111;
         background: #fff;
         font-size: 16px;
+      }
+
+      .panel-body > .panel-title-select {
+        width: 100%;
+        margin-bottom: 18px;
+        padding-left: 12px;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
       }
 
       .panel-body {
@@ -510,10 +523,11 @@
       .decision-title {
         width: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        text-align: center;
       }
 
       .decision-status {
@@ -788,8 +802,12 @@
       }
 
       .decision-panel {
-        max-width: 680px;
-        margin: 0 auto;
+        max-width: none;
+        margin: 18px 0 0;
+      }
+
+      .decision-establishment-name {
+        color: var(--info);
       }
 
       .modal {
@@ -898,6 +916,99 @@
         font-weight: 900;
       }
 
+      .new-establishment-card {
+        padding: 20px;
+        border: 1px solid #383838;
+        border-radius: 18px;
+        background: #101010;
+      }
+
+      .new-establishment-head {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .new-establishment-head h3,
+      .new-establishment-card label,
+      .new-establishment-card legend {
+        color: var(--gold);
+        font-weight: 850;
+      }
+
+      .new-establishment-card label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .new-establishment-card .form-control {
+        min-height: 52px;
+        margin: 0;
+        padding: 14px 15px;
+        color: #111;
+        background: #f7f7f7;
+      }
+
+      .new-establishment-card select:disabled {
+        color: #777;
+        background: #bdbdbd;
+      }
+
+      .new-establishment-field { margin-bottom: 18px; }
+      .required { color: #ff7676; }
+
+      .remove-establishment {
+        padding: 10px 14px;
+        border: 1px solid #d85d5d;
+        border-radius: 12px;
+        color: #ff8585;
+        background: transparent;
+        font-weight: 800;
+      }
+
+      .new-establishment-choices {
+        margin: 0 0 18px;
+        padding: 0;
+        border: 0;
+      }
+
+      .new-establishment-choices legend { margin-bottom: 10px; font-size: 14px; }
+      .new-establishment-choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .new-establishment-choice { position: relative; display: block; margin: 0; cursor: pointer; }
+      .new-establishment-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .new-establishment-choice span {
+        min-height: 62px;
+        padding: 12px 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 1px solid #383838;
+        border-radius: 14px;
+        color: #222;
+        background: #f7f7f7;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .new-establishment-choice input:checked + span {
+        border-color: var(--gold);
+        background: #fff5cf;
+        box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.13);
+      }
+
+      .new-establishment-address summary {
+        margin-bottom: 14px;
+        color: var(--gold);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .new-establishment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
       @media (max-width: 850px) {
         .layout {
           grid-template-columns: 1fr;
@@ -958,6 +1069,9 @@
           font-size: 12px;
           line-height: 1.3;
         }
+
+        .new-establishment-choice-grid,
+        .new-establishment-grid { grid-template-columns: 1fr; }
 
         .stat::after {
           margin-top: 7px;
@@ -1027,36 +1141,33 @@
               <button class="btn-inline" type="button" data-pagina="estabelecimento">＋ Novo</button>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section class="stats">
-        <button class="stat" type="button" data-pagina="mensagens">
-          <strong id="qtdMensagens">0 / 0</strong>
-          <span>Mensagens recebidas / enviadas</span>
-        </button>
-        <button class="stat" type="button" data-pagina="agendamentos">
-          <strong id="qtdAgendamentos">0</strong>
-          <span>Agendamentos</span>
-        </button>
-        <button class="stat" type="button" data-pagina="materiais">
-          <strong id="qtdMateriais">0</strong>
-          <span>Materiais</span>
-        </button>
-      </section>
-
-      <section class="panel decision-panel">
+          <div class="stats">
+            <button class="stat" type="button" data-pagina="mensagens">
+              <strong id="qtdMensagens">0 / 0</strong>
+              <span>Mensagens recebidas / enviadas</span>
+            </button>
+            <button class="stat" type="button" data-pagina="agendamentos">
+              <strong id="qtdAgendamentos">0</strong>
+              <span>Agendamentos</span>
+            </button>
+            <button class="stat" type="button" data-pagina="materiais">
+              <strong id="qtdMateriais">0</strong>
+              <span>Materiais</span>
+            </button>
+          </div>
+          <section class="panel decision-panel">
             <div class="panel-body">
               <div class="decision-title">
-                <h2>Sua decisão</h2>
-                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <h2>Sua decisão para <span class="decision-establishment-name" id="nomeEstabelecimentoDecisao">este estabelecimento</span></h2>
+                <div style="display:flex;justify-content:center">
                   <span class="status-badge" id="statusLead">Novo</span>
                 </div>
               </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
               <p class="decision-copy">
-                Depois de conhecer o produto, as propostas e o contrato,
-                informe à nossa equipe como deseja prosseguir.
+                Esta decisão será registrada somente para o estabelecimento
+                selecionado. Depois de conhecer a proposta e o contrato,
+                informe como deseja prosseguir.
               </p>
               <div class="decision-actions">
                 <button
@@ -1064,7 +1175,7 @@
                   data-status="NEGOCIANDO"
                   type="button"
                 >
-                  Analisando parceria
+                  Negociar parceria
                 </button>
                 <button
                   class="decision-button accept"
@@ -1078,20 +1189,21 @@
                   data-status="RECUSOU_PARCERIA"
                   type="button"
                 >
-                  Não tenho interesse
+                  Recusar parceria
                 </button>
               </div>
             </div>
+          </section>
+        </div>
       </section>
 
     </main>
 
     <section class="modal hidden" id="modalMensagens" role="dialog" aria-modal="true" aria-labelledby="tituloMensagens">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens</h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div><button class="btn-panel-refresh" id="btnAtualizarMensagens" type="button">↻ Atualizar</button></header>
+        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens <span class="detail-lead-name" data-nome-lead></span></h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div></header>
         <div class="panel-body">
-          <label for="estabelecimentoMensagens"><strong>Estabelecimento</strong></label>
-          <select id="estabelecimentoMensagens" class="form-control" style="margin:8px 0 14px"></select>
+          <select id="estabelecimentoMensagens" class="panel-title-select" aria-label="Estabelecimento"></select>
           <div class="messages" id="listaMensagens"></div>
           <form class="message-form" id="formMensagem">
             <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
@@ -1101,17 +1213,25 @@
       </div>
     </section>
 
-    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-label="Agendamentos">
+    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
       <div class="modal-card">
-        <header class="panel-head"><select id="estabelecimentoAgendamentos" class="panel-title-select" aria-label="Estabelecimento"></select><button class="btn-panel-refresh" id="btnAtualizarAgendamentos" type="button">↻ Atualizar</button></header>
-        <div class="panel-body"><div class="list" id="listaAgendamentos"></div></div>
+        <header class="panel-head">
+          <div>
+            <h2 id="tituloAgendamentos">Agendamentos <span class="detail-lead-name" data-nome-lead></span></h2>
+            <p>Todos os agendamentos realizados com a equipe Clubbar.</p>
+          </div>
+        </header>
+        <div class="panel-body">
+          <select id="estabelecimentoAgendamentos" class="panel-title-select" aria-label="Estabelecimento"></select>
+          <div class="list" id="listaAgendamentos"></div>
+        </div>
       </div>
     </section>
 
     <section class="modal hidden" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="tituloMateriais">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloMateriais">Materiais</h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
-        <div class="panel-body"><label for="estabelecimentoMateriais"><strong>Estabelecimento</strong></label><select id="estabelecimentoMateriais" class="form-control" style="margin:8px 0 14px"></select><div class="list" id="listaMateriais"></div></div>
+        <header class="panel-head"><div><h2 id="tituloMateriais">Materiais <span class="detail-lead-name" data-nome-lead></span></h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div></header>
+        <div class="panel-body"><select id="estabelecimentoMateriais" class="panel-title-select" aria-label="Estabelecimento"></select><div class="list" id="listaMateriais"></div></div>
       </div>
     </section>
 
@@ -1119,30 +1239,64 @@
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloEstabelecimento">Novo estabelecimento</h2><p>Cadastre outra unidade para negociar separadamente.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
         <div class="panel-body">
-              <form id="formEstabelecimento">
-                <input class="form-control" id="novoEstabelecimentoNome" placeholder="Nome do estabelecimento" required />
-                <select class="form-control" id="novoEstabelecimentoTipo" required>
-                  <option value="">Tipo de estabelecimento</option>
-                  <option value="BAR">Bar</option>
-                  <option value="CASA_NOTURNA">Casa noturna</option>
-                  <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
-                  <option value="CASA_EVENTOS">Casa de eventos</option>
-                </select>
-                <select class="form-control" id="novoEstabelecimentoVenda" required>
-                  <option value="AMBOS">Produtos e ingressos</option>
-                  <option value="PRODUTOS">Produtos</option>
-                  <option value="INGRESSOS">Ingressos</option>
-                </select>
-                <input class="form-control" id="novoEstabelecimentoResponsavel" placeholder="Responsável pelo estabelecimento" required />
-                <input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" placeholder="Telefone do responsável" required />
-                <input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email" placeholder="E-mail do responsável" required />
-                <input class="form-control" id="novoEstabelecimentoDocumento" placeholder="CPF/CNPJ (opcional)" />
-                <select class="form-control" id="novoEstabelecimentoCidade" required>
-                  <option value="">Carregando cidades...</option>
-                </select>
-                <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
-              </form>
+          <form id="formEstabelecimento" class="new-establishment-card">
+            <div class="new-establishment-head">
+              <h3>Estabelecimento 1</h3>
+              <button class="remove-establishment" id="btnRemoverNovoEstabelecimento" type="button">Remover</button>
             </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoNome">Nome <span class="required">*</span></label>
+              <input class="form-control" id="novoEstabelecimentoNome" maxlength="160" placeholder="Ex.: Adega Bar" required />
+            </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoTipo">Tipo <span class="required">*</span></label>
+              <select class="form-control" id="novoEstabelecimentoTipo" required>
+                <option value="">Selecione</option>
+                <option value="BAR">Bar</option>
+                <option value="CASA_NOTURNA">Casa noturna</option>
+                <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
+                <option value="CASA_EVENTOS">Casa de eventos</option>
+              </select>
+            </div>
+            <fieldset class="new-establishment-choices">
+              <legend>O que deseja vender? <span class="required">*</span></legend>
+              <div class="new-establishment-choice-grid">
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="PRODUTOS" required><span>Somente produtos</span></label>
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="INGRESSOS"><span>Somente ingressos</span></label>
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="AMBOS"><span>Produtos e ingressos</span></label>
+              </div>
+            </fieldset>
+            <details class="new-establishment-address">
+              <summary>Adicionar endereço</summary>
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoCep">CEP</label><input class="form-control" id="novoEstabelecimentoCep" inputmode="numeric" maxlength="9"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoEndereco">Endereço</label><input class="form-control" id="novoEstabelecimentoEndereco" maxlength="255"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoNumero">Número</label><input class="form-control" id="novoEstabelecimentoNumero" maxlength="20"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoBairro">Bairro</label><input class="form-control" id="novoEstabelecimentoBairro" maxlength="120"></div>
+              </div>
+              <div class="new-establishment-field"><label for="novoEstabelecimentoComplemento">Complemento</label><input class="form-control" id="novoEstabelecimentoComplemento" maxlength="120"></div>
+            </details>
+            <div class="new-establishment-grid">
+              <div class="new-establishment-field">
+                <label for="novoEstabelecimentoEstado">Estado <span class="required">*</span></label>
+                <select class="form-control" id="novoEstabelecimentoEstado" required><option value="">Selecione o estado</option></select>
+              </div>
+              <div class="new-establishment-field">
+                <label for="novoEstabelecimentoCidade">Cidade <span class="required">*</span></label>
+                <select class="form-control" id="novoEstabelecimentoCidade" required disabled><option value="">Selecione primeiro o estado</option></select>
+              </div>
+            </div>
+            <div class="new-establishment-grid">
+              <div class="new-establishment-field"><label for="novoEstabelecimentoResponsavel">Responsável pelo estabelecimento <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoResponsavel" required></div>
+              <div class="new-establishment-field"><label for="novoEstabelecimentoTelefoneResponsavel">Telefone do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" inputmode="tel" required></div>
+            </div>
+            <div class="new-establishment-grid">
+              <div class="new-establishment-field"><label for="novoEstabelecimentoEmailResponsavel">E-mail do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email" required></div>
+              <div class="new-establishment-field"><label for="novoEstabelecimentoDocumento">CPF/CNPJ</label><input class="form-control" id="novoEstabelecimentoDocumento"></div>
+            </div>
+            <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
+          </form>
+        </div>
       </div>
     </section>
 
@@ -1156,6 +1310,7 @@
         textoErroAcesso: document.getElementById("textoErroAcesso"),
         conteudoPortal: document.getElementById("conteudoPortal"),
         saudacao: document.getElementById("saudacao"),
+        nomeEstabelecimentoDecisao: document.getElementById("nomeEstabelecimentoDecisao"),
         statusLead: document.getElementById("statusLead"),
         qtdMensagens: document.getElementById("qtdMensagens"),
         qtdAgendamentos: document.getElementById("qtdAgendamentos"),
@@ -1166,12 +1321,6 @@
         formMensagem: document.getElementById("formMensagem"),
         novaMensagem: document.getElementById("novaMensagem"),
         btnEnviarMensagem: document.getElementById("btnEnviarMensagem"),
-        btnAtualizarMensagens: document.getElementById(
-          "btnAtualizarMensagens",
-        ),
-        btnAtualizarAgendamentos: document.getElementById(
-          "btnAtualizarAgendamentos",
-        ),
         estabelecimentoDecisao: document.getElementById(
           "estabelecimentoDecisao",
         ),
@@ -1185,12 +1334,18 @@
         formEstabelecimento: document.getElementById("formEstabelecimento"),
         novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
         novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
-        novoEstabelecimentoVenda: document.getElementById("novoEstabelecimentoVenda"),
         novoEstabelecimentoResponsavel: document.getElementById("novoEstabelecimentoResponsavel"),
         novoEstabelecimentoTelefoneResponsavel: document.getElementById("novoEstabelecimentoTelefoneResponsavel"),
         novoEstabelecimentoEmailResponsavel: document.getElementById("novoEstabelecimentoEmailResponsavel"),
         novoEstabelecimentoDocumento: document.getElementById("novoEstabelecimentoDocumento"),
+        novoEstabelecimentoEstado: document.getElementById("novoEstabelecimentoEstado"),
         novoEstabelecimentoCidade: document.getElementById("novoEstabelecimentoCidade"),
+        novoEstabelecimentoCep: document.getElementById("novoEstabelecimentoCep"),
+        novoEstabelecimentoEndereco: document.getElementById("novoEstabelecimentoEndereco"),
+        novoEstabelecimentoNumero: document.getElementById("novoEstabelecimentoNumero"),
+        novoEstabelecimentoBairro: document.getElementById("novoEstabelecimentoBairro"),
+        novoEstabelecimentoComplemento: document.getElementById("novoEstabelecimentoComplemento"),
+        btnRemoverNovoEstabelecimento: document.getElementById("btnRemoverNovoEstabelecimento"),
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         emailNovoAcesso: document.getElementById("emailNovoAcesso"),
         telefoneNovoAcesso: document.getElementById("telefoneNovoAcesso"),
@@ -1391,6 +1546,9 @@
 
         elementos.saudacao.textContent =
           `Olá, ${resumo.nmresponsavel || "parceiro"}`;
+        document.querySelectorAll("[data-nome-lead]").forEach((elemento) => {
+          elemento.textContent = resumo.nmresponsavel || "";
+        });
         elementos.qtdMensagens.textContent =
           `${resumo.mensagens_recebidas ?? 0} / ${resumo.mensagens_enviadas ?? 0}`;
         elementos.qtdAgendamentos.textContent = resumo.agendamentos ?? 0;
@@ -1432,6 +1590,8 @@
             (item) =>
               item.leadestabelecimento_id === estabelecimentoSelecionadoId,
           ) || { status: "NOVO", contratos: [] };
+        elementos.nomeEstabelecimentoDecisao.textContent =
+          estabelecimento.nmestabelecimento || "este estabelecimento";
         elementos.contratoEstabelecimento.replaceChildren();
         const contrato = estabelecimento.contratos?.[0];
         elementos.contratoEstabelecimento.classList.toggle(
@@ -1769,46 +1929,73 @@
         }
       }
 
-      async function carregarCidadesEstabelecimento() {
+      async function carregarEstadosEstabelecimento() {
         try {
-          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/cidades`);
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`);
+          const estados = await resposta.json();
+          if (!resposta.ok) throw new Error("Não foi possível carregar os estados.");
+          elementos.novoEstabelecimentoEstado.innerHTML = '<option value="">Selecione o estado</option>';
+          estados.forEach((estado) => {
+            const opcao = document.createElement("option");
+            opcao.value = estado.estado_id;
+            opcao.textContent = estado.sgestado;
+            elementos.novoEstabelecimentoEstado.append(opcao);
+          });
+        } catch (_) {
+          elementos.novoEstabelecimentoEstado.innerHTML = '<option value="">Erro ao carregar estados</option>';
+        }
+      }
+
+      async function carregarCidadesEstabelecimento(estadoId) {
+        elementos.novoEstabelecimentoCidade.disabled = true;
+        elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Carregando cidades...</option>';
+        if (!estadoId) {
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Selecione primeiro o estado</option>';
+          return;
+        }
+        try {
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`);
           const cidades = await resposta.json();
           if (!resposta.ok) throw new Error("Não foi possível carregar as cidades.");
-          elementos.novoEstabelecimentoCidade.innerHTML =
-            '<option value="">Selecione a cidade</option>';
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Selecione a cidade</option>';
           cidades.forEach((cidade) => {
             const opcao = document.createElement("option");
             opcao.value = cidade.cidade_id;
-            opcao.dataset.estado = cidade.estado_id;
-            opcao.textContent = cidade.label;
+            opcao.textContent = cidade.nmcidade;
             elementos.novoEstabelecimentoCidade.append(opcao);
           });
+          elementos.novoEstabelecimentoCidade.disabled = false;
         } catch (_) {
-          elementos.novoEstabelecimentoCidade.innerHTML =
-            '<option value="">Erro ao carregar cidades</option>';
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Erro ao carregar cidades</option>';
         }
       }
 
       async function cadastrarNovoEstabelecimento(evento) {
         evento.preventDefault();
-        const opcaoCidade = elementos.novoEstabelecimentoCidade.selectedOptions[0];
-        if (!opcaoCidade?.value) return;
+        const tipoVenda = elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]:checked')?.value;
+        if (!elementos.novoEstabelecimentoCidade.value || !tipoVenda) return;
         try {
           await api("/portal-parceiro/estabelecimentos", {
             method: "POST",
             body: JSON.stringify({
               nmestabelecimento: elementos.novoEstabelecimentoNome.value.trim(),
               tipo: elementos.novoEstabelecimentoTipo.value,
-              tipovenda: elementos.novoEstabelecimentoVenda.value,
+              tipovenda: tipoVenda,
               nmresponsavel: elementos.novoEstabelecimentoResponsavel.value.trim(),
               telefone_responsavel: elementos.novoEstabelecimentoTelefoneResponsavel.value.trim(),
               email_responsavel: elementos.novoEstabelecimentoEmailResponsavel.value.trim(),
               cpfcnpj: elementos.novoEstabelecimentoDocumento.value.trim() || null,
-              cidade_id: Number(opcaoCidade.value),
-              estado_id: Number(opcaoCidade.dataset.estado),
+              cep: elementos.novoEstabelecimentoCep.value.replace(/\D/g, "") || null,
+              endereco: elementos.novoEstabelecimentoEndereco.value.trim() || null,
+              numero: elementos.novoEstabelecimentoNumero.value.trim() || null,
+              bairro: elementos.novoEstabelecimentoBairro.value.trim() || null,
+              complemento: elementos.novoEstabelecimentoComplemento.value.trim() || null,
+              cidade_id: Number(elementos.novoEstabelecimentoCidade.value),
+              estado_id: Number(elementos.novoEstabelecimentoEstado.value),
             }),
           });
           elementos.formEstabelecimento.reset();
+          await carregarCidadesEstabelecimento("");
           await carregarResumo();
           fecharModal(document.getElementById("modalEstabelecimento"));
           mostrarToast("Estabelecimento cadastrado para negociação.");
@@ -1841,6 +2028,16 @@
         "submit",
         cadastrarNovoEstabelecimento,
       );
+      elementos.novoEstabelecimentoEstado.addEventListener("change", () =>
+        carregarCidadesEstabelecimento(elementos.novoEstabelecimentoEstado.value),
+      );
+      elementos.btnRemoverNovoEstabelecimento.addEventListener("click", () => {
+        if (paginaAtual === "estabelecimento") {
+          window.location.href = "portal-lead.html";
+          return;
+        }
+        fecharModal(document.getElementById("modalEstabelecimento"));
+      });
 
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
@@ -1908,30 +2105,6 @@
         }
       });
 
-      elementos.btnAtualizarMensagens.addEventListener("click", async () => {
-        elementos.btnAtualizarMensagens.disabled = true;
-        try {
-          await carregarMensagens();
-          await carregarResumo();
-        } catch (erro) {
-          mostrarToast(erro.message, true);
-        } finally {
-          elementos.btnAtualizarMensagens.disabled = false;
-        }
-      });
-
-      elementos.btnAtualizarAgendamentos.addEventListener("click", async () => {
-        elementos.btnAtualizarAgendamentos.disabled = true;
-        try {
-          await carregarAgendamentos();
-          await carregarResumo();
-        } catch (erro) {
-          mostrarToast(erro.message, true);
-        } finally {
-          elementos.btnAtualizarAgendamentos.disabled = false;
-        }
-      });
-
       document.querySelectorAll("[data-pagina]").forEach((botao) => {
         botao.addEventListener("click", () => {
           window.location.href = `portal-lead.html?tela=${botao.dataset.pagina}`;
@@ -1995,7 +2168,7 @@
         window.location.reload(),
       );
 
-      carregarCidadesEstabelecimento();
+      carregarEstadosEstabelecimento();
       iniciar();
     </script>
   </body>
