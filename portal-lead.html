@@ -64,7 +64,7 @@
         min-height: 74px;
         padding: 8px max(18px, 6vw);
         display: grid;
-        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        grid-template-columns: 40px minmax(0, 1fr) auto;
         align-items: center;
         gap: 18px;
         background: #000;
@@ -191,6 +191,29 @@
         background: var(--card);
       }
 
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .btn-logout {
+        min-height: 38px;
+        padding: 0 13px;
+        border: 1px solid #ef6262;
+        border-radius: 20px;
+        color: #ffd7d7;
+        background: rgba(196, 45, 45, 0.18);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .btn-logout:hover {
+        color: #fff;
+        background: #b72f2f;
+      }
+
       .stat:hover,
       .stat:focus-visible {
         border-color: var(--gold);
@@ -314,6 +337,18 @@
 
       .message-content {
         min-width: 0;
+      }
+
+      .message-sender {
+        display: block;
+        margin-bottom: 3px;
+        color: #75d2ff;
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .message.lead .message-sender {
+        color: #4d318f;
       }
 
       .message.lead .message-content {
@@ -807,6 +842,17 @@
           height: 48px;
         }
 
+        .btn-logout {
+          width: 38px;
+          padding: 0;
+          font-size: 0;
+        }
+
+        .btn-logout::before {
+          content: "↪";
+          font-size: 20px;
+        }
+
         .toast {
           top: 78px;
         }
@@ -862,7 +908,10 @@
     <header class="topbar">
       <a class="btn-top-back" id="btnVoltarTopo" href="index.html" aria-label="Voltar" title="Voltar">←</a>
       <img src="assets/images/logo.png" alt="Clubbar" />
-      <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
+      <div class="topbar-actions">
+        <button class="btn-logout hidden" type="button" id="btnSair" aria-label="Sair deste lead" title="Sair deste lead">Sair</button>
+        <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
+      </div>
     </header>
 
     <section class="screen-state" id="telaCarregando">
@@ -1033,6 +1082,7 @@
         textoErroAcesso: document.getElementById("textoErroAcesso"),
         conteudoPortal: document.getElementById("conteudoPortal"),
         saudacao: document.getElementById("saudacao"),
+        btnSair: document.getElementById("btnSair"),
         statusLead: document.getElementById("statusLead"),
         qtdMensagens: document.getElementById("qtdMensagens"),
         qtdAgendamentos: document.getElementById("qtdAgendamentos"),
@@ -1210,6 +1260,7 @@
         elementos.telaCarregando.classList.add("hidden");
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
+        elementos.btnSair.classList.add("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
           ? "Acompanhar meu atendimento"
           : "Entre novamente";
@@ -1222,6 +1273,7 @@
         elementos.telaCarregando.classList.add("hidden");
         elementos.telaErro.classList.add("hidden");
         elementos.conteudoPortal.classList.remove("hidden");
+        elementos.btnSair.classList.remove("hidden");
         if (paginaAtual && modaisPorPagina[paginaAtual]) {
           elementos.conteudoPortal.classList.add("hidden");
           abrirModal(modaisPorPagina[paginaAtual]);
@@ -1390,15 +1442,21 @@
           const conteudo = document.createElement("div");
           conteudo.className = "message-content";
 
+          const remetente = document.createElement("strong");
+          remetente.className = "message-sender";
+          const nomeLead = resumoAtual?.nmresponsavel || "Lead";
+          remetente.textContent = enviadaPeloLead
+            ? nomeLead
+            : `Cora • Clubbar — para ${nomeLead}`;
+
           const texto = document.createElement("div");
           texto.textContent = item.mensagem;
 
           const data = document.createElement("small");
           data.textContent =
-            `${enviadaPeloLead ? "Você" : "Cora • Clubbar"} • ` +
             formatarData(item.dtcriacao);
 
-          conteudo.append(texto, data);
+          conteudo.append(remetente, texto, data);
           caixa.append(avatar, conteudo);
           elementos.listaMensagens.append(caixa);
         });
@@ -1696,6 +1754,13 @@
       }
 
       elementos.formMensagem.addEventListener("submit", enviarMensagem);
+      elementos.btnSair.addEventListener("click", () => {
+        localStorage.removeItem(STORAGE_KEY);
+        token = null;
+        resumoAtual = null;
+        estabelecimentoSelecionadoId = null;
+        window.location.href = "portal-lead.html";
+      });
       elementos.formEstabelecimento.addEventListener(
         "submit",
         cadastrarNovoEstabelecimento,
