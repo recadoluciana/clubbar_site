@@ -352,6 +352,16 @@
         border: 1px solid #3a3a3a;
         border-radius: 10px;
       }
+      .panel-establishment-name {
+        width: 100%;
+        margin-bottom: 18px;
+        padding: 8px 12px;
+        color: #55aaff;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+        font-size: clamp(19px, 3vw, 25px);
+        font-weight: 900;
+      }
 
       .panel-body {
         padding: 18px 20px 20px;
@@ -676,9 +686,9 @@
       }
 
       .decision-copy {
-        margin-bottom: 13px;
+        margin: 22px 0 13px;
         color: var(--muted);
-        font-size: 13px;
+        font-size: 16px;
         line-height: 1.55;
       }
 
@@ -795,6 +805,45 @@
         display: none !important;
       }
 
+      .partnership-celebration {
+        position: relative;
+        overflow: hidden;
+        padding: 24px 18px;
+        text-align: center;
+        border: 1px solid rgba(50, 205, 110, 0.45);
+        border-radius: 16px;
+        background: rgba(22, 101, 52, 0.16);
+      }
+      .partnership-celebration .celebration-icon {
+        display: block;
+        font-size: 58px;
+        margin-bottom: 8px;
+        animation: celebrate-pop 700ms ease-out both;
+      }
+      .partnership-celebration::before,
+      .partnership-celebration::after {
+        content: "★  ✦  ★  ✨  ✦";
+        position: absolute;
+        top: 12px;
+        color: #fbc531;
+        font-size: 20px;
+        animation: star-burst 1.4s ease-out both;
+      }
+      .partnership-celebration::before { left: 7%; }
+      .partnership-celebration::after { right: 7%; animation-delay: 120ms; }
+      @keyframes celebrate-pop {
+        0% { transform: scale(.35) rotate(-18deg); opacity: 0; }
+        70% { transform: scale(1.18) rotate(5deg); }
+        100% { transform: scale(1) rotate(0); opacity: 1; }
+      }
+      @keyframes star-burst {
+        0% { transform: translateY(35px) scale(.4); opacity: 0; }
+        55% { opacity: 1; }
+        100% { transform: translateY(-5px) scale(1.1); opacity: .75; }
+      }
+      .partnership-celebration h3 { color: #fbc531; font-size: 24px; }
+      .partnership-celebration a { margin-top: 14px; display: inline-flex; }
+
       .portal-actions {
         margin-top: 18px;
         display: flex;
@@ -807,7 +856,18 @@
       }
 
       .decision-establishment-name {
+        display: block;
         color: var(--info);
+      }
+      .decision-establishment-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 24px;
+        font-weight: 800;
       }
 
       .modal {
@@ -1158,18 +1218,19 @@
           <section class="panel decision-panel">
             <div class="panel-body">
               <div class="decision-title">
-                <h2>Sua decisão para <span class="decision-establishment-name" id="nomeEstabelecimentoDecisao">este estabelecimento</span></h2>
-                <div style="display:flex;justify-content:center">
-                  <span class="status-badge" id="statusLead">Novo</span>
+                <h2>Sua decisão para</h2>
+                <div class="decision-establishment-row">
+                  <span class="decision-establishment-name" id="nomeEstabelecimentoDecisao">este estabelecimento</span>
+                  <span class="status-badge" id="statusLead">Pendente</span>
                 </div>
               </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
-              <p class="decision-copy">
+              <p class="decision-copy" id="textoDecisao">
                 Esta decisão será registrada somente para o estabelecimento
                 selecionado. Depois de conhecer a proposta e o contrato,
                 informe como deseja prosseguir.
               </p>
-              <div class="decision-actions">
+              <div class="decision-actions" id="acoesDecisao">
                 <button
                   class="decision-button analyzing"
                   data-status="NEGOCIANDO"
@@ -1203,7 +1264,7 @@
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens <span class="detail-lead-name" data-nome-lead></span></h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div></header>
         <div class="panel-body">
-          <select id="estabelecimentoMensagens" class="panel-title-select" aria-label="Estabelecimento"></select>
+          <div id="estabelecimentoMensagens" class="panel-establishment-name"></div>
           <div class="messages" id="listaMensagens"></div>
           <form class="message-form" id="formMensagem">
             <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
@@ -1222,7 +1283,7 @@
           </div>
         </header>
         <div class="panel-body">
-          <select id="estabelecimentoAgendamentos" class="panel-title-select" aria-label="Estabelecimento"></select>
+          <div id="estabelecimentoAgendamentos" class="panel-establishment-name"></div>
           <div class="list" id="listaAgendamentos"></div>
         </div>
       </div>
@@ -1231,7 +1292,7 @@
     <section class="modal hidden" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="tituloMateriais">
       <div class="modal-card">
         <header class="panel-head"><div><h2 id="tituloMateriais">Materiais <span class="detail-lead-name" data-nome-lead></span></h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div></header>
-        <div class="panel-body"><select id="estabelecimentoMateriais" class="panel-title-select" aria-label="Estabelecimento"></select><div class="list" id="listaMateriais"></div></div>
+        <div class="panel-body"><div id="estabelecimentoMateriais" class="panel-establishment-name"></div><div class="list" id="listaMateriais"></div></div>
       </div>
     </section>
 
@@ -1358,7 +1419,11 @@
         btnVoltarTopo: document.getElementById("btnVoltarTopo"),
       };
 
-      const paginaAtual = new URLSearchParams(window.location.search).get("tela");
+      const parametrosPagina = new URLSearchParams(window.location.search);
+      const paginaAtual = parametrosPagina.get("tela");
+      const estabelecimentoInicialId = Number(
+        parametrosPagina.get("leadestabelecimento_id"),
+      );
       const modaisPorPagina = {
         mensagens: "modalMensagens",
         agendamentos: "modalAgendamentos",
@@ -1391,12 +1456,12 @@
 
       let token = obterToken();
       let resumoAtual = null;
-      let estabelecimentoSelecionadoId = null;
+      let estabelecimentoSelecionadoId = estabelecimentoInicialId || null;
       let fluxoAceiteAberto = false;
 
       function nomeStatus(valor) {
         const nomes = {
-          NOVO: "Novo",
+          NOVO: "Pendente",
           CONTATADO: "Contatado",
           NEGOCIANDO: "Em negociação",
           ACEITOU_PARCERIA: "Aceitou parceria",
@@ -1568,22 +1633,14 @@
           return carregarResumo();
         }
         elementos.estabelecimentoDecisao.replaceChildren();
-        const seletoresEstabelecimento = [
-          elementos.estabelecimentoDecisao,
-          elementos.estabelecimentoMensagens,
-          elementos.estabelecimentoAgendamentos,
-          elementos.estabelecimentoMateriais,
-        ];
-        seletoresEstabelecimento.forEach((seletor) => seletor.replaceChildren());
+        elementos.estabelecimentoDecisao.replaceChildren();
         estabelecimentos.forEach((item) => {
-          seletoresEstabelecimento.forEach((seletor) => {
-            const opcao = document.createElement("option");
-            opcao.value = item.leadestabelecimento_id;
-            opcao.textContent = item.nmestabelecimento;
-            opcao.selected =
-              item.leadestabelecimento_id === estabelecimentoSelecionadoId;
-            seletor.append(opcao);
-          });
+          const opcao = document.createElement("option");
+          opcao.value = item.leadestabelecimento_id;
+          opcao.textContent = item.nmestabelecimento;
+          opcao.selected =
+            item.leadestabelecimento_id === estabelecimentoSelecionadoId;
+          elementos.estabelecimentoDecisao.append(opcao);
         });
         const estabelecimento =
           estabelecimentos.find(
@@ -1592,13 +1649,54 @@
           ) || { status: "NOVO", contratos: [] };
         elementos.nomeEstabelecimentoDecisao.textContent =
           estabelecimento.nmestabelecimento || "este estabelecimento";
+        [
+          elementos.estabelecimentoMensagens,
+          elementos.estabelecimentoAgendamentos,
+          elementos.estabelecimentoMateriais,
+        ].forEach((elemento) => {
+          elemento.textContent =
+            estabelecimento.nmestabelecimento || "Estabelecimento";
+        });
         elementos.contratoEstabelecimento.replaceChildren();
         const contrato = estabelecimento.contratos?.[0];
+        const parceriaAceita =
+          estabelecimento.status === "ACEITOU_PARCERIA" ||
+          estabelecimento.status === "CONVERTIDO";
+        document.getElementById("textoDecisao").classList.toggle(
+          "hidden",
+          parceriaAceita,
+        );
+        document.getElementById("acoesDecisao").classList.toggle(
+          "hidden",
+          parceriaAceita,
+        );
+        if (parceriaAceita) {
+          fluxoAceiteAberto = false;
+          elementos.contratoEstabelecimento.classList.remove("hidden");
+          const celebracao = document.createElement("div");
+          celebracao.className = "partnership-celebration";
+          const icone = document.createElement("span");
+          icone.className = "celebration-icon";
+          icone.textContent = "🍾✨";
+          const titulo = document.createElement("h3");
+          titulo.textContent = "Parceria aceita!";
+          const mensagem = document.createElement("p");
+          mensagem.textContent =
+            "Bem-vindo à Clubbar! Você poderá baixar o aplicativo ou usar o Clubbar Partner pelo navegador.";
+          const linkPartner = document.createElement("a");
+          linkPartner.className = "btn-primary";
+          linkPartner.href = CLUBBAR_CONFIG.PARTNER_URL;
+          linkPartner.target = "_blank";
+          linkPartner.rel = "noopener noreferrer";
+          linkPartner.textContent = "Acessar Clubbar Partner ↗";
+          celebracao.append(icone, titulo, mensagem, linkPartner);
+          elementos.contratoEstabelecimento.append(celebracao);
+        }
         elementos.contratoEstabelecimento.classList.toggle(
           "hidden",
-          !fluxoAceiteAberto,
+          !fluxoAceiteAberto && !parceriaAceita,
         );
-        if (fluxoAceiteAberto && contrato) {
+        if (!parceriaAceita && fluxoAceiteAberto && contrato) {
           const cardContrato = document.createElement("div");
           const tituloContrato = document.createElement("strong");
           tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
@@ -1636,7 +1734,7 @@
           );
           cardContrato.append(confirmarParceria);
           elementos.contratoEstabelecimento.append(cardContrato);
-        } else if (fluxoAceiteAberto) {
+        } else if (!parceriaAceita && fluxoAceiteAberto) {
           elementos.contratoEstabelecimento.append(
             criarVazio("Contrato ainda não disponibilizado para esta unidade."),
           );
@@ -2107,7 +2205,15 @@
 
       document.querySelectorAll("[data-pagina]").forEach((botao) => {
         botao.addEventListener("click", () => {
-          window.location.href = `portal-lead.html?tela=${botao.dataset.pagina}`;
+          const destino = new URL("portal-lead.html", window.location.href);
+          destino.searchParams.set("tela", botao.dataset.pagina);
+          if (estabelecimentoSelecionadoId) {
+            destino.searchParams.set(
+              "leadestabelecimento_id",
+              estabelecimentoSelecionadoId,
+            );
+          }
+          window.location.href = destino.href;
         });
       });
 
@@ -2146,22 +2252,6 @@
           carregarAgendamentos(),
           carregarMateriais(),
         ]);
-      });
-
-      [
-        elementos.estabelecimentoMensagens,
-        elementos.estabelecimentoAgendamentos,
-        elementos.estabelecimentoMateriais,
-      ].forEach((seletor) => {
-        seletor.addEventListener("change", async () => {
-          estabelecimentoSelecionadoId = Number(seletor.value);
-          await carregarResumo();
-          await Promise.all([
-            carregarMensagens(),
-            carregarAgendamentos(),
-            carregarMateriais(),
-          ]);
-        });
       });
 
       elementos.btnAtualizarPagina.addEventListener("click", () =>
