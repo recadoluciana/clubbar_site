@@ -1003,7 +1003,7 @@
       .new-establishment-head h3,
       .new-establishment-card label,
       .new-establishment-card legend {
-        color: var(--gold);
+        color: #111;
         font-weight: 850;
       }
 
@@ -1071,7 +1071,7 @@
 
       .new-establishment-address summary {
         margin-bottom: 14px;
-        color: var(--gold);
+        color: #111;
         cursor: pointer;
         font-weight: 800;
       }
@@ -1155,6 +1155,26 @@
         .message {
           max-width: 91%;
         }
+      }
+      /* Tema claro */
+      :root { --bg:#fff; --card:#fff; --card-soft:#f7f8fa; --line:#dedede; --text:#202124; --muted:#666; }
+      body { background:linear-gradient(145deg,#fff,#f7f8fa); color:var(--text); }
+      .hero,.panel,.stat,.item,.decision-panel,.state-card,.new-establishment-card,.modal-card {
+        background:#fff;
+        color:#202124;
+        border-color:#dedede;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+      }
+      .hero { background:linear-gradient(135deg,#fff,#f5f7fa); }
+      .panel-head { background:#f7f8fa; border-bottom-color:#dedede; }
+      .message { background:#f6f7f9; color:#202124; border-color:#dedede; }
+      .message.lead { background:#edf5ff; }
+      .message.clubbar { background:#fff6d8; color:#000; }
+      .screen-state,.contract-text,.empty { background:#f7f8fa; color:#202124; border-color:#dedede; }
+      .form-control,.panel-title-select,.hero-establishment,.new-establishment-field input,.new-establishment-field select,.new-establishment-field textarea {
+        background:#fff;
+        color:#202124;
+        border-color:#cfd3d7;
       }
     </style>
   </head>
