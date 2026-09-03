@@ -171,6 +171,15 @@
         margin-top: 17px;
       }
 
+      .create-establishment-button {
+        width: 100%;
+        min-height: 50px;
+        margin-bottom: 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
       .hero-establishment > label {
         display: block;
         margin-bottom: 7px;
@@ -1195,10 +1204,12 @@
           <h1 id="saudacao">Olá</h1>
           <p>Acompanhe o atendimento do(s) seu(s) estabelecimento(s).</p>
           <div class="hero-establishment">
+            <button class="btn-inline create-establishment-button" type="button" data-pagina="estabelecimento">
+              ＋ Criar novo estabelecimento
+            </button>
             <label for="estabelecimentoDecisao">Selecione o estabelecimento</label>
             <div class="hero-selector-row">
               <select id="estabelecimentoDecisao" class="form-control"></select>
-              <button class="btn-inline" type="button" data-pagina="estabelecimento">＋ Novo</button>
             </div>
           </div>
           <div class="stats">
