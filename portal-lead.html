@@ -1577,7 +1577,16 @@
 
           let mensagem = dados.detail || "Não foi possível concluir a ação.";
           if (Array.isArray(mensagem)) {
-            mensagem = mensagem.map((item) => item.msg).join(" ");
+            mensagem = mensagem
+              .map((item) => item.description || item.msg || JSON.stringify(item))
+              .join(" ");
+          } else if (mensagem && typeof mensagem === "object") {
+            const erros = Array.isArray(mensagem.errors) ? mensagem.errors : [];
+            mensagem = erros.length
+              ? erros
+                  .map((item) => item.description || item.msg || JSON.stringify(item))
+                  .join(" ")
+              : mensagem.description || mensagem.message || JSON.stringify(mensagem);
           }
           throw new Error(mensagem);
         }
