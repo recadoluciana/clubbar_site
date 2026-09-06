@@ -948,6 +948,29 @@
         font: 13px/1.6 Arial, sans-serif;
       }
 
+      .contract-tools,
+      .implantation-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .contract-tools .decision-button,
+      .implantation-actions .decision-button,
+      .implantation-actions .decision-button.accept {
+        width: auto;
+        max-width: 100%;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        text-decoration: none;
+        line-height: 1.25;
+      }
+
       body.modal-open {
         overflow: hidden;
       }
@@ -1085,6 +1108,17 @@
       }
 
       @media (max-width: 620px) {
+        .contract-tools,
+        .implantation-actions {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .contract-tools .decision-button,
+        .implantation-actions .decision-button,
+        .implantation-actions .decision-button.accept {
+          width: 100%;
+        }
         .topbar {
           min-height: 66px;
           padding-inline: 14px;
@@ -1740,6 +1774,17 @@
           const tituloContrato = document.createElement("strong");
           tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
           cardContrato.append(tituloContrato);
+          const ferramentasContrato = document.createElement("div");
+          ferramentasContrato.className = "contract-tools";
+          const baixarPdf = document.createElement("button");
+          baixarPdf.type = "button";
+          baixarPdf.className = "decision-button analyzing";
+          baixarPdf.textContent = "Baixar ou compartilhar contrato em PDF";
+          baixarPdf.addEventListener("click", () =>
+            baixarContratoPdf(contrato.leadestabelecimentocontrato_id),
+          );
+          ferramentasContrato.append(baixarPdf);
+          cardContrato.append(ferramentasContrato);
           if (contrato.conteudocontrato) {
             const textoContrato = document.createElement("div");
             textoContrato.className = "contract-text";
@@ -1776,6 +1821,8 @@
               : "Pague com Pix ou cartão no ambiente seguro do Asaas para liberar a implantação.";
             pagamento.append(tituloPagamento, descricaoPagamento);
             if (!implantacaoLiberada && cobranca?.checkout_url) {
+              const acoesPagamento = document.createElement("div");
+              acoesPagamento.className = "implantation-actions";
               const pagar = document.createElement("a");
               pagar.className = "decision-button accept";
               pagar.href = cobranca.checkout_url;
@@ -1785,10 +1832,10 @@
               const verificar = document.createElement("button");
               verificar.type = "button";
               verificar.className = "decision-button analyzing";
-              verificar.style.marginLeft = "8px";
               verificar.textContent = "Já paguei";
               verificar.addEventListener("click", () => verificarPagamentoImplantacao(contrato.leadestabelecimentocontrato_id));
-              pagamento.append(pagar, verificar);
+              acoesPagamento.append(pagar, verificar);
+              pagamento.append(acoesPagamento);
             }
             cardContrato.append(pagamento);
           }
@@ -2052,15 +2099,55 @@
         });
       }
 
-      function iniciarAceiteParceria() {
+      async function iniciarAceiteParceria() {
         fluxoAceiteAberto = true;
         const estabelecimento = (resumoAtual?.estabelecimentos || []).find(
           (item) => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
         );
         const contrato = estabelecimento?.contratos?.[0];
-        carregarResumo().catch((erro) => mostrarToast(erro.message, true));
         if (!contrato?.conteudocontrato) {
           mostrarToast("O contrato ainda não foi disponibilizado para este estabelecimento.", true);
+          return;
+        }
+        const cobranca = contrato.cobranca_implantacao;
+        if (contrato.status === "ACEITO" && (cobranca?.status === "PAGA" || cobranca?.status === "ISENTA")) {
+          await registrarStatus("ACEITOU_PARCERIA");
+          return;
+        }
+        await carregarResumo();
+        elementos.contratoEstabelecimento.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (contrato.status === "ENVIADO") {
+          mostrarToast("Leia o contrato e toque em “Li e aceito o contrato” para continuar.");
+        } else {
+          mostrarToast("O pagamento da implantação ainda precisa ser confirmado pelo Asaas.", true);
+        }
+      }
+
+      async function baixarContratoPdf(contratoId) {
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/contratos/${contratoId}/pdf`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          if (!resposta.ok) {
+            const dados = await resposta.json().catch(() => ({}));
+            throw new Error(dados.detail || "Não foi possível gerar o PDF do contrato.");
+          }
+          const blob = await resposta.blob();
+          const arquivo = new File([blob], `contrato-clubbar-${contratoId}.pdf`, { type: "application/pdf" });
+          if (navigator.canShare?.({ files: [arquivo] })) {
+            await navigator.share({ title: "Contrato de parceria Clubbar", files: [arquivo] });
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = arquivo.name;
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          mostrarToast("Contrato em PDF gerado com sucesso.");
+        } catch (erro) {
+          if (erro?.name !== "AbortError") mostrarToast(erro.message, true);
         }
       }
 
