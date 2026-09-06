@@ -1750,15 +1750,50 @@
             );
             cardContrato.append(document.createElement("br"), aceitarContrato);
           }
+          const cobranca = contrato.cobranca_implantacao;
+          const implantacaoLiberada =
+            cobranca?.status === "PAGA" || cobranca?.status === "ISENTA";
+          if (contrato.status === "ACEITO") {
+            const pagamento = document.createElement("div");
+            pagamento.style.cssText =
+              "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:16px;background:#f5f9ff";
+            const tituloPagamento = document.createElement("strong");
+            tituloPagamento.textContent = implantacaoLiberada
+              ? cobranca.status === "ISENTA" ? "Implantação isenta" : "Implantação paga"
+              : `Taxa única de implantação — ${Number(contrato.vrimplantacao || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
+            const descricaoPagamento = document.createElement("p");
+            descricaoPagamento.textContent = implantacaoLiberada
+              ? "Pagamento confirmado. A parceria já pode ser concluída."
+              : "Pague com Pix ou cartão no ambiente seguro do Asaas para liberar a implantação.";
+            pagamento.append(tituloPagamento, descricaoPagamento);
+            if (!implantacaoLiberada && cobranca?.checkout_url) {
+              const pagar = document.createElement("a");
+              pagar.className = "decision-button accept";
+              pagar.href = cobranca.checkout_url;
+              pagar.target = "_blank";
+              pagar.rel = "noopener noreferrer";
+              pagar.textContent = "Pagar implantação no Asaas ↗";
+              const verificar = document.createElement("button");
+              verificar.type = "button";
+              verificar.className = "decision-button analyzing";
+              verificar.style.marginLeft = "8px";
+              verificar.textContent = "Já paguei";
+              verificar.addEventListener("click", () => verificarPagamentoImplantacao(contrato.leadestabelecimentocontrato_id));
+              pagamento.append(pagar, verificar);
+            }
+            cardContrato.append(pagamento);
+          }
           const confirmarParceria = document.createElement("button");
           confirmarParceria.type = "button";
           confirmarParceria.className = "btn-primary";
           confirmarParceria.style.cssText = "width:100%;margin-top:12px";
           confirmarParceria.textContent =
-            contrato.status === "ACEITO"
+            contrato.status === "ACEITO" && implantacaoLiberada
               ? "Confirmar parceria"
-              : "Confirme o aceite do contrato para continuar";
-          confirmarParceria.disabled = contrato.status !== "ACEITO";
+              : contrato.status === "ACEITO"
+                ? "Aguardando pagamento da implantação"
+                : "Confirme o aceite do contrato para continuar";
+          confirmarParceria.disabled = contrato.status !== "ACEITO" || !implantacaoLiberada;
           confirmarParceria.addEventListener("click", () =>
             registrarStatus("ACEITOU_PARCERIA"),
           );
@@ -2071,6 +2106,16 @@
           });
         } catch (_) {
           elementos.novoEstabelecimentoEstado.innerHTML = '<option value="">Erro ao carregar estados</option>';
+        }
+      }
+
+      async function verificarPagamentoImplantacao(contratoId) {
+        try {
+          const cobranca = await api(`/portal-parceiro/contratos/${contratoId}/implantacao`);
+          await carregarResumo();
+          mostrarToast(cobranca.status === "PAGA" ? "Pagamento confirmado com sucesso." : "O pagamento ainda não foi confirmado pelo Asaas.", cobranca.status !== "PAGA" && cobranca.status !== "ISENTA");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
         }
       }
 
