@@ -62,9 +62,15 @@
         font-size: clamp(25px, 5vw, 34px);
       }
       .subtitle {
-        margin: 7px 0 22px;
+        margin: 7px 0 8px;
         color: #333;
         font-size: 17px;
+      }
+      .establishment-name {
+        margin: 0 0 22px;
+        color: var(--blue);
+        font-size: 20px;
+        font-weight: 900;
       }
       .card {
         padding: clamp(18px, 4vw, 28px);
@@ -165,6 +171,7 @@
     <main class="hidden" id="conteudo">
       <h1 class="lead-name" id="nomeLead"></h1>
       <p class="subtitle">Leia atentamente o seu contrato</p>
+      <p class="establishment-name" id="nomeEstabelecimento"></p>
 
       <section class="card">
         <h2 class="contract-title" id="tituloContrato"></h2>
@@ -209,6 +216,7 @@
         erro: document.getElementById("erro"),
         conteudo: document.getElementById("conteudo"),
         nomeLead: document.getElementById("nomeLead"),
+        nomeEstabelecimento: document.getElementById("nomeEstabelecimento"),
         tituloContrato: document.getElementById("tituloContrato"),
         textoContrato: document.getElementById("textoContrato"),
         baixarPdf: document.getElementById("baixarPdf"),
@@ -243,7 +251,22 @@
         }
         if (!resposta.ok) {
           const detalhe = dados.detail;
-          throw new Error(typeof detalhe === "string" ? detalhe : "Não foi possível concluir a operação.");
+          let mensagem = "Não foi possível concluir a operação.";
+          if (typeof detalhe === "string") {
+            mensagem = detalhe;
+          } else if (Array.isArray(detalhe)) {
+            mensagem = detalhe
+              .map((item) => item.description || item.msg || JSON.stringify(item))
+              .join(" ");
+          } else if (detalhe && typeof detalhe === "object") {
+            const erros = Array.isArray(detalhe.errors) ? detalhe.errors : [];
+            mensagem = erros.length
+              ? erros
+                  .map((item) => item.description || item.msg || JSON.stringify(item))
+                  .join(" ")
+              : detalhe.description || detalhe.message || JSON.stringify(detalhe);
+          }
+          throw new Error(mensagem);
         }
         return dados;
       }
@@ -305,7 +328,8 @@
           throw new Error("O contrato ainda não foi disponibilizado para este estabelecimento.");
         }
         el.nomeLead.textContent = resumo.nmresponsavel || "Lead";
-        el.tituloContrato.textContent = `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
+        el.nomeEstabelecimento.textContent = estabelecimento.nmestabelecimento || "Estabelecimento";
+        el.tituloContrato.textContent = `Contrato ${contratoAtual.versao}`;
         el.textoContrato.textContent = contratoAtual.conteudocontrato;
         const foiAceito = contratoAtual.status === "ACEITO";
         el.areaAceite.classList.toggle("hidden", foiAceito);
@@ -326,6 +350,15 @@
         }
         try {
           const resumo = await api(`/portal-parceiro/resumo?leadestabelecimento_id=${estabelecimentoId}`);
+          const estabelecimento = (resumo.estabelecimentos || []).find(
+            (item) => item.leadestabelecimento_id === estabelecimentoId,
+          );
+          const contrato = estabelecimento?.contratos?.[0];
+          if (contrato?.status === "ACEITO" && !contrato.cobranca_implantacao) {
+            contrato.cobranca_implantacao = await api(
+              `/portal-parceiro/contratos/${contrato.leadestabelecimentocontrato_id}/implantacao`,
+            );
+          }
           renderizar(resumo);
         } catch (erro) {
           el.carregando.classList.add("hidden");
