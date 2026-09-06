@@ -1380,10 +1380,10 @@
               <div class="decision-actions" id="acoesDecisao">
                 <button
                   class="decision-button analyzing"
-                  data-status="NEGOCIANDO"
+                  id="btnVisualizarContrato"
                   type="button"
                 >
-                  Negociar parceria
+                  Visualizar contrato
                 </button>
                 <button
                   class="decision-button accept"
@@ -1538,6 +1538,7 @@
         contratoEstabelecimento: document.getElementById(
           "contratoEstabelecimento",
         ),
+        btnVisualizarContrato: document.getElementById("btnVisualizarContrato"),
         btnAceitarParceria: document.getElementById("btnAceitarParceria"),
         formEstabelecimento: document.getElementById("formEstabelecimento"),
         novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
@@ -1960,6 +1961,7 @@
         elementos.btnAceitarParceria.disabled =
           estabelecimento.status === "CONVERTIDO" ||
           estabelecimento.status === "ACEITOU_PARCERIA";
+        elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
       }
 
       async function carregarMensagens() {
@@ -2234,27 +2236,32 @@
       }
 
       async function iniciarAceiteParceria() {
-        fluxoAceiteAberto = true;
+        const destino = new URL("aceite-parceria.html", window.location.href);
+        destino.searchParams.set(
+          "leadestabelecimento_id",
+          estabelecimentoSelecionadoId,
+        );
+        window.location.href = destino.href;
+      }
+
+      async function visualizarContrato() {
         const estabelecimento = (resumoAtual?.estabelecimentos || []).find(
           (item) => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
         );
         const contrato = estabelecimento?.contratos?.[0];
         if (!contrato?.conteudocontrato) {
-          mostrarToast("O contrato ainda não foi disponibilizado para este estabelecimento.", true);
+          mostrarToast(
+            "O contrato ainda não foi disponibilizado para este estabelecimento.",
+            true,
+          );
           return;
         }
-        const cobranca = contrato.cobranca_implantacao;
-        if (contrato.status === "ACEITO" && (cobranca?.status === "PAGA" || cobranca?.status === "ISENTA")) {
-          await registrarStatus("ACEITOU_PARCERIA");
-          return;
-        }
+        fluxoAceiteAberto = true;
         await carregarResumo();
-        elementos.contratoEstabelecimento.scrollIntoView({ behavior: "smooth", block: "start" });
-        if (contrato.status === "ENVIADO") {
-          mostrarToast("Leia o contrato e toque em “Li e aceito o contrato” para continuar.");
-        } else {
-          mostrarToast("O pagamento da implantação ainda precisa ser confirmado pelo Asaas.", true);
-        }
+        elementos.contratoEstabelecimento.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
 
       async function baixarContratoPdf(contratoId) {
@@ -2539,6 +2546,7 @@
       });
 
       elementos.btnAceitarParceria.addEventListener("click", iniciarAceiteParceria);
+      elementos.btnVisualizarContrato.addEventListener("click", visualizarContrato);
 
       document.querySelectorAll("[data-status]").forEach((botao) => {
         botao.addEventListener("click", () =>
