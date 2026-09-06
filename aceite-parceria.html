@@ -279,44 +279,20 @@
         return Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
       }
 
-      function renderizarPagamento(cobranca) {
+      function renderizarConclusao() {
         el.pagamento.replaceChildren();
         el.pagamento.classList.remove("hidden");
         const titulo = document.createElement("strong");
-        const liberada = cobranca?.status === "PAGA" || cobranca?.status === "ISENTA";
-        titulo.textContent = liberada
-          ? (cobranca.status === "ISENTA" ? "Implantação isenta" : "Implantação paga")
-          : `Taxa única de implantação — ${moeda(contratoAtual.vrimplantacao)}`;
+        titulo.textContent = "Contrato aceito";
         const descricao = document.createElement("p");
-        descricao.textContent = liberada
-          ? "O aceite da parceria já pode ser concluído."
-          : "Pague com Pix ou cartão no ambiente seguro do Asaas para continuar.";
+        descricao.textContent =
+          "Conclua a parceria para que a equipe Clubbar possa converter o cadastro e iniciar a implantação.";
         el.pagamento.append(titulo, descricao);
-
-        if (liberada) {
-          const concluir = document.createElement("button");
-          concluir.className = "button green";
-          concluir.textContent = "Concluir parceria";
-          concluir.addEventListener("click", concluirParceria);
-          el.pagamento.append(concluir);
-          return;
-        }
-
-        const acoes = document.createElement("div");
-        acoes.className = "payment-actions";
-        if (cobranca?.checkout_url) {
-          const pagar = document.createElement("button");
-          pagar.className = "button green";
-          pagar.textContent = "Pagar implantação no Asaas ↗";
-          pagar.addEventListener("click", () => window.open(cobranca.checkout_url, "_blank", "noopener"));
-          acoes.append(pagar);
-        }
-        const verificar = document.createElement("button");
-        verificar.className = "button secondary";
-        verificar.textContent = "Já paguei";
-        verificar.addEventListener("click", verificarPagamento);
-        acoes.append(verificar);
-        el.pagamento.append(acoes);
+        const concluir = document.createElement("button");
+        concluir.className = "button green";
+        concluir.textContent = "Concluir parceria";
+        concluir.addEventListener("click", concluirParceria);
+        el.pagamento.append(concluir);
       }
 
       function renderizar(resumo) {
@@ -337,7 +313,7 @@
         el.confirmarAceite.classList.toggle("hidden", foiAceito);
         el.confirmarAceite.disabled = foiAceito || !el.aceite.checked;
         el.pagamento.classList.toggle("hidden", !foiAceito);
-        if (foiAceito) renderizarPagamento(contratoAtual.cobranca_implantacao);
+        if (foiAceito) renderizarConclusao();
         el.carregando.classList.add("hidden");
         el.erro.classList.add("hidden");
         el.conteudo.classList.remove("hidden");
@@ -350,15 +326,6 @@
         }
         try {
           const resumo = await api(`/portal-parceiro/resumo?leadestabelecimento_id=${estabelecimentoId}`);
-          const estabelecimento = (resumo.estabelecimentos || []).find(
-            (item) => item.leadestabelecimento_id === estabelecimentoId,
-          );
-          const contrato = estabelecimento?.contratos?.[0];
-          if (contrato?.status === "ACEITO" && !contrato.cobranca_implantacao) {
-            contrato.cobranca_implantacao = await api(
-              `/portal-parceiro/contratos/${contrato.leadestabelecimentocontrato_id}/implantacao`,
-            );
-          }
           renderizar(resumo);
         } catch (erro) {
           el.carregando.classList.add("hidden");
@@ -377,14 +344,6 @@
           toast(erro.message, true);
           el.confirmarAceite.disabled = false;
         }
-      }
-
-      async function verificarPagamento() {
-        try {
-          const cobranca = await api(`/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/implantacao`);
-          toast(cobranca.status === "PAGA" ? "Pagamento confirmado." : "O pagamento ainda não foi confirmado.", cobranca.status !== "PAGA" && cobranca.status !== "ISENTA");
-          await carregar();
-        } catch (erro) { toast(erro.message, true); }
       }
 
       async function concluirParceria() {
