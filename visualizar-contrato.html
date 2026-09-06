@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizar contrato | Clubbar</title>
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+    <style>
+      :root {
+        --blue: #1976d2;
+        --line: #d9dde2;
+        --red: #d93232;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #202124;
+        background: #f4f5f7;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      button { font: inherit; cursor: pointer; }
+      .hidden { display: none !important; }
+      .topbar {
+        height: 74px;
+        padding: 8px max(18px, 6vw);
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        align-items: center;
+        background: #000;
+      }
+      .topbar img {
+        width: auto;
+        height: 58px;
+        max-width: 68vw;
+        object-fit: contain;
+        justify-self: center;
+        transform: scale(1.25);
+      }
+      .back {
+        color: #fff;
+        text-decoration: none;
+        font-size: 24px;
+        font-weight: 900;
+      }
+      main {
+        width: min(920px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 28px 0 50px;
+      }
+      .lead-name {
+        margin: 0;
+        color: var(--blue);
+        font-size: clamp(25px, 5vw, 34px);
+      }
+      .subtitle {
+        margin: 7px 0 22px;
+        color: #444;
+        font-size: 17px;
+      }
+      .card {
+        padding: clamp(18px, 4vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+      }
+      .contract-title {
+        margin: 0 0 16px;
+        font-size: 20px;
+      }
+      .contract-text {
+        max-height: 560px;
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8f9fa;
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+      .pdf-button {
+        width: 100%;
+        min-height: 50px;
+        margin-top: 16px;
+        padding: 12px 16px;
+        border: 1px solid #333;
+        border-radius: 13px;
+        color: #000;
+        background: #fff;
+        font-weight: 900;
+      }
+      .state { padding: 60px 20px; text-align: center; }
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        max-width: min(430px, calc(100% - 36px));
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #fff;
+        background: var(--red);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, .25);
+        font-weight: 800;
+      }
+      @media (max-width: 560px) {
+        main { padding-top: 20px; }
+        .contract-text { max-height: 500px; padding: 13px; font-size: 14px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back" id="voltar" href="portal-lead.html" aria-label="Voltar">←</a>
+      <img src="assets/images/logo.png" alt="Clubbar Lead" />
+      <span></span>
+    </header>
+
+    <div class="state" id="carregando">Carregando contrato...</div>
+    <div class="state hidden" id="erro"></div>
+
+    <main class="hidden" id="conteudo">
+      <h1 class="lead-name" id="nomeLead"></h1>
+      <p class="subtitle">Visualizar contrato</p>
+      <section class="card">
+        <h2 class="contract-title" id="tituloContrato"></h2>
+        <div class="contract-text" id="textoContrato"></div>
+        <button class="pdf-button" id="baixarPdf" type="button">
+          Baixar ou compartilhar contrato em PDF
+        </button>
+      </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script>
+      const STORAGE_KEY = "clubbar_portal_lead_token";
+      const token = localStorage.getItem(STORAGE_KEY);
+      const params = new URLSearchParams(window.location.search);
+      const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
+      let contratoAtual = null;
+      const el = {
+        voltar: document.getElementById("voltar"),
+        carregando: document.getElementById("carregando"),
+        erro: document.getElementById("erro"),
+        conteudo: document.getElementById("conteudo"),
+        nomeLead: document.getElementById("nomeLead"),
+        tituloContrato: document.getElementById("tituloContrato"),
+        textoContrato: document.getElementById("textoContrato"),
+        baixarPdf: document.getElementById("baixarPdf"),
+      };
+      el.voltar.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
+
+      async function api(caminho) {
+        const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}${caminho}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const dados = await resposta.json().catch(() => ({}));
+        if (!resposta.ok) {
+          throw new Error(
+            typeof dados.detail === "string"
+              ? dados.detail
+              : "Não foi possível carregar o contrato.",
+          );
+        }
+        return dados;
+      }
+
+      function nomeStatus(status) {
+        return { ENVIADO: "Enviado", ACEITO: "Aceito" }[status] || status;
+      }
+
+      function mostrarErro(mensagem) {
+        el.carregando.classList.add("hidden");
+        el.conteudo.classList.add("hidden");
+        el.erro.textContent = mensagem;
+        el.erro.classList.remove("hidden");
+      }
+
+      async function carregar() {
+        if (!token || !estabelecimentoId) {
+          window.location.href = "portal-lead.html";
+          return;
+        }
+        try {
+          const resumo = await api(
+            `/portal-parceiro/resumo?leadestabelecimento_id=${estabelecimentoId}`,
+          );
+          const estabelecimento = (resumo.estabelecimentos || []).find(
+            (item) => item.leadestabelecimento_id === estabelecimentoId,
+          );
+          contratoAtual = estabelecimento?.contratos?.[0];
+          if (!contratoAtual?.conteudocontrato) {
+            throw new Error(
+              "O contrato ainda não foi disponibilizado para este estabelecimento.",
+            );
+          }
+          el.nomeLead.textContent = resumo.nmresponsavel || "Lead";
+          el.tituloContrato.textContent =
+            `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
+          el.textoContrato.textContent = contratoAtual.conteudocontrato;
+          el.carregando.classList.add("hidden");
+          el.erro.classList.add("hidden");
+          el.conteudo.classList.remove("hidden");
+        } catch (erro) {
+          mostrarErro(erro.message);
+        }
+      }
+
+      async function baixarPdf() {
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/pdf`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          if (!resposta.ok) {
+            throw new Error("Não foi possível gerar o PDF do contrato.");
+          }
+          const blob = await resposta.blob();
+          const arquivo = new File(
+            [blob],
+            `contrato-clubbar-${contratoAtual.leadestabelecimentocontrato_id}.pdf`,
+            { type: "application/pdf" },
+          );
+          if (navigator.canShare?.({ files: [arquivo] })) {
+            await navigator.share({
+              title: "Contrato de parceria Clubbar",
+              files: [arquivo],
+            });
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = arquivo.name;
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+        } catch (erro) {
+          const aviso = document.createElement("div");
+          aviso.className = "toast";
+          aviso.textContent = erro.message;
+          document.body.append(aviso);
+          setTimeout(() => aviso.remove(), 6500);
+        }
+      }
+
+      el.baixarPdf.addEventListener("click", baixarPdf);
+      carregar();
+    </script>
+  </body>
+</html>

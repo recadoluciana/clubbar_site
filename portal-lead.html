@@ -2245,23 +2245,12 @@
       }
 
       async function visualizarContrato() {
-        const estabelecimento = (resumoAtual?.estabelecimentos || []).find(
-          (item) => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+        const destino = new URL("visualizar-contrato.html", window.location.href);
+        destino.searchParams.set(
+          "leadestabelecimento_id",
+          estabelecimentoSelecionadoId,
         );
-        const contrato = estabelecimento?.contratos?.[0];
-        if (!contrato?.conteudocontrato) {
-          mostrarToast(
-            "O contrato ainda não foi disponibilizado para este estabelecimento.",
-            true,
-          );
-          return;
-        }
-        fluxoAceiteAberto = true;
-        await carregarResumo();
-        elementos.contratoEstabelecimento.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        window.location.href = destino.href;
       }
 
       async function baixarContratoPdf(contratoId) {
