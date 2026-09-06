@@ -468,6 +468,35 @@
         color: #4d318f;
       }
 
+      .message-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .message-heading .message-sender {
+        flex: 1;
+      }
+
+      .message-delete {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        color: #8b2020;
+        background: rgba(255, 255, 255, 0.48);
+        cursor: pointer;
+        font-size: 17px;
+      }
+
+      .message-delete:hover,
+      .message-delete:focus-visible {
+        background: rgba(255, 255, 255, 0.82);
+      }
+
       .message.lead .message-content {
         grid-column: 1;
         grid-row: 1;
@@ -1944,6 +1973,10 @@
           return;
         }
 
+        const ultimaMensagemDoLead = [...mensagens]
+          .reverse()
+          .find((item) => item.origem === "LEAD")?.leadmensagem_id;
+
         mensagens.forEach((item) => {
           const caixa = document.createElement("article");
           const enviadaPeloLead = item.origem === "LEAD";
@@ -1971,6 +2004,26 @@
             ? nomeLead
             : `Cora • Clubbar — para ${nomeLead}`;
 
+          const cabecalho = document.createElement("div");
+          cabecalho.className = "message-heading";
+          cabecalho.append(remetente);
+
+          if (
+            enviadaPeloLead &&
+            item.leadmensagem_id === ultimaMensagemDoLead
+          ) {
+            const excluir = document.createElement("button");
+            excluir.type = "button";
+            excluir.className = "message-delete";
+            excluir.title = "Excluir última mensagem enviada";
+            excluir.setAttribute("aria-label", "Excluir última mensagem enviada");
+            excluir.textContent = "🗑";
+            excluir.addEventListener("click", () =>
+              excluirMensagem(item.leadmensagem_id),
+            );
+            cabecalho.append(excluir);
+          }
+
           const texto = document.createElement("div");
           texto.textContent = item.mensagem;
 
@@ -1978,13 +2031,28 @@
           data.textContent =
             formatarData(item.dtcriacao);
 
-          conteudo.append(remetente, texto, data);
+          conteudo.append(cabecalho, texto, data);
           caixa.append(avatar, conteudo);
           elementos.listaMensagens.append(caixa);
         });
 
         elementos.listaMensagens.scrollTop =
           elementos.listaMensagens.scrollHeight;
+      }
+
+      async function excluirMensagem(mensagemId) {
+        if (!window.confirm("Excluir sua última mensagem enviada?")) return;
+
+        try {
+          await api(
+            `/portal-parceiro/mensagens/${mensagemId}?leadestabelecimento_id=${estabelecimentoSelecionadoId}`,
+            { method: "DELETE" },
+          );
+          await carregarMensagens();
+          mostrarToast("Mensagem excluída.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
       }
 
       async function enviarMensagem(evento) {
