@@ -487,7 +487,7 @@
       .choice-group legend,
       .btn-adicionar-estabelecimento,
       details summary { color:#111!important; }
-      .summary-line { font-weight:700; }
+      .summary-line { font-weight:400; }
     </style>
   </head>
   <body>
@@ -595,7 +595,7 @@
         const i=Number(t.pctaxaingresso).toLocaleString('pt-BR');
         const m=Number(t.vrtaxaminimaingresso).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
         document.getElementById('resumoTaxaProduto').textContent=`${p}% sobre a venda de produtos, descontados do parceiro.`;
-        document.getElementById('resumoTaxaIngresso').textContent=`Taxa de conveniência de ${i}% ou mínimo de ${m} por ingresso, prevalecendo o maior valor e cobrada do cliente.`;
+        document.getElementById('resumoTaxaIngresso').textContent=`${i}% de taxa de conveniência ou mínimo de ${m} por ingresso, prevalecendo o maior valor e cobrada do cliente.`;
       }).catch(()=>{});
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
