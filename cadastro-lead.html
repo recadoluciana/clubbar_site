@@ -510,11 +510,11 @@
             <div class="summary-lines">
               <div class="summary-line">
                 <span class="summary-icon" aria-hidden="true">✓</span>
-                <span>5% sobre a venda de produtos descontadas do parceiro.</span>
+                <span id="resumoTaxaProduto">Carregando taxa sobre produtos...</span>
               </div>
               <div class="summary-line">
                 <span class="summary-icon" aria-hidden="true">✓</span>
-                <span>Taxa de conveniência de 5% nos ingressos, cobrada diretamente do cliente no momento do pagamento.</span>
+                <span id="resumoTaxaIngresso">Carregando taxa de conveniência dos ingressos...</span>
               </div>
             </div>
             <span class="no-monthly-badge">★ SEM MENSALIDADE</span>
@@ -588,6 +588,15 @@
     </div>
     <script src="js/config.js"></script>
     <script>
+      fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/taxas-padrao/vigente`).then(r => {
+        if (!r.ok) throw new Error(); return r.json();
+      }).then(t => {
+        const p=Number(t.pctaxaproduto).toLocaleString('pt-BR');
+        const i=Number(t.pctaxaingresso).toLocaleString('pt-BR');
+        const m=Number(t.vrtaxaminimaingresso).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+        document.getElementById('resumoTaxaProduto').textContent=`${p}% sobre a venda de produtos, descontados do parceiro.`;
+        document.getElementById('resumoTaxaIngresso').textContent=`Taxa de conveniência de ${i}% ou mínimo de ${m} por ingresso, prevalecendo o maior valor e cobrada do cliente.`;
+      }).catch(()=>{});
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
         listaEstabelecimentos = document.getElementById("estabelecimentos"),
