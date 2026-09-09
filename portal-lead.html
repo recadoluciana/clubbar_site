@@ -1607,6 +1607,10 @@
       let estabelecimentoSelecionadoId = estabelecimentoInicialId || null;
       let fluxoAceiteAberto = false;
 
+      if (token && !paginaAtual && !estabelecimentoSelecionadoId) {
+        window.location.replace("portal-lead-estabelecimentos.html");
+      }
+
       function nomeStatus(valor) {
         const nomes = {
           NOVO: "Pendente",
@@ -1750,7 +1754,7 @@
 
       function fecharModal(modal) {
         if (paginaAtual) {
-          window.location.href = "portal-lead.html";
+          window.location.href = "portal-lead-estabelecimentos.html";
           return;
         }
         modal?.classList.add("hidden");
@@ -2458,7 +2462,8 @@
           if (!resposta.ok) throw new Error(dados.detail || "Não foi possível entrar.");
           token = dados.acesso;
           localStorage.setItem(STORAGE_KEY, token);
-          await iniciar();
+          window.location.href = "portal-lead-estabelecimentos.html";
+          return;
         } catch (erro) {
           mostrarToast(erro.message, true);
         } finally {

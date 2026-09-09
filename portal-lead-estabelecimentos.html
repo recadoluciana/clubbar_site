@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Estabelecimentos | Clubbar</title>
+  <link rel="icon" type="image/png" href="assets/images/coruja.png">
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#202124;font-family:Arial,Helvetica,sans-serif}
+    .topbar{height:76px;padding:7px 18px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;background:#050505;color:#fff}
+    .topbar img{height:58px;max-width:230px;justify-self:center;object-fit:contain}.icon-button{width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:25px;cursor:pointer}
+    .page-head{padding:18px 20px;background:linear-gradient(105deg,#ffd54f,#fff4cc,#f5f6f8);border-radius:0 0 22px 22px;box-shadow:0 3px 9px #0002}
+    .page-head h1{margin:0;color:#1683ff;font-size:clamp(22px,4vw,30px)}.page-head p{margin:5px 0 0;color:#5f6368;font-size:14px}
+    main{width:min(920px,100%);margin:auto;padding:20px 16px 36px}.intro{margin:0 0 14px;font-size:16px}.cards{display:grid;grid-template-columns:1fr;gap:13px}
+    .store{width:100%;padding:0;border:1px solid #dedede;border-radius:18px;background:#fff;text-align:left;box-shadow:0 2px 7px #0002;cursor:pointer;overflow:hidden;transition:.18s}
+    .store:hover,.store:focus-visible{transform:translateY(-2px);border-color:#1683ff;box-shadow:0 7px 18px #1683ff22;outline:none}.store-body{padding:17px}.store-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.store h2{margin:0;color:#1683ff;font-size:20px}.arrow{color:#1683ff;font-size:25px}.badges{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 12px}.badge{padding:4px 9px;border-radius:20px;background:#eef5ff;color:#116cc5;font-size:11px}.badge.status{background:#fff4d0;color:#755800}.info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;padding-top:11px;border-top:1px solid #eee}.info div{min-width:0;color:#5f6368;font-size:13px;overflow-wrap:anywhere}.info strong{display:block;margin-bottom:2px;color:#202124;font-size:11px;font-weight:normal}
+    .state{padding:55px 20px;text-align:center;color:#666}.retry{margin-top:15px;padding:11px 18px;border:0;border-radius:12px;background:#ffc83d;font-weight:700;cursor:pointer}
+    @media(max-width:600px){.info{grid-template-columns:1fr}.topbar{height:60px}.topbar img{height:48px}.page-head{padding:15px 18px}main{padding-top:16px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-button" id="voltar" title="Voltar" aria-label="Voltar">←</button>
+    <img src="assets/images/logo.png" alt="Clubbar Lead">
+    <button class="icon-button" id="atualizar" title="Atualizar" aria-label="Atualizar">↻</button>
+  </header>
+  <section class="page-head"><h1 id="nomeLead">Portal do Lead</h1><p>Selecione o estabelecimento que deseja acompanhar</p></section>
+  <main>
+    <p class="intro">Seus estabelecimentos</p>
+    <div class="state" id="estado">Carregando estabelecimentos...</div>
+    <div class="cards" id="cards" hidden></div>
+  </main>
+  <script src="js/config.js"></script>
+  <script>
+    const STORAGE_KEY='clubbar_portal_lead_token';
+    const nomesStatus={NOVO:'Pendente',CONTATADO:'Contatado',NEGOCIANDO:'Em negociação',ACEITOU_PARCERIA:'Aceitou parceria',CONVERTIDO:'Parceiro',RECUSOU_PARCERIA:'Recusou parceria'};
+    const tipoLoja={BAR:'Bar',CASA_NOTURNA:'Casa noturna',PRODUTOR_EVENTOS:'Produtor de eventos',CASA_EVENTOS:'Casa de eventos'};
+    const tipoVenda={PRODUTOS:'Produtos',INGRESSOS:'Ingressos',AMBOS:'Produtos e ingressos'};
+    const somenteNumeros=v=>String(v||'').replace(/\D/g,'');
+    function documento(v){const n=somenteNumeros(v);if(n.length===11)return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');if(n.length===14)return n.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');return v||'Não informado'}
+    function texto(v){return String(v||'').trim()||'Não informado'}
+    function endereco(e){const linha=[e.endereco,e.numero].filter(Boolean).join(', ');const cidade=[e.nmcidade,e.sgestado].filter(Boolean).join('/');return [linha,e.complemento,e.bairro,cidade,e.cep].filter(Boolean).join(' • ')||'Não informado'}
+    function info(rotulo,valor){const d=document.createElement('div');const s=document.createElement('strong');s.textContent=rotulo;d.append(s,document.createTextNode(valor));return d}
+    function card(e){const b=document.createElement('button');b.type='button';b.className='store';b.addEventListener('click',()=>{location.href=`portal-lead.html?leadestabelecimento_id=${encodeURIComponent(e.leadestabelecimento_id)}`});const body=document.createElement('div');body.className='store-body';const title=document.createElement('div');title.className='store-title';const h=document.createElement('h2');h.textContent=texto(e.nmestabelecimento);const arrow=document.createElement('span');arrow.className='arrow';arrow.textContent='›';title.append(h,arrow);const badges=document.createElement('div');badges.className='badges';for(const value of [tipoLoja[e.tipo]||e.tipo,tipoVenda[e.tipovenda]||e.tipovenda,nomesStatus[e.status]||e.status]){const x=document.createElement('span');x.className='badge'+(value===(nomesStatus[e.status]||e.status)?' status':'');x.textContent=value;badges.append(x)}const grid=document.createElement('div');grid.className='info';grid.append(info('Responsável',texto(e.nmresponsavel)),info('E-mail',texto(e.email_responsavel||e.email)),info('Telefone',texto(e.telefone_responsavel||e.telefone)),info('CPF/CNPJ',documento(e.cpfcnpj)),info('Endereço cadastral',endereco(e)));body.append(title,badges,grid);b.append(body);return b}
+    async function carregar(){const token=localStorage.getItem(STORAGE_KEY);if(!token){location.replace('portal-lead.html');return}const estado=document.getElementById('estado'),cards=document.getElementById('cards');estado.hidden=false;cards.hidden=true;estado.textContent='Carregando estabelecimentos...';try{const r=await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/resumo`,{headers:{Authorization:`Bearer ${token}`}});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Não foi possível carregar os estabelecimentos.');document.getElementById('nomeLead').textContent=data.nmresponsavel||'Portal do Lead';cards.replaceChildren(...(data.estabelecimentos||[]).map(card));if(!data.estabelecimentos?.length){estado.textContent='Nenhum estabelecimento cadastrado.';return}estado.hidden=true;cards.hidden=false}catch(e){estado.replaceChildren(document.createTextNode(e.message||'Não foi possível carregar.'),document.createElement('br'));const bt=document.createElement('button');bt.className='retry';bt.textContent='Tentar novamente';bt.onclick=carregar;estado.append(bt)}}
+    document.getElementById('voltar').onclick=()=>location.href='index.html';document.getElementById('atualizar').onclick=carregar;carregar();
+  </script>
+</body>
+</html>
