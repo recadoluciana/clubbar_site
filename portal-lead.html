@@ -1771,13 +1771,11 @@
           elemento.textContent = resumo.nmresponsavel || "";
         });
         const estabelecimentos = resumo.estabelecimentos || [];
-        if (paginaAtual === "estabelecimento") {
-          const tituloNovoEstabelecimento = document.querySelector(
-            "#formEstabelecimento .new-establishment-head h3",
-          );
-          if (tituloNovoEstabelecimento) {
-            tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
-          }
+        const tituloNovoEstabelecimento = document.querySelector(
+          "#formEstabelecimento .new-establishment-head h3",
+        );
+        if (tituloNovoEstabelecimento) {
+          tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
         }
         if (
           !estabelecimentoSelecionadoId ||
