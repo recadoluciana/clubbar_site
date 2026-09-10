@@ -28,6 +28,7 @@
     footer{background:#fff;color:#666;border-top-color:#dedede}.dora-chat{background:#f7f8fa;border-bottom-color:#dedede;filter:drop-shadow(0 8px 18px rgba(0,0,0,.10))}.dora-message{background:#fff;color:#202124}
     .logged-lead{background:#eef6ff;color:#24374a;border-bottom-color:#c9def4}.logged-lead a{color:#0b67c7;background:#fff}
     .interest-action{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:none;text-align:center}
+    .actions .plan-action{width:100%}
     .interest-action .interest-caption{margin:0;font-size:12px;line-height:1.45;font-weight:500;color:inherit}
     .actions{align-items:flex-start}
     header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-left:10px;padding-right:10px}
@@ -40,6 +41,7 @@
     .app-download{min-width:0}
     .hero-grid{grid-template-columns:1fr}
     .hero-card{width:100%;max-width:1120px;margin:0 auto}
+    .hero h1{font-size:clamp(22px,2.8vw,36px);line-height:1.35;letter-spacing:-.4px}
     .hero-card > h3{color:var(--blue)}
     .hero-card .card{min-height:0;padding:16px 0;border:0;border-bottom:1px solid #e2e2e2;border-radius:0;background:transparent;box-shadow:none}
     .hero-card .card:last-child{border-bottom:0}
@@ -63,8 +65,12 @@
 <script src="js/config.js"></script>
     <script src="js/contact.js"></script>
 <script>
-  document.querySelector('.hero h1 span').textContent = 'bares, casas noturnas e produtores de eventos.';
-  document.querySelector('.plan-action')?.remove();
+  document.querySelector('.hero h1').textContent = `Nossa, todo mundo está cansado de receber ofertas de tudo, kkkk. Cartões, contas, internet, e outras milhões de coisas que a internet mostra e a gente fica sem saber. Eu mesma detesto rede social e aplicativos. Mas tem algumas coisas que a gente não consegue evitar. Uma solução que ajude a gente a trabalhar menos e a ganhar mais. Brasileira. Não é traduzida de outro país não. Foi implementada por pessoas que querem economizar centavos para poder crescer. E para com esta ideia de experiência, economizar não é prioridade, queremos é te servir com qualidade. Aff. As duas coisas são igualmente essenciais. Então quem sabe este aplicativo pode ser útil para você.`;
+  const botaoPlano = document.querySelector('.plan-action');
+  if (botaoPlano) {
+    botaoPlano.querySelector('span:first-child').textContent = 'Plano Clubbar';
+    botaoPlano.querySelector('.btn-subtitle').textContent = 'O que eu gastarei para usar o Clubbar?';
+  }
   document.querySelector('.features .heading')?.remove();
   document.querySelector('.plan-foot p')?.remove();
   document.querySelector('.plan-foot .interest-action')?.remove();
