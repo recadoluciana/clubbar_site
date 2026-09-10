@@ -936,7 +936,7 @@
         55% { opacity: 1; }
         100% { transform: translateY(-5px) scale(1.1); opacity: .75; }
       }
-      .partnership-celebration h3 { color: #fbc531; font-size: 24px; }
+      .partnership-celebration h3 { color: #078a35; font-size: 24px; }
       .partnership-celebration a { margin-top: 14px; display: inline-flex; }
 
       .portal-actions {
@@ -1343,8 +1343,7 @@
     <main class="page hidden" id="conteudoPortal">
       <section class="hero">
         <div class="hero-copy">
-          <h1 id="saudacao">Olá</h1>
-          <p>Consulte o contrato de utilização do app do(s) seu(s) estabelecimento(s).</p>
+          <h1 id="saudacao"></h1>
           <div class="hero-establishment" id="seletorEstabelecimento">
             <button class="btn-inline create-establishment-button" type="button" data-pagina="estabelecimento">
               ＋ Criar novo estabelecimento
@@ -1840,7 +1839,7 @@
           titulo.textContent = "Parceria aceita!";
           const mensagem = document.createElement("p");
           mensagem.textContent =
-            "Bem-vindo à Clubbar! Você poderá baixar o aplicativo ou usar o Clubbar Partner pelo navegador.";
+            "Que bom, você aceitou nossa parceria assinando digitalmente nosso contrato. Agora você é nosso parceiro. Mas não se preocupe: se você se arrependeu, assinou sem querer ou outra pessoa usou sua internet para fazer isso, nada será cobrado de você nem do seu estabelecimento. Somos transparentes. Só depois de conversarmos diretamente por telefone e de você realmente concluir que nosso app pode ajudar a alavancar suas vendas é que começaremos a cobrar o percentual ajustado no seu contrato.";
           const linkPartner = document.createElement("a");
           linkPartner.className = "btn-primary";
           linkPartner.href = CLUBBAR_CONFIG.PARTNER_URL;
