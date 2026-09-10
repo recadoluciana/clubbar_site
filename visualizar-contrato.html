@@ -107,6 +107,7 @@
         main { padding-top: 20px; }
         .contract-text { max-height: 500px; padding: 13px; font-size: 14px; }
       }
+      .hidden { display: none !important; }
     </style>
   </head>
   <body>
@@ -125,13 +126,16 @@
       <section class="card">
         <h2 class="contract-title" id="tituloContrato"></h2>
         <div class="contract-text" id="textoContrato"></div>
+        <a id="assinarContrato" class="pdf-button hidden" style="display:block;text-align:center;text-decoration:none">Assinar seu contrato</a>
         <button class="pdf-button" id="baixarPdf" type="button">
-          Baixar ou compartilhar contrato em PDF
+          Baixar contrato em PDF
         </button>
       </section>
     </main>
 
     <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
       const token = localStorage.getItem(STORAGE_KEY);
@@ -150,9 +154,10 @@
       };
       el.voltar.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
 
-      async function api(caminho) {
+      async function api(caminho, options = {}) {
         const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}${caminho}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          ...options,
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
         const dados = await resposta.json().catch(() => ({}));
         if (!resposta.ok) {
@@ -166,7 +171,7 @@
       }
 
       function nomeStatus(status) {
-        return { ENVIADO: "Enviado", ACEITO: "Aceito" }[status] || status;
+        return { RASCUNHO: "Não assinado", ENVIADO: "Pronto para assinar", ACEITO: "Aceito" }[status] || status;
       }
 
       function mostrarErro(mensagem) {
@@ -198,6 +203,10 @@
           el.tituloContrato.textContent =
             `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
           el.textoContrato.textContent = contratoAtual.conteudocontrato;
+          const assinar = document.getElementById("assinarContrato");
+          assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;
+          assinar.classList.toggle("hidden", contratoAtual.status === "ACEITO");
+          el.baixarPdf.classList.toggle("hidden", contratoAtual.status !== "ACEITO");
           el.carregando.classList.add("hidden");
           el.erro.classList.add("hidden");
           el.conteudo.classList.remove("hidden");
@@ -221,19 +230,15 @@
             `contrato-clubbar-${contratoAtual.leadestabelecimentocontrato_id}.pdf`,
             { type: "application/pdf" },
           );
-          if (navigator.canShare?.({ files: [arquivo] })) {
-            await navigator.share({
-              title: "Contrato de parceria Clubbar",
-              files: [arquivo],
-            });
-            return;
-          }
+
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
           link.download = arquivo.name;
+          document.body.appendChild(link);
           link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
         } catch (erro) {
           const aviso = document.createElement("div");
           aviso.className = "toast";

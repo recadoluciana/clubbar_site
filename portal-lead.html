@@ -1339,7 +1339,7 @@
         <div class="hero-copy">
           <h1 id="saudacao">Olá</h1>
           <p>Acompanhe o atendimento do(s) seu(s) estabelecimento(s).</p>
-          <div class="hero-establishment">
+          <div class="hero-establishment" id="seletorEstabelecimento">
             <button class="btn-inline create-establishment-button" type="button" data-pagina="estabelecimento">
               ＋ Criar novo estabelecimento
             </button>
@@ -1348,27 +1348,11 @@
               <select id="estabelecimentoDecisao" class="form-control"></select>
             </div>
           </div>
-          <div class="stats">
-            <button class="stat" type="button" data-pagina="mensagens">
-              <span>Gerenciar mensagens recebidas / enviadas</span>
-              <strong id="qtdMensagens">(0/0)</strong>
-            </button>
-            <button class="stat" type="button" data-pagina="materiais">
-              <span>Gerenciar materiais recebidos</span>
-              <strong id="qtdMateriais">(0)</strong>
-            </button>
-            <button class="stat" type="button" data-pagina="agendamentos">
-              <span>Gerenciar agendamentos</span>
-              <strong id="qtdAgendamentos">(0)</strong>
-            </button>
-          </div>
           <section class="panel decision-panel">
             <div class="panel-body">
               <div class="decision-title">
-                <h2>Sua decisão para</h2>
                 <div class="decision-establishment-row">
                   <span class="decision-establishment-name" id="nomeEstabelecimentoDecisao">este estabelecimento</span>
-                  <span class="status-badge" id="statusLead">Pendente</span>
                 </div>
               </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
@@ -1383,22 +1367,16 @@
                   id="btnVisualizarContrato"
                   type="button"
                 >
-                  Visualizar contrato
+                  Preencher seu contrato
                 </button>
                 <button
                   class="decision-button accept"
                   id="btnAceitarParceria"
                   type="button"
                 >
-                  Aceitar parceria
+                  Assinar seu contrato
                 </button>
-                <button
-                  class="decision-button decline"
-                  data-status="RECUSOU_PARCERIA"
-                  type="button"
-                >
-                  Recusar parceria
-                </button>
+                <button class="decision-button analyzing" id="btnBaixarContrato" type="button" disabled>Baixar contrato em PDF</button>
               </div>
             </div>
           </section>
@@ -1509,6 +1487,8 @@
     </section>
 
     <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
 
@@ -1519,10 +1499,6 @@
         conteudoPortal: document.getElementById("conteudoPortal"),
         saudacao: document.getElementById("saudacao"),
         nomeEstabelecimentoDecisao: document.getElementById("nomeEstabelecimentoDecisao"),
-        statusLead: document.getElementById("statusLead"),
-        qtdMensagens: document.getElementById("qtdMensagens"),
-        qtdAgendamentos: document.getElementById("qtdAgendamentos"),
-        qtdMateriais: document.getElementById("qtdMateriais"),
         listaMensagens: document.getElementById("listaMensagens"),
         listaAgendamentos: document.getElementById("listaAgendamentos"),
         listaMateriais: document.getElementById("listaMateriais"),
@@ -1565,6 +1541,7 @@
         btnEnviarRecuperacao: document.getElementById("btnEnviarRecuperacao"),
         btnAtualizarPagina: document.getElementById("btnAtualizarPagina"),
         btnVoltarTopo: document.getElementById("btnVoltarTopo"),
+        seletorEstabelecimento: document.getElementById("seletorEstabelecimento"),
       };
 
       const parametrosPagina = new URLSearchParams(window.location.search);
@@ -1578,9 +1555,13 @@
         materiais: "modalMateriais",
         estabelecimento: "modalEstabelecimento",
       };
+      if (estabelecimentoInicialId) {
+        elementos.seletorEstabelecimento.classList.add("hidden");
+        elementos.btnVoltarTopo.href = "portal-lead-estabelecimentos.html";
+      }
       if (paginaAtual && modaisPorPagina[paginaAtual]) {
         document.body.classList.add("pagina-detalhe");
-        elementos.btnVoltarTopo.href = "portal-lead.html";
+        elementos.btnVoltarTopo.href = "portal-lead-estabelecimentos.html";
       }
 
       function obterToken() {
@@ -1590,7 +1571,7 @@
         const tokenRecebido = parametros.get("acesso");
 
         if (tokenRecebido) {
-          localStorage.setItem(STORAGE_KEY, tokenRecebido);
+          ClubbarSession.start(tokenRecebido);
           history.replaceState(
             null,
             document.title,
@@ -1775,10 +1756,6 @@
         document.querySelectorAll("[data-nome-lead]").forEach((elemento) => {
           elemento.textContent = resumo.nmresponsavel || "";
         });
-        elementos.qtdMensagens.textContent =
-          `(${resumo.mensagens_recebidas ?? 0}/${resumo.mensagens_enviadas ?? 0})`;
-        elementos.qtdAgendamentos.textContent = `(${resumo.agendamentos ?? 0})`;
-        elementos.qtdMateriais.textContent = `(${resumo.materiais ?? 0})`;
         const estabelecimentos = resumo.estabelecimentos || [];
         if (
           !estabelecimentoSelecionadoId ||
@@ -1828,7 +1805,7 @@
         );
         document.getElementById("acoesDecisao").classList.toggle(
           "hidden",
-          parceriaAceita,
+          false,
         );
         if (parceriaAceita) {
           fluxoAceiteAberto = false;
@@ -1866,7 +1843,8 @@
           const baixarPdf = document.createElement("button");
           baixarPdf.type = "button";
           baixarPdf.className = "decision-button analyzing";
-          baixarPdf.textContent = "Baixar ou compartilhar contrato em PDF";
+          baixarPdf.textContent = "Baixar contrato em PDF";
+          baixarPdf.disabled = contrato.status !== "ACEITO";
           baixarPdf.addEventListener("click", () =>
             baixarContratoPdf(contrato.leadestabelecimentocontrato_id),
           );
@@ -1947,25 +1925,24 @@
             criarVazio("Contrato ainda não disponibilizado para esta unidade."),
           );
         }
-        elementos.statusLead.textContent = nomeStatus(estabelecimento.status);
-        elementos.statusLead.classList.toggle(
-          "status-aceitou",
-          estabelecimento.status === "ACEITOU_PARCERIA",
-        );
-        elementos.statusLead.classList.toggle(
-          "status-recusou",
-          estabelecimento.status === "RECUSOU_PARCERIA",
-        );
-
         document.querySelectorAll("[data-status]").forEach((botao) => {
           botao.disabled =
             estabelecimento.status === "CONVERTIDO" ||
             botao.dataset.status === estabelecimento.status;
         });
         elementos.btnAceitarParceria.disabled =
+          !contrato ||
           estabelecimento.status === "CONVERTIDO" ||
           estabelecimento.status === "ACEITOU_PARCERIA";
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
+        elementos.btnVisualizarContrato.textContent = "Visualizar seu contrato";
+        const baixar = document.getElementById("btnBaixarContrato");
+        const contratoAceito = estabelecimento.contratos?.find(item => item.status === "ACEITO");
+        baixar.disabled = !contratoAceito;
+        baixar.title = contratoAceito ? "Baixar o contrato aceito" : "Disponível após assinar o contrato";
+        baixar.onclick = () => {
+          if (contratoAceito) baixarContratoPdf(contratoAceito.leadestabelecimentocontrato_id);
+        };
       }
 
       async function carregarMensagens() {
@@ -2269,16 +2246,15 @@
           }
           const blob = await resposta.blob();
           const arquivo = new File([blob], `contrato-clubbar-${contratoId}.pdf`, { type: "application/pdf" });
-          if (navigator.canShare?.({ files: [arquivo] })) {
-            await navigator.share({ title: "Contrato de parceria Clubbar", files: [arquivo] });
-            return;
-          }
+
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
           link.download = arquivo.name;
+          document.body.appendChild(link);
           link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
           mostrarToast("Contrato em PDF gerado com sucesso.");
         } catch (erro) {
           if (erro?.name !== "AbortError") mostrarToast(erro.message, true);
@@ -2436,7 +2412,7 @@
       );
       elementos.btnRemoverNovoEstabelecimento.addEventListener("click", () => {
         if (paginaAtual === "estabelecimento") {
-          window.location.href = "portal-lead.html";
+          window.location.href = "portal-lead-estabelecimentos.html";
           return;
         }
         fecharModal(document.getElementById("modalEstabelecimento"));
@@ -2461,7 +2437,7 @@
           const dados = await resposta.json();
           if (!resposta.ok) throw new Error(dados.detail || "Não foi possível entrar.");
           token = dados.acesso;
-          localStorage.setItem(STORAGE_KEY, token);
+          ClubbarSession.start(token);
           window.location.href = "portal-lead-estabelecimentos.html";
           return;
         } catch (erro) {

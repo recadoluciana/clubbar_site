@@ -179,7 +179,7 @@
 
         <div class="tools">
           <button class="button secondary" id="baixarPdf" type="button">
-            Baixar ou compartilhar contrato em PDF
+            Baixar contrato em PDF
           </button>
         </div>
 
@@ -196,14 +196,28 @@
         </p>
 
         <button class="button" id="confirmarAceite" type="button" disabled>
-          Confirme o aceite do contrato para continuar
+          Assinar contrato
         </button>
 
         <div class="payment hidden" id="pagamento"></div>
       </section>
     </main>
 
+    <dialog id="completarDados" style="border:0;border-radius:16px;padding:24px;width:min(440px,85vw)">
+      <form id="formDadosContrato" style="display:grid;gap:14px">
+        <h2>Complete os dados do contrato</h2>
+        <p>Informe os dados abaixo para revisar o contrato e assinar. Se cancelar, a assinatura será encerrada.</p>
+        <label>CPF ou CNPJ <input id="documentoAssinatura" required maxlength="18" inputmode="numeric" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Nome completo ou razão social <input id="nomeAssinatura" required minlength="2" maxlength="160" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <p id="erroPreenchimento" role="alert" style="color:#b42318"></p>
+        <button class="button" type="submit">Continuar para o contrato</button>
+        <button class="button secondary" id="cancelarPreenchimento" type="button">Cancelar e fechar</button>
+      </form>
+    </dialog>
+
     <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
       const token = localStorage.getItem(STORAGE_KEY);
@@ -295,7 +309,33 @@
         el.pagamento.append(concluir);
       }
 
-      function renderizar(resumo) {
+      function solicitarDados(dados) {
+        const dialog = document.getElementById("completarDados");
+        const form = document.getElementById("formDadosContrato");
+        const documento = document.getElementById("documentoAssinatura");
+        const nome = document.getElementById("nomeAssinatura");
+        documento.value = dados.cpfcnpj;
+        nome.value = dados.nmrazaosocial;
+        el.carregando.classList.add("hidden");
+        return new Promise(resolve => {
+          const terminar = value => { dialog.close(); resolve(value); };
+          form.onsubmit = event => {
+            event.preventDefault();
+            const cpfcnpj = documento.value.replace(/\D/g, "");
+            const nmrazaosocial = nome.value.trim();
+            if (![11, 14].includes(cpfcnpj.length) || nmrazaosocial.length < 2) {
+              document.getElementById("erroPreenchimento").textContent = "Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos e o nome completo ou razão social.";
+              return;
+            }
+            terminar({cpfcnpj, nmrazaosocial});
+          };
+          document.getElementById("cancelarPreenchimento").onclick = () => terminar(null);
+          dialog.oncancel = event => { event.preventDefault(); terminar(null); };
+          dialog.showModal();
+        });
+      }
+
+      async function renderizar(resumo) {
         const estabelecimento = (resumo.estabelecimentos || []).find(
           (item) => item.leadestabelecimento_id === estabelecimentoId,
         );
@@ -307,7 +347,25 @@
         el.nomeEstabelecimento.textContent = estabelecimento.nmestabelecimento || "Estabelecimento";
         el.tituloContrato.textContent = `Contrato ${contratoAtual.versao}`;
         el.textoContrato.textContent = contratoAtual.conteudocontrato;
+        if (contratoAtual.status === "RASCUNHO") {
+          let dados = {
+            cpfcnpj: contratoAtual.cpfcnpjcontratante || estabelecimento.cpfcnpj || "",
+            nmrazaosocial: contratoAtual.nmrazaosocial || "",
+          };
+          if (![11, 14].includes(dados.cpfcnpj.replace(/\D/g, "").length) || dados.nmrazaosocial.trim().length < 2) {
+            dados = await solicitarDados(dados);
+            if (!dados) {
+              window.location.replace(`portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`);
+              return;
+            }
+          }
+          contratoAtual = await api(`/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/dados`, {
+            method: "PATCH", body: JSON.stringify(dados),
+          });
+          el.textoContrato.textContent = contratoAtual.conteudocontrato;
+        }
         const foiAceito = contratoAtual.status === "ACEITO";
+        el.baixarPdf.classList.toggle("hidden", !foiAceito);
         el.areaAceite.classList.toggle("hidden", foiAceito);
         el.aceito.classList.toggle("hidden", !foiAceito);
         el.confirmarAceite.classList.toggle("hidden", foiAceito);
@@ -326,7 +384,7 @@
         }
         try {
           const resumo = await api(`/portal-parceiro/resumo?leadestabelecimento_id=${estabelecimentoId}`);
-          renderizar(resumo);
+          await renderizar(resumo);
         } catch (erro) {
           el.carregando.classList.add("hidden");
           el.erro.textContent = erro.message;
@@ -366,16 +424,15 @@
           if (!resposta.ok) throw new Error("Não foi possível gerar o PDF do contrato.");
           const blob = await resposta.blob();
           const arquivo = new File([blob], `contrato-clubbar-${contratoAtual.leadestabelecimentocontrato_id}.pdf`, { type: "application/pdf" });
-          if (navigator.canShare?.({ files: [arquivo] })) {
-            await navigator.share({ title: "Contrato de parceria Clubbar", files: [arquivo] });
-            return;
-          }
+
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
           link.download = arquivo.name;
+          document.body.appendChild(link);
           link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
         } catch (erro) { toast(erro.message, true); }
       }
 

@@ -488,6 +488,32 @@
       .btn-adicionar-estabelecimento,
       details summary { color:#111!important; }
       .summary-line { font-weight:400; }
+      /* Compact registration layout. */
+      main { padding: 18px 12px 30px; }
+      .box { max-width: 740px; border-radius: 18px; }
+      .head { padding: 18px 24px 16px; }
+      .head h1 { font-size: clamp(24px, 4vw, 30px); margin-bottom: 5px; }
+      .head p { line-height: 1.45; }
+      form { padding: 18px 24px 22px; }
+      .grid { gap: 12px; }
+      .group { margin-bottom: 10px; }
+      label { margin-bottom: 4px; }
+      input:not([type="radio"]), select, textarea {
+        min-height: 42px; padding: 9px 11px; border-radius: 9px;
+      }
+      .estabelecimento-card { margin: 4px 0 12px; padding: 14px; border-radius: 12px; }
+      .estabelecimento-head { margin-bottom: 10px; }
+      .choice-group { margin-bottom: 12px; }
+      .choice-group legend { margin-bottom: 6px; }
+      .choice-card span { min-height: 48px; padding: 8px; border-radius: 9px; }
+      .error:empty { display: none; }
+      @media (max-width: 680px) {
+        .head, form { padding-left: 14px; padding-right: 14px; }
+        .grid { gap: 0; }
+        input:not([type="radio"]), select, textarea { min-height: 44px; font-size: 16px; }
+        .choice-grid { gap: 6px; }
+        .choice-card span { min-height: 44px; }
+      }
     </style>
   </head>
   <body>
@@ -498,27 +524,13 @@
     <main>
       <section class="box">
         <div class="head">
-          <h1>Venha ser nosso parceiro...</h1>
+          <h1>Quero conhecer o Clubbar</h1>
           <p>
-            Conte um pouco sobre seu estabelecimento. Nossa equipe entrará em
-            contato para apresentar o Clubbar e entender sua operação.
+            Preencha o cadastro inicial somente para que possamos saber que você
+            quer conhecer a solução. Sem compromisso!
           </p>
         </div>
         <form id="formParceiro" novalidate>
-          <div class="summary">
-            <strong>Plano único Clubbar</strong>
-            <div class="summary-lines">
-              <div class="summary-line">
-                <span class="summary-icon" aria-hidden="true">✓</span>
-                <span id="resumoTaxaProduto">Carregando taxa sobre produtos...</span>
-              </div>
-              <div class="summary-line">
-                <span class="summary-icon" aria-hidden="true">✓</span>
-                <span id="resumoTaxaIngresso">Carregando taxa de conveniência dos ingressos...</span>
-              </div>
-            </div>
-            <span class="no-monthly-badge">★ SEM MENSALIDADE</span>
-          </div>
           <div class="grid">
             <div class="group">
               <label for="nmresponsavel"
@@ -532,15 +544,16 @@
               <div class="error" id="erro-nmresponsavel"></div>
             </div>
             <div class="group">
-              <label for="nmorganizacao">Nome do grupo ou empresa</label
+              <label for="nmorganizacao">Nome do grupo ou empresa <span class="required">*</span></label
               ><input
-                id="nmorganizacao"
+                id="nmorganizacao" required
                 maxlength="160"
                 autocomplete="organization"
-                placeholder="Ex.: Grupo Binatto (opcional)"
+                placeholder="Ex.: Grupo Binatto"
               />
             </div>
           </div>
+          <div class="error" id="erro-nmorganizacao"></div>
           <div class="grid">
             <div class="group">
               <label for="telefone"
@@ -562,7 +575,6 @@
             </div>
           </div>
           <div id="estabelecimentos"></div>
-          <button class="btn-adicionar-estabelecimento" id="btnAdicionarEstabelecimento" type="button">＋ Adicionar outro estabelecimento</button>
           <button class="btn" id="btnEnviar" type="submit">
             Confirmar cadastro
           </button>
@@ -587,27 +599,19 @@
       </div>
     </div>
     <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/contact.js"></script>
     <script>
-      fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/taxas-padrao/vigente`).then(r => {
-        if (!r.ok) throw new Error(); return r.json();
-      }).then(t => {
-        const p=Number(t.pctaxaproduto).toLocaleString('pt-BR');
-        const i=Number(t.pctaxaingresso).toLocaleString('pt-BR');
-        const m=Number(t.vrtaxaminimaingresso).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-        document.getElementById('resumoTaxaProduto').textContent=`${p}% sobre a venda de produtos, descontados do parceiro.`;
-        document.getElementById('resumoTaxaIngresso').textContent=`${i}% de taxa de conveniência ou mínimo de ${m} por ingresso, prevalecendo o maior valor e cobrada do cliente.`;
-      }).catch(()=>{});
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
         listaEstabelecimentos = document.getElementById("estabelecimentos"),
-        btnAdicionarEstabelecimento = document.getElementById("btnAdicionarEstabelecimento"),
         tel = document.getElementById("telefone"),
         portalLoading = document.getElementById("portalLoading"),
         portalLoadingTempo = document.getElementById("portalLoadingTempo");
       let redirecionando = false;
       let proximoEstabelecimento = 1;
       let estadosCache = [];
-      const ids = ["nmresponsavel", "telefone", "email"];
+      const ids = ["nmresponsavel", "nmorganizacao", "telefone", "email"];
       const nums = (v) => v.replace(/\D/g, "");
       function mask(v) {
         const n = nums(v).slice(0, 11);
@@ -745,34 +749,27 @@
         card.className = "estabelecimento-card";
         card.dataset.indice = indice;
         card.innerHTML = `
-          <div class="estabelecimento-head"><h3>Estabelecimento ${listaEstabelecimentos.children.length + 1}</h3><button class="btn-remover-estabelecimento" type="button">Remover</button></div>
+          <div class="estabelecimento-head"><h3>Estabelecimento</h3></div>
           <div class="grid">
             <div class="group"><label>Nome <span class="required">*</span></label><input data-campo="nmestabelecimento" maxlength="160" placeholder="Ex.: Adega Bar"></div>
             <div class="group"><label>Tipo <span class="required">*</span></label><select data-campo="tipo"><option value="">Selecione</option><option value="BAR">Bar</option><option value="CASA_NOTURNA">Casa noturna</option><option value="PRODUTOR_EVENTOS">Produtor de eventos</option><option value="CASA_EVENTOS">Casa de eventos</option></select></div>
           </div>
+          <div class="group"><label for="cpfcnpj-${indice}">CPF ou CNPJ <span class="required">*</span></label><input id="cpfcnpj-${indice}" data-campo="cpfcnpj" required inputmode="numeric" maxlength="18" placeholder="Informe um CPF (11 dígitos) ou CNPJ (14 dígitos)"></div>
           <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
-          <details><summary style="margin-bottom:14px;color:var(--gold);cursor:pointer;font-weight:800">Adicionar endereço</summary>
+          <section aria-label="Endereço completo opcional"><h3 style="margin:14px 0">Endereço completo (opcional)</h3>
             <div class="grid"><div class="group"><label>CEP</label><input data-campo="cep" inputmode="numeric" maxlength="9"></div><div class="group"><label>Endereço</label><input data-campo="endereco" maxlength="255"></div></div>
             <div class="grid"><div class="group"><label>Número</label><input data-campo="numero" maxlength="20"></div><div class="group"><label>Bairro</label><input data-campo="bairro" maxlength="120"></div></div>
             <div class="group"><label>Complemento</label><input data-campo="complemento" maxlength="120"></div>
-          </details>
           <div class="grid">
-            <div class="group"><label>Estado <span class="required">*</span></label><select data-campo="estado_id"></select></div>
-            <div class="group"><label>Cidade <span class="required">*</span></label><select data-campo="cidade_id" disabled><option value="">Selecione primeiro o estado</option></select></div>
+            <div class="group"><label>Estado</label><select data-campo="estado_id"></select></div>
+            <div class="group"><label>Cidade</label><select data-campo="cidade_id" disabled><option value="">Selecione primeiro o estado</option></select></div>
           </div>
+          </section>
           <div class="error" data-error></div>`;
         const estadoSelect = card.querySelector('[data-campo="estado_id"]');
         const cidadeSelect = card.querySelector('[data-campo="cidade_id"]');
         preencherEstados(estadoSelect);
         estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
-        card.querySelector(".btn-remover-estabelecimento").addEventListener("click", () => {
-          if (listaEstabelecimentos.children.length === 1) {
-            toast("É necessário manter pelo menos um estabelecimento.", "err");
-            return;
-          }
-          card.remove();
-          [...listaEstabelecimentos.children].forEach((item, i) => item.querySelector("h3").textContent = `Estabelecimento ${i + 1}`);
-        });
         listaEstabelecimentos.appendChild(card);
       }
       function dadosEstabelecimentos() {
@@ -780,7 +777,7 @@
           nmestabelecimento: card.querySelector('[data-campo="nmestabelecimento"]').value.trim(),
           tipo: card.querySelector('[data-campo="tipo"]').value,
           tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
-          cpfcnpj: null,
+          cpfcnpj: nums(card.querySelector('[data-campo="cpfcnpj"]').value),
           telefone: null,
           email: null,
           cep: nums(card.querySelector('[data-campo="cep"]').value) || null,
@@ -788,8 +785,8 @@
           numero: card.querySelector('[data-campo="numero"]').value.trim() || null,
           bairro: card.querySelector('[data-campo="bairro"]').value.trim() || null,
           complemento: card.querySelector('[data-campo="complemento"]').value.trim() || null,
-          estado_id: Number(card.querySelector('[data-campo="estado_id"]').value),
-          cidade_id: Number(card.querySelector('[data-campo="cidade_id"]').value),
+          estado_id: Number(card.querySelector('[data-campo="estado_id"]').value) || null,
+          cidade_id: Number(card.querySelector('[data-campo="cidade_id"]').value) || null,
         }));
       }
       function validate() {
@@ -798,6 +795,10 @@
         const nr = document.getElementById("nmresponsavel").value.trim(),
           t = nums(tel.value),
           email = document.getElementById("email").value.trim().toLowerCase();
+        if (!document.getElementById("nmorganizacao").value.trim()) {
+          fail("nmorganizacao", "Informe o nome do grupo ou empresa.");
+          ok = false;
+        }
         if (nr.length < 3) {
           fail("nmresponsavel", "Informe pelo menos 3 caracteres.");
           ok = false;
@@ -816,10 +817,12 @@
           const erros = [];
           card.querySelectorAll("input,select").forEach((campo) => campo.classList.remove("invalid"));
           if (item.nmestabelecimento.length < 2) erros.push("informe o nome");
+          if (![11, 14].includes(item.cpfcnpj.length)) {
+            erros.push("informe um CPF com 11 dígitos ou um CNPJ com 14 dígitos");
+            card.querySelector('[data-campo="cpfcnpj"]').classList.add("invalid");
+          }
           if (!item.tipo) erros.push("selecione o tipo");
           if (!item.tipovenda) erros.push("selecione o tipo de venda");
-          if (!item.estado_id) erros.push("selecione o estado");
-          if (!item.cidade_id) erros.push("selecione a cidade");
           if (item.email && !validEmail(item.email)) erros.push("informe um e-mail válido");
           if (item.telefone && ![10, 11].includes(item.telefone.length)) erros.push("informe um telefone válido");
           card.querySelector("[data-error]").textContent = erros.length ? `Revise este estabelecimento: ${erros.join(", ")}.` : "";
@@ -831,10 +834,9 @@
         tel.value = mask(tel.value);
         clear("telefone");
       });
-      ["nmresponsavel", "email"].forEach((id) =>
+      ["nmresponsavel", "nmorganizacao", "email"].forEach((id) =>
         document.getElementById(id).addEventListener("input", () => clear(id)),
       );
-      btnAdicionarEstabelecimento.addEventListener("click", criarEstabelecimento);
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!validate()) {
