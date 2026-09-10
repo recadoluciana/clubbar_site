@@ -55,6 +55,10 @@
 <script src="js/config.js"></script>
     <script src="js/contact.js"></script>
 <script>
+  document.querySelector('.plan-action')?.remove();
+  document.querySelector('.features .heading')?.remove();
+  document.querySelector('.plan-foot p')?.remove();
+  document.querySelector('.plan-foot .interest-action')?.remove();
   const aplicativos = document.querySelector('.app-showcase');
   const plano = document.getElementById('plano');
   if (aplicativos && plano) plano.after(aplicativos);
