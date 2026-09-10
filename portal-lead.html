@@ -1333,10 +1333,10 @@
           <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
         </form>
         <form class="recovery-form hidden" id="formRecuperarDados">
-          <p>Informe seu e-mail para receber os dados dos seus contratos.</p>
+          <p>Informe seu e-mail para receber seu número de telefone de acesso.</p>
           <input id="emailRecuperarDados" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <button class="btn-primary" id="btnEnviarRecuperacao" type="submit">Enviar meus dados</button>
-          <p class="recovery-help">Para acessar sua página de atendimento, informe o e-mail usado no cadastro e o telefone com DDD. Se não lembrar, basta digitar seu e-mail de cadastro. Se nem o e-mail lembrar, faça um novo cadastro. Não aceitamos duas pessoas com o mesmo e-mail.</p>
+          <button class="btn-primary" id="btnEnviarRecuperacao" type="submit">Enviar meu número de telefone</button>
+          <p class="recovery-help">Para acessar sua página de atendimento, informe o e-mail usado no cadastro e o telefone com DDD. Se não lembrar, basta digitar seu e-mail de cadastro. Se nem o e-mail você se lembrar, faça um novo cadastro. Obs.: não aceitamos duas pessoas com o mesmo e-mail. <span role="img" aria-label="Tudo bem, é fácil">😎👍</span></p>
         </form>
       </div>
     </section>
@@ -2498,7 +2498,7 @@
           mostrarToast(erro.message, true);
         } finally {
           elementos.btnEnviarRecuperacao.disabled = false;
-          elementos.btnEnviarRecuperacao.textContent = "Enviar meus dados";
+          elementos.btnEnviarRecuperacao.textContent = "Enviar meu número de telefone";
         }
       });
 
