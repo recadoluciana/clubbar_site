@@ -43,6 +43,7 @@
     .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;padding:7px 9px;border:1px solid #c62828;border-radius:9px;background:#fff;color:#c62828;font-size:11px;font-weight:700;cursor:pointer}.logout-link.show{display:inline-block}
     .recovery-dialog{width:min(430px,calc(100% - 32px));margin:auto;padding:0;border:1px solid #ddd;border-radius:18px;background:#fff;box-shadow:0 24px 70px #0005}.recovery-dialog::backdrop{background:#0008}.recovery-dialog form{display:grid;gap:10px;padding:22px;text-align:center}.recovery-dialog h2{font-size:20px}.recovery-dialog input{min-height:46px;padding:10px;border:1px solid #ccc;border-radius:9px;text-align:left}.recovery-dialog button{min-height:42px;border:0;border-radius:10px;background:#ffbf00;font-weight:700;cursor:pointer}.recovery-close{background:#f2f2f2!important}
     .recovery-help{font-size:11px;line-height:1.45;color:#666}
+    .price-highlight{color:var(--blue);font-weight:800}
     .signup-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}.signup-badge{padding:8px 13px;border-radius:999px;background:#c62828;color:#fff;font-size:13px;font-weight:900;letter-spacing:.3px;box-shadow:0 4px 10px #c6282833}
     .app-showcase{width:calc(100% - 40px);margin-left:auto;margin-right:auto;overflow:hidden}
     .app-download{min-width:0}
@@ -84,7 +85,7 @@
   if (sessionStorage.getItem('clubbar_portal_lead_token')) logoutIndex.classList.add('show');
   logoutIndex.onclick = () => { sessionStorage.removeItem('clubbar_portal_lead_token'); sessionStorage.removeItem('clubbar_portal_lead_activity'); logoutIndex.classList.remove('show'); };
   document.querySelector('.hero h1').textContent = 'Precisa realizar mais vendas e gerar mais lucratividade?';
-  document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o preço da entrada, o preço do que vai consumir e, muitas vezes, o “preço” das filas para entrar ou consumir. O Clubbar foi criado no Brasil<sup>*</sup> para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação. no dia a dia aqui no Brasil.<br><br><small>*Porque somente nós, que nascemos e vivemos aqui, sabemos das taxas e impostos que pagamos no dia a dia.</small>';
+  document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o <span class="price-highlight">preço</span> da entrada, o <span class="price-highlight">preço</span> do que vai consumir e, muitas vezes, o “<span class="price-highlight">preço</span>” das filas para entrar ou consumir. O Clubbar foi criado no Brasil<sup>*</sup> para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação. no dia a dia aqui no Brasil.<br><br><small>*Porque somente nós, que nascemos e vivemos aqui, sabemos das taxas e impostos que pagamos no dia a dia.</small>';
   const botaoPlano = document.querySelector('.plan-action');
   if (botaoPlano) {
     botaoPlano.querySelector('span:first-child').textContent = 'Plano Clubbar';
@@ -123,7 +124,10 @@
     custos.id = 'custos';
     acoes.after(custos);
     const botaoPlano = document.querySelector('.plan-action');
-    if (botaoPlano) botaoPlano.href = '#custos';
+    if (botaoPlano) {
+      botaoPlano.removeAttribute('href');
+      botaoPlano.addEventListener('click', (event) => event.preventDefault());
+    }
     planoSecao?.remove();
   }
   const tituloFuncionalidades = document.createElement('h2');
