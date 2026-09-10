@@ -33,6 +33,8 @@
     .actions{align-items:flex-start}
     header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-left:10px;padding-right:10px}
     .header-brand{grid-column:1;grid-row:1;justify-self:start}
+    .header-brand{display:flex;align-items:center;gap:8px}
+    .brand-owl{width:42px;height:42px;object-fit:contain}
     .brand-logo{margin-left:0;max-width:46vw}
     .topbar-actions{grid-column:2;grid-row:1;justify-self:end;display:flex;align-items:center;gap:10px}
     .topbar-link{padding:9px 14px;border:1px solid var(--blue);border-radius:11px;color:#075ca8;background:#fff;font-weight:850;white-space:nowrap}
@@ -47,11 +49,12 @@
     .hero-card .card:last-child{border-bottom:0}
     .hero-card .card:hover{transform:none;border-color:#e2e2e2}
     @media(max-width:640px){header{width:100%;min-width:0;overflow:hidden}.header-brand{min-width:0}.brand-logo{height:44px;max-width:100%;transform:none}.topbar-actions{min-width:0}.topbar-link{padding:7px 8px;font-size:11px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
+    @media(max-width:640px){.brand-owl{width:34px;height:34px}.header-brand{gap:5px}}
   </style>
 </head>
 <body>
 <header>
-  <a class="header-brand" href="index.html"><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar"></a>
+  <a class="header-brand" href="index.html"><img class="brand-owl" src="assets/images/coruja.png" alt=""><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar"></a>
   <nav class="topbar-actions" aria-label="Acesso do parceiro">
     <a class="topbar-link" href="portal-lead.html">Já sou cadastrado</a>
   </nav>
@@ -65,7 +68,8 @@
 <script src="js/config.js"></script>
     <script src="js/contact.js"></script>
 <script>
-  document.querySelector('.hero h1').textContent = `Nossa, todo mundo está cansado de receber ofertas de tudo, kkkk. Cartões, contas, internet, e outras milhões de coisas que a internet mostra e a gente fica sem saber. Eu mesma detesto rede social e aplicativos. Mas tem algumas coisas que a gente não consegue evitar. Uma solução que ajude a gente a trabalhar menos e a ganhar mais. Brasileira. Não é traduzida de outro país não. Foi implementada por pessoas que querem economizar centavos para poder crescer. E para com esta ideia de experiência, economizar não é prioridade, queremos é te servir com qualidade. Aff. As duas coisas são igualmente essenciais. Então quem sabe este aplicativo pode ser útil para você.`;
+  document.querySelector('.hero h1').textContent = 'Seu bar não precisa de mais um aplicativo. Precisa de menos filas e mais controle.';
+  document.querySelector('.hero p').textContent = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o preço da entrada, o que vai consumir e, muitas vezes, filas que não deveriam existir. O Clubbar foi criado no Brasil para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação.';
   const botaoPlano = document.querySelector('.plan-action');
   if (botaoPlano) {
     botaoPlano.querySelector('span:first-child').textContent = 'Plano Clubbar';
