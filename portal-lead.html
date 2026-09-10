@@ -944,6 +944,7 @@
         display: flex;
         justify-content: center;
       }
+      #btnBaixarContrato,.contract-tools{display:none!important}
 
       .decision-panel {
         max-width: none;
@@ -1954,6 +1955,10 @@
           !contrato ||
           estabelecimento.status === "CONVERTIDO" ||
           estabelecimento.status === "ACEITOU_PARCERIA";
+        elementos.btnAceitarParceria.classList.toggle(
+          "hidden",
+          parceriaAceita || contrato?.status === "ACEITO",
+        );
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
         elementos.btnVisualizarContrato.textContent = "Visualizar seu contrato";
         const baixar = document.getElementById("btnBaixarContrato");
