@@ -1433,7 +1433,6 @@
           <form id="formEstabelecimento" class="new-establishment-card">
             <div class="new-establishment-head">
               <h3>Estabelecimento 1</h3>
-              <button class="remove-establishment" id="btnRemoverNovoEstabelecimento" type="button">Remover</button>
             </div>
             <div class="new-establishment-field">
               <label for="novoEstabelecimentoNome">Nome <span class="required">*</span></label>
@@ -1772,6 +1771,14 @@
           elemento.textContent = resumo.nmresponsavel || "";
         });
         const estabelecimentos = resumo.estabelecimentos || [];
+        if (paginaAtual === "estabelecimento") {
+          const tituloNovoEstabelecimento = document.querySelector(
+            "#formEstabelecimento .new-establishment-head h3",
+          );
+          if (tituloNovoEstabelecimento) {
+            tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
+          }
+        }
         if (
           !estabelecimentoSelecionadoId ||
           !estabelecimentos.some(
@@ -2425,14 +2432,6 @@
       elementos.novoEstabelecimentoEstado.addEventListener("change", () =>
         carregarCidadesEstabelecimento(elementos.novoEstabelecimentoEstado.value),
       );
-      elementos.btnRemoverNovoEstabelecimento.addEventListener("click", () => {
-        if (paginaAtual === "estabelecimento") {
-          window.location.href = "portal-lead-estabelecimentos.html";
-          return;
-        }
-        fecharModal(document.getElementById("modalEstabelecimento"));
-      });
-
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
         elementos.btnNovoAcesso.disabled = true;
