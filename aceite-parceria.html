@@ -220,7 +220,7 @@
     <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
-      const token = localStorage.getItem(STORAGE_KEY);
+      const token = sessionStorage.getItem(STORAGE_KEY);
       const params = new URLSearchParams(window.location.search);
       const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
       let contratoAtual = null;

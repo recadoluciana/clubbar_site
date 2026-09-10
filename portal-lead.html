@@ -1580,7 +1580,7 @@
           return tokenRecebido;
         }
 
-        return localStorage.getItem(STORAGE_KEY);
+        return sessionStorage.getItem(STORAGE_KEY);
       }
 
       let token = obterToken();
@@ -1674,7 +1674,7 @@
 
         if (!resposta.ok) {
           if (resposta.status === 401) {
-            localStorage.removeItem(STORAGE_KEY);
+            sessionStorage.removeItem(STORAGE_KEY);
           }
 
           let mensagem = dados.detail || "Não foi possível concluir a ação.";
