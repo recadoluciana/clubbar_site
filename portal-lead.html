@@ -944,6 +944,12 @@
         display: flex;
         justify-content: center;
       }
+      .new-establishment-card{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+      .new-establishment-card>.new-establishment-head,.new-establishment-card>fieldset,.new-establishment-card>details,.new-establishment-card>.new-establishment-grid,.new-establishment-card>.btn-primary{grid-column:1/-1}
+      .new-establishment-card>.new-establishment-field{grid-column:auto}
+      .new-establishment-card>.new-establishment-head{margin-bottom:0}
+      .new-establishment-address{display:block}
+      @media(max-width:600px){.new-establishment-card{grid-template-columns:1fr}.new-establishment-card>.new-establishment-field{grid-column:1/-1}}
       #btnBaixarContrato,.contract-tools{display:none!important}
 
       .decision-panel {
@@ -1772,11 +1778,21 @@
           elemento.textContent = resumo.nmresponsavel || "";
         });
         const estabelecimentos = resumo.estabelecimentos || [];
-        const tituloNovoEstabelecimento = document.querySelector(
+      const tituloNovoEstabelecimento = document.querySelector(
           "#formEstabelecimento .new-establishment-head h3",
         );
         if (tituloNovoEstabelecimento) {
           tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
+        }
+        const formNovo = document.getElementById("formEstabelecimento");
+        const documentoNovo = document.getElementById("novoEstabelecimentoDocumento");
+        const escolhaVenda = formNovo?.querySelector(".new-establishment-choices");
+        if (formNovo && documentoNovo && escolhaVenda && documentoNovo.parentElement.parentElement !== escolhaVenda.previousElementSibling) {
+          escolhaVenda.before(documentoNovo.parentElement.parentElement);
+          document.querySelector("#novoEstabelecimentoResponsavel")?.closest(".new-establishment-grid")?.classList.add("hidden");
+          document.querySelector("#novoEstabelecimentoEmailResponsavel")?.closest(".new-establishment-grid")?.classList.add("hidden");
+          const enderecoNovo = formNovo.querySelector(".new-establishment-address");
+          if (enderecoNovo) enderecoNovo.open = true;
         }
         if (
           !estabelecimentoSelecionadoId ||

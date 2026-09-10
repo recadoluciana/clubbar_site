@@ -84,7 +84,7 @@
   if (sessionStorage.getItem('clubbar_portal_lead_token')) logoutIndex.classList.add('show');
   logoutIndex.onclick = () => { sessionStorage.removeItem('clubbar_portal_lead_token'); sessionStorage.removeItem('clubbar_portal_lead_activity'); logoutIndex.classList.remove('show'); };
   document.querySelector('.hero h1').textContent = 'Precisa realizar mais vendas e gerar mais lucratividade?';
-  document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o preço da entrada, o que vai consumir e, muitas vezes, filas que não deveriam existir. O Clubbar foi criado no Brasil<sup>*</sup> para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação.<br><br><small>*Porque somente nós, que nascemos e vivemos aqui, sabemos das taxas e impostos que pagamos no dia a dia.</small>';
+  document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o preço da entrada, o preço do que vai consumir e, muitas vezes, o “preço” das filas para entrar ou consumir. O Clubbar foi criado no Brasil<sup>*</sup> para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação. no dia a dia aqui no Brasil.<br><br><small>*Porque somente nós, que nascemos e vivemos aqui, sabemos das taxas e impostos que pagamos no dia a dia.</small>';
   const botaoPlano = document.querySelector('.plan-action');
   if (botaoPlano) {
     botaoPlano.querySelector('span:first-child').textContent = 'Plano Clubbar';
@@ -115,6 +115,21 @@
     operacao.append(...beneficios.querySelectorAll('.card'));
     beneficios.parentElement.remove();
   }
+  const planoCompleto = document.querySelector('.plan');
+  const custos = planoCompleto?.querySelector('.fees');
+  const planoSecao = document.getElementById('plano');
+  const acoes = document.querySelector('.actions');
+  if (custos && acoes) {
+    custos.id = 'custos';
+    acoes.after(custos);
+    const botaoPlano = document.querySelector('.plan-action');
+    if (botaoPlano) botaoPlano.href = '#custos';
+    planoSecao?.remove();
+  }
+  const tituloFuncionalidades = document.createElement('h2');
+  tituloFuncionalidades.textContent = 'Funcionalidades';
+  tituloFuncionalidades.style.cssText = 'margin:24px 0 8px;color:var(--blue);font-size:25px';
+  if (operacao) operacao.prepend(tituloFuncionalidades);
   const aplicativos = document.querySelector('.app-showcase');
   const plano = document.getElementById('plano');
   if (aplicativos && plano) plano.after(aplicativos);
