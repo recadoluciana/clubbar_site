@@ -56,7 +56,7 @@
       }
       .brand-lockup { display: flex; align-items: center; justify-content: center; gap: 6px; }
       .brand-lockup .brand-owl { width: 48px; height: 48px; transform: none; }
-      .brand-lockup .brand-logo { height: 51px; }
+      .brand-lockup .brand-logo { height: 42px; }
       .back {
         position: absolute;
         left: 7%;
@@ -447,7 +447,7 @@
           height: 48px;
         }
         .brand-lockup .brand-owl { width: 40px; height: 40px; }
-        .brand-lockup .brand-logo { height: 48px; }
+        .brand-lockup .brand-logo { height: 40px; }
         .back {
           left: 14px;
         }
@@ -748,6 +748,19 @@
           toast(e.message, "err");
         }
       }
+      async function buscarEnderecoPorCep(card, campoCep) {
+        const cep = nums(campoCep.value).slice(0, 8);
+        if (cep.length !== 8) return;
+        const endereco = card.querySelector('[data-campo="endereco"]');
+        const bairro = card.querySelector('[data-campo="bairro"]');
+        try {
+          const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const dados = await resposta.json();
+          if (dados.erro) return;
+          if (endereco && !endereco.value) endereco.value = dados.logradouro || "";
+          if (bairro && !bairro.value) bairro.value = dados.bairro || "";
+        } catch (_) {}
+      }
       function criarEstabelecimento() {
         const indice = proximoEstabelecimento++;
         const card = document.createElement("section");
@@ -775,6 +788,12 @@
         const cidadeSelect = card.querySelector('[data-campo="cidade_id"]');
         preencherEstados(estadoSelect);
         estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
+        const campoCep = card.querySelector('[data-campo="cep"]');
+        campoCep.addEventListener("input", () => {
+          const numeros = nums(campoCep.value).slice(0, 8);
+          campoCep.value = numeros.length > 5 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : numeros;
+          if (numeros.length === 8) buscarEnderecoPorCep(card, campoCep);
+        });
         listaEstabelecimentos.appendChild(card);
       }
       function dadosEstabelecimentos() {
