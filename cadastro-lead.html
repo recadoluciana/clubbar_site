@@ -390,6 +390,7 @@
         font-size: 14px;
         line-height: 1.45;
       }
+      .toast-action{display:inline-flex;padding:9px 16px;border-radius:10px;background:var(--gold);color:#111;font-weight:800;text-decoration:none}
       .portal-loading {
         position: fixed;
         inset: 0;
@@ -901,7 +902,11 @@
 
           prepararPortal(d.acesso_portal);
         } catch (err) {
-          toast(err.message || "Erro inesperado.", "err");
+          if (err.message.includes("já está cadastrada") || err.message.includes("já está cadastrado")) {
+            toast('Cadastro não realizado.<br><br>Esta empresa já se encontra cadastrada. Para acessar seu painel de atendimento, clique no botão abaixo.<br><br><a class="toast-action" href="portal-lead.html">Já sou cadastrado</a>', "err");
+          } else {
+            toast(err.message || "Erro inesperado.", "err");
+          }
         } finally {
           if (!redirecionando) {
             btn.disabled = false;
