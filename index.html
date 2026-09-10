@@ -114,11 +114,17 @@
   });
   const operacao = document.querySelector('.hero-card');
   operacao?.querySelector(':scope > h3')?.remove();
+  if (operacao) {
+    const tituloBeneficios = document.createElement('h3');
+    tituloBeneficios.textContent = 'Funcionalidades';
+    tituloBeneficios.style.color = 'var(--blue)';
+    operacao.prepend(tituloBeneficios);
+  }
   const beneficios = document.querySelector('.features .grid');
   if (operacao && beneficios) {
     const funcionalidades = document.createElement('section');
     funcionalidades.className = 'functionalities-card';
-    funcionalidades.innerHTML = '<h2>Funcionalidades</h2><div class="grid"></div>';
+    funcionalidades.innerHTML = '<h2>Benefícios</h2><div class="grid"></div>';
     funcionalidades.querySelector('.grid').append(...beneficios.querySelectorAll('.card'));
     document.querySelector('.hero').after(funcionalidades);
     beneficios.parentElement.remove();
