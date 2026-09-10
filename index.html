@@ -42,6 +42,8 @@
     .topbar-link:hover{color:#000;background:#ffbf00}
     .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;padding:7px 9px;border:1px solid #c62828;border-radius:9px;background:#fff;color:#c62828;font-size:11px;font-weight:700;cursor:pointer}.logout-link.show{display:inline-block}
     .recovery-dialog{width:min(430px,calc(100% - 32px));margin:auto;padding:0;border:1px solid #ddd;border-radius:18px;background:#fff;box-shadow:0 24px 70px #0005}.recovery-dialog::backdrop{background:#0008}.recovery-dialog form{display:grid;gap:10px;padding:22px;text-align:center}.recovery-dialog h2{font-size:20px}.recovery-dialog input{min-height:46px;padding:10px;border:1px solid #ccc;border-radius:9px;text-align:left}.recovery-dialog button{min-height:42px;border:0;border-radius:10px;background:#ffbf00;font-weight:700;cursor:pointer}.recovery-close{background:#f2f2f2!important}
+    .recovery-help{font-size:11px;line-height:1.45;color:#666}
+    .signup-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}.signup-badge{padding:8px 13px;border-radius:999px;background:#c62828;color:#fff;font-size:13px;font-weight:900;letter-spacing:.3px;box-shadow:0 4px 10px #c6282833}
     .app-showcase{width:calc(100% - 40px);margin-left:auto;margin-right:auto;overflow:hidden}
     .app-download{min-width:0}
     .hero-grid{grid-template-columns:1fr}
@@ -76,13 +78,11 @@
     <script src="js/contact.js"></script>
 <script>
   const recoveryDialog = document.getElementById('recoveryDialog');
+  document.querySelector('.not-received')?.remove();
+  recoveryDialog?.remove();
   const logoutIndex = document.getElementById('logoutIndex');
   if (sessionStorage.getItem('clubbar_portal_lead_token')) logoutIndex.classList.add('show');
   logoutIndex.onclick = () => { sessionStorage.removeItem('clubbar_portal_lead_token'); sessionStorage.removeItem('clubbar_portal_lead_activity'); logoutIndex.classList.remove('show'); };
-  document.getElementById('naoRecebiEmail').onclick = () => recoveryDialog.showModal();
-  document.getElementById('recoveryClose').onclick = () => recoveryDialog.close();
-  document.getElementById('recoveryPhone').addEventListener('input', (event) => { const n=event.target.value.replace(/\D/g,'').slice(0,11); event.target.value=n.length>10?`(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`:n.length>6?`(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}`:n; });
-  document.getElementById('recoveryForm').onsubmit = async (event) => { event.preventDefault(); const message=document.getElementById('recoveryMessage'); try { const response=await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/recuperar-dados`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:recoveryEmail.value.trim(),telefone:recoveryPhone.value})}); const data=await response.json(); if(!response.ok) throw new Error(data.detail||'Não foi possível consultar o cadastro.'); message.textContent=data.mensagem; } catch(error) { message.textContent=error.message; } };
   document.querySelector('.hero h1').textContent = 'Precisa realizar mais vendas e gerar mais lucratividade?';
   document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o preço da entrada, o que vai consumir e, muitas vezes, filas que não deveriam existir. O Clubbar foi criado no Brasil<sup>*</sup> para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação.<br><br><small>*Porque somente nós, que nascemos e vivemos aqui, sabemos das taxas e impostos que pagamos no dia a dia.</small>';
   const botaoPlano = document.querySelector('.plan-action');
@@ -97,6 +97,17 @@
   document.querySelector('.plan .badge')?.remove();
   const tituloPlano = document.querySelector('.plan-head h3');
   if (tituloPlano) tituloPlano.textContent = 'O que eu vou gastar?';
+  document.querySelectorAll('.interest-action').forEach((botao) => {
+    const titulo = botao.querySelector('span:first-child');
+    const subtitulo = botao.querySelector('.interest-caption');
+    if (!titulo || !subtitulo) return;
+    titulo.textContent = 'Cadastre-se aqui';
+    subtitulo.textContent = 'Faça seu cadastro sem compromisso e sem cobranças indevidas, somente para que possamos explicar como funciona o Clubbar.';
+    const badges = document.createElement('span');
+    badges.className = 'signup-badges';
+    badges.innerHTML = '<span class="signup-badge">SEM COMPROMISSO</span><span class="signup-badge">SEM SURPRESINHAS</span>';
+    botao.appendChild(badges);
+  });
   const operacao = document.querySelector('.hero-card');
   operacao?.querySelector(':scope > h3')?.remove();
   const beneficios = document.querySelector('.features .grid');
