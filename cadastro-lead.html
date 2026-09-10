@@ -48,12 +48,15 @@
         border-bottom: 1px solid #222;
       }
       header img {
-        height: 60px;
+        height: 51px;
         width: auto;
         max-width: 70vw;
         object-fit: contain;
         transform: scale(1.25);
       }
+      .brand-lockup { display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .brand-lockup .brand-owl { width: 48px; height: 48px; transform: none; }
+      .brand-lockup .brand-logo { height: 51px; }
       .back {
         position: absolute;
         left: 7%;
@@ -441,8 +444,10 @@
           padding-inline: 14px;
         }
         header img {
-          height: 56px;
+          height: 48px;
         }
+        .brand-lockup .brand-owl { width: 40px; height: 40px; }
+        .brand-lockup .brand-logo { height: 48px; }
         .back {
           left: 14px;
         }
@@ -519,7 +524,7 @@
   <body>
     <header>
       <a class="back" href="index.html">← Voltar</a
-      ><img src="assets/images/logo.png" alt="Clubbar" />
+      ><span class="brand-lockup"><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar" /></span>
     </header>
     <main>
       <section class="box">

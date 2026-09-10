@@ -1495,6 +1495,16 @@
     <script src="js/session.js"></script>
     <script src="js/contact.js"></script>
     <script>
+      document.querySelectorAll('input[type="tel"], input[inputmode="tel"]').forEach((campo) => {
+        campo.addEventListener("input", () => {
+          const numeros = campo.value.replace(/\D/g, "").slice(0, 11);
+          if (numeros.length <= 2) campo.value = numeros;
+          else if (numeros.length <= 10) campo.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+          else campo.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+        });
+      });
+    </script>
+    <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
 
       const elementos = {
