@@ -55,6 +55,8 @@
     .hero-card .card{min-height:0;padding:10px 0;border:0;border-bottom:1px solid #e2e2e2;border-radius:0;background:transparent;box-shadow:none}
     .hero-card .card:last-child{border-bottom:0}
     .hero-card .card:hover{transform:none;border-color:#e2e2e2}
+    .functionalities-card{max-width:1120px;margin:28px auto 0;padding:22px;border:1px solid #dedede;border-radius:21px;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.1)}.functionalities-card h2{margin:0 0 16px;color:var(--blue);font-size:25px}.functionalities-card .grid{grid-template-columns:repeat(3,1fr)}
+    @media(max-width:900px){.functionalities-card .grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:640px){.functionalities-card{margin:22px 16px 0;padding:16px}.functionalities-card .grid{grid-template-columns:1fr}}
     @media(max-width:640px){header{width:100%;min-width:0;overflow:hidden}.header-brand{min-width:0}.brand-logo{height:44px;max-width:100%;transform:none}.topbar-actions{min-width:0}.topbar-link{padding:7px 8px;font-size:11px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
     @media(max-width:640px){.brand-owl{width:40px;height:40px}.header-brand{gap:6px}}
   </style>
@@ -113,7 +115,11 @@
   operacao?.querySelector(':scope > h3')?.remove();
   const beneficios = document.querySelector('.features .grid');
   if (operacao && beneficios) {
-    operacao.append(...beneficios.querySelectorAll('.card'));
+    const funcionalidades = document.createElement('section');
+    funcionalidades.className = 'functionalities-card';
+    funcionalidades.innerHTML = '<h2>Funcionalidades</h2><div class="grid"></div>';
+    funcionalidades.querySelector('.grid').append(...beneficios.querySelectorAll('.card'));
+    document.querySelector('.hero').after(funcionalidades);
     beneficios.parentElement.remove();
   }
   const planoCompleto = document.querySelector('.plan');
@@ -130,10 +136,6 @@
     }
     planoSecao?.remove();
   }
-  const tituloFuncionalidades = document.createElement('h2');
-  tituloFuncionalidades.textContent = 'Funcionalidades';
-  tituloFuncionalidades.style.cssText = 'margin:24px 0 8px;color:var(--blue);font-size:25px';
-  if (operacao) operacao.prepend(tituloFuncionalidades);
   const aplicativos = document.querySelector('.app-showcase');
   const plano = document.getElementById('plano');
   if (aplicativos && plano) plano.after(aplicativos);
