@@ -30,20 +30,20 @@
     .interest-action{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:340px;text-align:center}
     .interest-action .interest-caption{margin:0;font-size:12px;line-height:1.45;font-weight:500;color:inherit}
     .actions{align-items:flex-start}
-    header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px}
-    .header-brand{grid-column:2;grid-row:1;justify-self:center}
+    header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-left:10px;padding-right:10px}
+    .header-brand{grid-column:1;grid-row:1;justify-self:start}
     .brand-logo{margin-left:0;max-width:46vw}
-    .topbar-actions{grid-column:3;grid-row:1;justify-self:end;display:flex;align-items:center;gap:10px}
+    .topbar-actions{grid-column:2;grid-row:1;justify-self:end;display:flex;align-items:center;gap:10px}
     .topbar-link{padding:9px 14px;border:1px solid var(--blue);border-radius:11px;color:#075ca8;background:#fff;font-weight:850;white-space:nowrap}
     .topbar-link:hover{color:#fff;background:var(--blue)}
+    @media(max-width:640px){.brand-logo{height:48px;max-width:48vw}.topbar-link{padding:7px 9px;font-size:12px}}
   </style>
 </head>
 <body>
 <header>
   <a class="header-brand" href="index.html"><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar"></a>
   <nav class="topbar-actions" aria-label="Acesso do parceiro">
-    <a class="topbar-link" href="portal-lead.html">Já cadastrei</a>
-    <a class="topbar-link" href="cadastro-lead.html">Tenho interesse</a>
+    <a class="topbar-link" href="portal-lead.html">Já sou cadastrado</a>
   </nav>
 </header>
 <main>
@@ -55,6 +55,9 @@
 <script src="js/config.js"></script>
     <script src="js/contact.js"></script>
 <script>
+  const aplicativos = document.querySelector('.app-showcase');
+  const plano = document.getElementById('plano');
+  if (aplicativos && plano) plano.after(aplicativos);
   fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/taxas-padrao/vigente`).then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(t => {
     document.getElementById('taxaProduto').textContent = `${Number(t.pctaxaproduto).toLocaleString('pt-BR')}%`;
     document.getElementById('taxaIngresso').textContent = `${Number(t.pctaxaingresso).toLocaleString('pt-BR')}%`;
