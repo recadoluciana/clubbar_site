@@ -73,7 +73,7 @@
 
       .topbar img {
         width: auto;
-        height: 52px;
+        height: 44px;
         max-width: 68vw;
         object-fit: contain;
         justify-self: center;
@@ -1212,7 +1212,7 @@
         }
 
         .topbar img {
-          height: 45px;
+          height: 38px;
         }
 
         .toast {
@@ -1321,7 +1321,7 @@
     <section class="screen-state hidden" id="telaErro">
       <div class="state-card">
         <div class="state-icon">🔒</div>
-        <h1>Vamos conversar, quem sabe meu app pode ser útil para você.</h1>
+        <h1>Acesse seu cadastro.</h1>
         <p id="textoErroAcesso">
           Seu acesso é inválido ou expirou. Entre em contato com a equipe
           Clubbar.
@@ -1715,10 +1715,10 @@
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
-          ? "Vamos conversar, quem sabe meu app pode ser útil para você."
+          ? "Acesse seu cadastro."
           : "Entre novamente";
         elementos.textoErroAcesso.textContent = semToken
-          ? "Informe o mesmo e-mail e telefone utilizados no cadastro."
+          ? "Acesse o seu cadastro."
           : mensagem + " Informe seus dados para entrar novamente.";
       }
 
