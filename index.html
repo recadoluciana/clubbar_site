@@ -27,7 +27,7 @@
     .features{background:#f7f8fa}.plan{background:linear-gradient(145deg,#fff,#f8f9fb)}.plan-head{border-bottom-color:#dedede}.fee{background:#f8f9fb}
     footer{background:#fff;color:#666;border-top-color:#dedede}.dora-chat{background:#f7f8fa;border-bottom-color:#dedede;filter:drop-shadow(0 8px 18px rgba(0,0,0,.10))}.dora-message{background:#fff;color:#202124}
     .logged-lead{background:#eef6ff;color:#24374a;border-bottom-color:#c9def4}.logged-lead a{color:#0b67c7;background:#fff}
-    .interest-action{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:340px;text-align:center}
+    .interest-action{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:none;text-align:center}
     .interest-action .interest-caption{margin:0;font-size:12px;line-height:1.45;font-weight:500;color:inherit}
     .actions{align-items:flex-start}
     header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-left:10px;padding-right:10px}
@@ -40,6 +40,10 @@
     .app-download{min-width:0}
     .hero-grid{grid-template-columns:1fr}
     .hero-card{width:100%;max-width:1120px;margin:0 auto}
+    .hero-card > h3{color:var(--blue)}
+    .hero-card .card{min-height:0;padding:16px 0;border:0;border-bottom:1px solid #e2e2e2;border-radius:0;background:transparent;box-shadow:none}
+    .hero-card .card:last-child{border-bottom:0}
+    .hero-card .card:hover{transform:none;border-color:#e2e2e2}
     @media(max-width:640px){header{width:100%;min-width:0;overflow:hidden}.header-brand{min-width:0}.brand-logo{height:44px;max-width:100%;transform:none}.topbar-actions{min-width:0}.topbar-link{padding:7px 8px;font-size:11px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
   </style>
 </head>
@@ -59,10 +63,17 @@
 <script src="js/config.js"></script>
     <script src="js/contact.js"></script>
 <script>
+  document.querySelector('.hero h1 span').textContent = 'bares, casas noturnas e produtores de eventos.';
   document.querySelector('.plan-action')?.remove();
   document.querySelector('.features .heading')?.remove();
   document.querySelector('.plan-foot p')?.remove();
   document.querySelector('.plan-foot .interest-action')?.remove();
+  const operacao = document.querySelector('.hero-card');
+  const beneficios = document.querySelector('.features .grid');
+  if (operacao && beneficios) {
+    operacao.append(...beneficios.querySelectorAll('.card'));
+    beneficios.parentElement.remove();
+  }
   const aplicativos = document.querySelector('.app-showcase');
   const plano = document.getElementById('plano');
   if (aplicativos && plano) plano.after(aplicativos);

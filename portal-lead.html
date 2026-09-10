@@ -838,6 +838,11 @@
         display: grid;
         place-items: center;
       }
+      #telaErro {
+        min-height: auto;
+        padding-top: 18px;
+        align-items: start;
+      }
 
       .state-card {
         width: min(520px, 100%);
@@ -1308,14 +1313,14 @@
       <div class="state-card">
         <img class="state-owl" src="assets/images/coruja.png" alt="" aria-hidden="true" />
         <h1>Preparando o seu portal</h1>
-        <p>Aguarde enquanto carregamos seu atendimento.</p>
+        <p>Aguarde enquanto consultamos seus dados.</p>
       </div>
     </section>
 
     <section class="screen-state hidden" id="telaErro">
       <div class="state-card">
         <div class="state-icon">🔒</div>
-        <h1>Não foi possível acessar</h1>
+        <h1>Consultar contrato de utilização do app</h1>
         <p id="textoErroAcesso">
           Seu acesso é inválido ou expirou. Entre em contato com a equipe
           Clubbar.
@@ -1323,11 +1328,11 @@
         <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <button class="btn-primary" id="btnNovoAcesso" type="submit">Entrar no atendimento</button>
+          <button class="btn-primary" id="btnNovoAcesso" type="submit">Consultar contrato de utilização do app</button>
           <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
         </form>
         <form class="recovery-form hidden" id="formRecuperarDados">
-          <p>Informe seu e-mail para receber os dados dos seus atendimentos.</p>
+          <p>Informe seu e-mail para receber os dados dos seus contratos.</p>
           <input id="emailRecuperarDados" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnEnviarRecuperacao" type="submit">Enviar meus dados</button>
         </form>
@@ -1338,7 +1343,7 @@
       <section class="hero">
         <div class="hero-copy">
           <h1 id="saudacao">Olá</h1>
-          <p>Acompanhe o atendimento do(s) seu(s) estabelecimento(s).</p>
+          <p>Consulte o contrato de utilização do app do(s) seu(s) estabelecimento(s).</p>
           <div class="hero-establishment" id="seletorEstabelecimento">
             <button class="btn-inline create-establishment-button" type="button" data-pagina="estabelecimento">
               ＋ Criar novo estabelecimento
@@ -1701,7 +1706,7 @@
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
-          ? "Acompanhar meu atendimento"
+          ? "Consultar contrato de utilização do app"
           : "Entre novamente";
         elementos.textoErroAcesso.textContent = semToken
           ? "Informe o mesmo e-mail e telefone utilizados no cadastro."
@@ -2444,7 +2449,7 @@
           mostrarToast(erro.message, true);
         } finally {
           elementos.btnNovoAcesso.disabled = false;
-          elementos.btnNovoAcesso.textContent = "Entrar no atendimento";
+          elementos.btnNovoAcesso.textContent = "Consultar contrato de utilização do app";
         }
       });
 
