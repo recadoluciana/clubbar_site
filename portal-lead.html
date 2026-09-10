@@ -73,7 +73,7 @@
 
       .topbar img {
         width: auto;
-        height: 58px;
+        height: 52px;
         max-width: 68vw;
         object-fit: contain;
         justify-self: center;
@@ -1211,7 +1211,7 @@
         }
 
         .topbar img {
-          height: 50px;
+          height: 45px;
         }
 
         .toast {
@@ -1320,7 +1320,7 @@
     <section class="screen-state hidden" id="telaErro">
       <div class="state-card">
         <div class="state-icon">🔒</div>
-        <h1>Consultar contrato de utilização do app</h1>
+        <h1>Vamos conversar, quem sabe meu app pode ser útil para você.</h1>
         <p id="textoErroAcesso">
           Seu acesso é inválido ou expirou. Entre em contato com a equipe
           Clubbar.
@@ -1328,7 +1328,7 @@
         <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
           <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <button class="btn-primary" id="btnNovoAcesso" type="submit">Consultar contrato de utilização do app</button>
+          <button class="btn-primary" id="btnNovoAcesso" type="submit">Confirmar</button>
           <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
         </form>
         <form class="recovery-form hidden" id="formRecuperarDados">
@@ -1706,7 +1706,7 @@
         elementos.conteudoPortal.classList.add("hidden");
         elementos.telaErro.classList.remove("hidden");
         elementos.telaErro.querySelector("h1").textContent = semToken
-          ? "Consultar contrato de utilização do app"
+          ? "Vamos conversar, quem sabe meu app pode ser útil para você."
           : "Entre novamente";
         elementos.textoErroAcesso.textContent = semToken
           ? "Informe o mesmo e-mail e telefone utilizados no cadastro."
@@ -2449,7 +2449,7 @@
           mostrarToast(erro.message, true);
         } finally {
           elementos.btnNovoAcesso.disabled = false;
-          elementos.btnNovoAcesso.textContent = "Consultar contrato de utilização do app";
+          elementos.btnNovoAcesso.textContent = "Confirmar";
         }
       });
 
