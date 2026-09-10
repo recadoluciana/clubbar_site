@@ -8,7 +8,7 @@
   <style>
     *{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#202124;font-family:Arial,Helvetica,sans-serif}
     .topbar{height:76px;padding:7px 18px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;background:#050505;color:#fff}
-    .topbar img{height:58px;max-width:230px;justify-self:center;object-fit:contain}.icon-button{width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:25px;cursor:pointer}
+    .topbar-brand{display:flex;align-items:center;justify-content:center;gap:6px}.topbar img{height:49px;max-width:230px;justify-self:center;object-fit:contain}.topbar .brand-owl{width:42px;height:42px;object-fit:contain}.icon-button{width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:25px;cursor:pointer}
     .page-head{padding:18px 20px;background:linear-gradient(105deg,#ffd54f,#fff4cc,#f5f6f8);border-radius:0 0 22px 22px;box-shadow:0 3px 9px #0002}
     .page-head h1{margin:0;color:#1683ff;font-size:clamp(22px,4vw,30px)}.page-head p{margin:5px 0 0;color:#5f6368;font-size:14px}
     .establishments-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px}.establishments-head .intro{margin:0}.add-establishment{padding:9px 13px;border:0;border-radius:11px;background:#1683ff;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.add-establishment:hover{background:#0b6fdd}
@@ -16,13 +16,13 @@
     .store{width:100%;padding:0;border:1px solid #dedede;border-radius:18px;background:#fff;text-align:left;box-shadow:0 2px 7px #0002;cursor:pointer;overflow:hidden;transition:.18s}
     .store:hover,.store:focus-visible{transform:translateY(-2px);border-color:#1683ff;box-shadow:0 7px 18px #1683ff22;outline:none}.store-body{padding:17px}.store-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.store h2{margin:0;color:#1683ff;font-size:20px}.arrow{color:#1683ff;font-size:25px}.badges{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 12px}.badge{padding:4px 9px;border-radius:20px;background:#eef5ff;color:#116cc5;font-size:11px}.badge.status{background:#fff4d0;color:#755800}.info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;padding-top:11px;border-top:1px solid #eee}.info div{min-width:0;color:#5f6368;font-size:13px;overflow-wrap:anywhere}.info strong{display:block;margin-bottom:2px;color:#202124;font-size:11px;font-weight:normal}
     .state{padding:55px 20px;text-align:center;color:#666}.retry{margin-top:15px;padding:11px 18px;border:0;border-radius:12px;background:#ffc83d;font-weight:700;cursor:pointer}
-    @media(max-width:600px){.info{grid-template-columns:1fr}.topbar{height:60px}.topbar img{height:48px}.page-head{padding:15px 18px}main{padding-top:16px}.establishments-head{align-items:flex-start}.add-establishment{font-size:11px;padding:8px 9px;white-space:normal}}
+    @media(max-width:600px){.info{grid-template-columns:1fr}.topbar{height:60px}.topbar img{height:41px}.topbar .brand-owl{width:36px;height:36px}.page-head{padding:15px 18px}main{padding-top:16px}.establishments-head{align-items:flex-start}.add-establishment{font-size:11px;padding:8px 9px;white-space:normal}}
   </style>
 </head>
 <body>
   <header class="topbar">
     <button class="icon-button" id="voltar" title="Voltar" aria-label="Voltar">←</button>
-    <img src="assets/images/logo.png" alt="Clubbar Lead">
+    <span class="topbar-brand"><img class="brand-owl" src="assets/images/coruja.png" alt=""><img src="assets/images/logo.png" alt="Clubbar Lead"></span>
     <button class="icon-button" id="atualizar" title="Atualizar" aria-label="Atualizar">↻</button>
   </header>
   <section class="page-head"><h1 id="nomeLead">Portal do Lead</h1><p>Selecione o estabelecimento que deseja acompanhar</p></section>
