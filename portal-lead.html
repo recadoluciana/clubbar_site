@@ -79,6 +79,7 @@
         justify-self: center;
         transform: scale(1.25);
       }
+      .topbar-brand{display:flex;align-items:center;justify-content:center;gap:6px}.topbar-brand .brand-owl{width:48px;height:48px;transform:none}.topbar-brand .brand-logo{height:43px;transform:none}
 
       .btn-top-back {
         width: 38px;
@@ -1310,7 +1311,7 @@
   <body>
     <header class="topbar">
       <a class="btn-top-back" id="btnVoltarTopo" href="index.html" aria-label="Voltar" title="Voltar">←</a>
-      <img src="assets/images/logo.png" alt="Clubbar" />
+      <span class="topbar-brand"><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar" /></span>
       <div class="topbar-actions">
         <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
       </div>
@@ -1772,8 +1773,7 @@
         const resumo = await api(`/portal-parceiro/resumo${filtroEstabelecimento}`);
         resumoAtual = resumo;
 
-        elementos.saudacao.textContent =
-          `Olá, ${resumo.nmresponsavel || "parceiro"}`;
+        elementos.saudacao.textContent = resumo.nmresponsavel || "parceiro";
         document.querySelectorAll("[data-nome-lead]").forEach((elemento) => {
           elemento.textContent = resumo.nmresponsavel || "";
         });
@@ -1856,14 +1856,14 @@
           titulo.textContent = "Parceria aceita!";
           const mensagem = document.createElement("p");
           mensagem.textContent =
-            "Que bom, você aceitou nossa parceria assinando digitalmente nosso contrato. Agora você é nosso parceiro. Mas não se preocupe: se você se arrependeu, assinou sem querer ou outra pessoa usou sua internet para fazer isso, nada será cobrado de você nem do seu estabelecimento. Somos transparentes. Só depois de conversarmos diretamente por telefone e de você realmente concluir que nosso app pode ajudar a alavancar suas vendas é que começaremos a cobrar o percentual ajustado no seu contrato.";
+            "Você aceitou nossa parceria assinando digitalmente nosso contrato. Agora você é nosso parceiro. Mas não se preocupe, pois este aceite não significa nada monetário. Apenas significa que, se o seu cliente comprar algum produto, produto ou ingresso pelo nosso app, cobraremos a taxa combinada no contrato.";
           const linkPartner = document.createElement("a");
           linkPartner.className = "btn-primary";
           linkPartner.href = CLUBBAR_CONFIG.PARTNER_URL;
           linkPartner.target = "_blank";
           linkPartner.rel = "noopener noreferrer";
           linkPartner.textContent = "Acessar Clubbar Partner ↗";
-          celebracao.append(icone, titulo, mensagem, linkPartner);
+          celebracao.append(icone, titulo, mensagem);
           elementos.contratoEstabelecimento.append(celebracao);
         }
         elementos.contratoEstabelecimento.classList.toggle(
