@@ -44,8 +44,9 @@
     .hero-grid{grid-template-columns:1fr}
     .hero-card{width:100%;max-width:1120px;margin:0 auto}
     .hero h1{font-size:clamp(22px,2.8vw,36px);line-height:1.35;letter-spacing:-.4px}
+    .hero p{font-size:16px;line-height:1.6}
     .hero-card > h3{color:var(--blue)}
-    .hero-card .card{min-height:0;padding:16px 0;border:0;border-bottom:1px solid #e2e2e2;border-radius:0;background:transparent;box-shadow:none}
+    .hero-card .card{min-height:0;padding:10px 0;border:0;border-bottom:1px solid #e2e2e2;border-radius:0;background:transparent;box-shadow:none}
     .hero-card .card:last-child{border-bottom:0}
     .hero-card .card:hover{transform:none;border-color:#e2e2e2}
     @media(max-width:640px){header{width:100%;min-width:0;overflow:hidden}.header-brand{min-width:0}.brand-logo{height:44px;max-width:100%;transform:none}.topbar-actions{min-width:0}.topbar-link{padding:7px 8px;font-size:11px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
@@ -78,6 +79,10 @@
   document.querySelector('.features .heading')?.remove();
   document.querySelector('.plan-foot p')?.remove();
   document.querySelector('.plan-foot .interest-action')?.remove();
+  document.querySelector('.app-showcase')?.remove();
+  document.querySelector('.plan .badge')?.remove();
+  const tituloPlano = document.querySelector('.plan-head h3');
+  if (tituloPlano) tituloPlano.textContent = 'O que você vai me pagar?';
   const operacao = document.querySelector('.hero-card');
   const beneficios = document.querySelector('.features .grid');
   if (operacao && beneficios) {
