@@ -900,6 +900,9 @@
       .hidden {
         display: none !important;
       }
+      #btnAceitarParceria {
+        display: none !important;
+      }
 
       .partnership-celebration {
         position: relative;
@@ -1369,18 +1372,18 @@
                 </div>
               </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
-              <p class="decision-copy" id="textoDecisao">
+              <p class="decision-copy hidden" id="textoDecisao">
                 Esta decisão será registrada somente para o estabelecimento
                 selecionado. Depois de conhecer a proposta e o contrato,
                 informe como deseja prosseguir.
               </p>
               <div class="decision-actions" id="acoesDecisao">
                 <button
-                  class="decision-button analyzing"
+                  class="decision-button accept"
                   id="btnVisualizarContrato"
                   type="button"
                 >
-                  Preencher seu contrato
+                  Visualizar/assinar seu contrato
                 </button>
                 <button
                   class="decision-button accept"
@@ -1977,7 +1980,7 @@
           parceriaAceita || contrato?.status === "ACEITO",
         );
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
-        elementos.btnVisualizarContrato.textContent = "Visualizar seu contrato";
+        elementos.btnVisualizarContrato.textContent = "Visualizar/assinar seu contrato";
         const baixar = document.getElementById("btnBaixarContrato");
         const contratoAceito = estabelecimento.contratos?.find(item => item.status === "ACEITO");
         baixar.disabled = !contratoAceito;
