@@ -44,6 +44,8 @@
     .recovery-dialog{width:min(430px,calc(100% - 32px));margin:auto;padding:0;border:1px solid #ddd;border-radius:18px;background:#fff;box-shadow:0 24px 70px #0005}.recovery-dialog::backdrop{background:#0008}.recovery-dialog form{display:grid;gap:10px;padding:22px;text-align:center}.recovery-dialog h2{font-size:20px}.recovery-dialog input{min-height:46px;padding:10px;border:1px solid #ccc;border-radius:9px;text-align:left}.recovery-dialog button{min-height:42px;border:0;border-radius:10px;background:#ffbf00;font-weight:700;cursor:pointer}.recovery-close{background:#f2f2f2!important}
     .recovery-help{font-size:11px;line-height:1.45;color:#666}
     .price-highlight{color:var(--blue);font-weight:800}
+    .intro-index{max-width:1120px;margin:0 auto;padding:24px 24px 8px;text-align:center;color:#202124;line-height:1.5}
+    .intro-index strong{display:block}.intro-index .intro-brand{font-size:24px;color:var(--blue);margin-bottom:4px}.intro-index .intro-platform{font-size:18px;margin-bottom:12px}.intro-index p{margin:5px 0;font-size:15px}
     .fees-label{width:100%;padding:15px 27px;color:var(--blue);font-size:18px;font-weight:900;text-align:center}
     .interest-action>span:first-child{color:var(--blue);font-size:calc(1em + 3px)}
     .fees-card{width:100%;margin-top:18px;padding:14px;border:1px solid #dedede;border-radius:21px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.08)}.fees-card .fees-label{padding:5px 10px 12px;text-align:left}.fees-card .fees{padding:12px 10px 4px}
@@ -73,6 +75,13 @@
     <button class="logout-link" id="logoutIndex" type="button">Sair</button>
   </nav>
 </header>
+<section class="intro-index" aria-label="Apresentação do Clubbar">
+  <strong class="intro-brand">Clubbar</strong>
+  <strong class="intro-platform">A plataforma de venda digital para bares, casas noturnas e eventos</strong>
+  <p><strong>Venda de ingressos, produtos e experiências, antecipadamente ou no local.</strong></p>
+  <p><strong>Redução de filas, redução de custos operacionais e aumento do faturamento.</strong></p>
+  <p><strong>Gestão do seu negócio através de painéis completos.</strong></p>
+</section>
 <div class="not-received">Para acessar sua página de atendimento, você precisa digitar o e-mail usado no cadastro e o número do telefone com DDD. Caso não se lembre, clique no botão abaixo para resgatar suas informações. Basta digitar seu e-mail de cadastro. Se nem o e-mail você lembrar, é melhor fazer novamente o cadastro. Lembre-se: não aceitamos duas pessoas com o mesmo e-mail.<br><button type="button" id="naoRecebiEmail">Resgatar minhas informações</button></div>
 <main>
   <section class="hero"><div class="hero-grid"><div><h1>Venda digital para <span>bares, casas noturnas e eventos.</span></h1><p>Venda ingressos e produtos, reduza filas, simplifique a operação e acompanhe os resultados do seu negócio em um painel completo.</p><div class="actions"><a class="btn two-line interest-action" href="cadastro-lead.html"><span>Conheça o Clubbar</span><span class="interest-caption">Faça seu cadastro inicial e aguarde confirmação por e-mail para prosseguir com seu interesse em contratar.</span></a><a class="btn two-line plan-action" href="#plano"><span>Plano único</span><span class="btn-subtitle">Plano único sem mensalidade</span></a></div><div class="app-showcase" aria-label="Aplicativos Clubbar"><h3 class="apps-title">Aplicativos disponíveis</h3><div class="app-downloads"><div class="app-download"><img src="assets/images/icone_clubbar.png" alt="Ícone Clubbar Client"><div><strong>Clubbar Client</strong><small>App para o cliente final realizar suas compras de ingressos e produtos antecipadamente e armazená-las em uma carteira digital para uso futuro.</small></div><div class="app-options"><div class="app-access download">Baixe o aplicativo<span>Em breve</span></div></div></div><div class="app-download"><img src="assets/images/icone_partner.png" alt="Ícone Clubbar Partner"><div><strong>Clubbar Partner</strong><small>App do estabelecimento para criar seu cardápio digital e sua agenda de eventos, além de gerenciar suas vendas.</small></div><div class="app-options"><div class="app-access download">Baixe o aplicativo<span>Em breve</span></div></div></div></div></div></div><aside class="hero-card"><h3>Uma operação mais simples</h3><div class="item"><i>🍹</i><div><strong>Cardápio digital</strong><small>Venda de bebidas, comidas, combos e promoções.</small></div></div><div class="item"><i>🗓️</i><div><strong>Agenda mensal digital</strong><small>Eventos, shows e atrações programadas para o mês.</small></div></div><div class="item"><i>🎟️</i><div><strong>Ingressos digitais</strong><small>Venda antecipada, lotes e validação de entrada.</small></div></div><div class="item"><i>🎁</i><div><strong>Cashback de produtos</strong><small>Ganhe créditos na compra de produtos pelo aplicativo.</small></div></div><div class="item"><i>📊</i><div><strong>Gestão centralizada</strong><small>Acompanhe vendas, entradas, retiradas e usuários.</small></div></div></aside></div></section>
@@ -108,11 +117,11 @@
     const titulo = botao.querySelector('span:first-child');
     const subtitulo = botao.querySelector('.interest-caption');
     if (!titulo || !subtitulo) return;
-    titulo.textContent = 'Cadastre-se aqui';
-    subtitulo.textContent = 'Faça seu cadastro sem compromisso e sem cobranças indevidas, somente para que possamos explicar como funciona o Clubbar.';
+    titulo.textContent = 'Conheça o Clubbar';
+    subtitulo.textContent = 'Faça seu cadastro inicial e aguarde confirmação por e-mail para prosseguir com seu interesse em contratar.';
     const badges = document.createElement('span');
     badges.className = 'signup-badges';
-    badges.innerHTML = '<span class="signup-badge">SEM COMPROMISSO</span><span class="signup-badge">SEM SURPRESINHAS</span>';
+    badges.innerHTML = '<span class="signup-badge">Plano único - Taxas cobradas</span><span class="signup-badge">SEM MENSALIDADE</span>';
     botao.appendChild(badges);
   });
   const operacao = document.querySelector('.hero-card');
