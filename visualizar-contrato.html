@@ -70,6 +70,10 @@
         margin: 0 0 16px;
         font-size: 20px;
       }
+      .establishment-title { margin: 0 0 16px; color: var(--blue); font-size: 22px; }
+      .lead-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; margin-bottom:20px; }
+      .lead-data div { padding:10px 12px; border-bottom:1px solid #edf0f2; color:#555; font-size:14px; }
+      .lead-data strong { display:block; margin-bottom:3px; color:#202124; font-size:12px; }
       .contract-text {
         max-height: 560px;
         overflow: auto;
@@ -91,6 +95,10 @@
         background: #fff;
         font-weight: 900;
       }
+      .sign-button { border:0; color:#fff; background:#168a4a; }
+      .sign-button:hover { background:#116d3b; }
+      .signed-status { margin-top:18px; padding:14px; border-radius:12px; color:#176b3b; background:#e8f5ec; font-weight:700; }
+      .signed-status a { display:block; margin-top:8px; color:#1468bd; font-weight:800; }
       .state { padding: 60px 20px; text-align: center; }
       .toast {
         position: fixed;
@@ -107,6 +115,7 @@
       @media (max-width: 560px) {
         main { padding-top: 20px; }
         .contract-text { max-height: 500px; padding: 13px; font-size: 14px; }
+        .lead-data { grid-template-columns:1fr; }
       }
       .hidden { display: none !important; }
     </style>
@@ -125,12 +134,12 @@
       <h1 class="lead-name" id="nomeLead"></h1>
       <p class="subtitle">Visualizar contrato</p>
       <section class="card">
+        <h2 class="establishment-title" id="tituloEstabelecimento"></h2>
+        <div class="lead-data" id="dadosEstabelecimento"></div>
         <h2 class="contract-title" id="tituloContrato"></h2>
         <div class="contract-text" id="textoContrato"></div>
-        <a id="assinarContrato" class="pdf-button hidden" style="display:block;text-align:center;text-decoration:none">Assinar seu contrato</a>
-        <button class="pdf-button" id="baixarPdf" type="button">
-          Baixar contrato em PDF
-        </button>
+        <a id="assinarContrato" class="pdf-button sign-button" style="display:block;text-align:center;text-decoration:none">Visualizar/assinar seu contrato</a>
+        <div class="signed-status hidden" id="statusAssinado"></div>
       </section>
     </main>
 
@@ -151,7 +160,9 @@
         nomeLead: document.getElementById("nomeLead"),
         tituloContrato: document.getElementById("tituloContrato"),
         textoContrato: document.getElementById("textoContrato"),
-        baixarPdf: document.getElementById("baixarPdf"),
+        tituloEstabelecimento: document.getElementById("tituloEstabelecimento"),
+        dadosEstabelecimento: document.getElementById("dadosEstabelecimento"),
+        statusAssinado: document.getElementById("statusAssinado"),
       };
       el.voltar.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
 
@@ -174,6 +185,12 @@
       function nomeStatus(status) {
         return { RASCUNHO: "Não assinado", ENVIADO: "Pronto para assinar", ACEITO: "Aceito" }[status] || status;
       }
+
+      function texto(valor) { return String(valor ?? "").trim() || "Não informado"; }
+      function tipo(valor) { return { BAR: "Bar", CASA_NOTURNA: "Casa noturna", PRODUTOR_EVENTOS: "Produtor de eventos", CASA_EVENTOS: "Casa de eventos" }[valor] || texto(valor); }
+      function venda(valor) { return { PRODUTOS: "Somente produtos", INGRESSOS: "Somente ingressos", AMBOS: "Produtos e ingressos" }[valor] || texto(valor); }
+      function dataHora(valor) { if (!valor) return ""; const data = new Date(valor); return Number.isNaN(data.getTime()) ? texto(valor) : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(data); }
+      function campo(rotulo, valor) { const div = document.createElement("div"); div.innerHTML = `<strong>${rotulo}</strong>${texto(valor)}`; return div; }
 
       function mostrarErro(mensagem) {
         el.carregando.classList.add("hidden");
@@ -201,13 +218,32 @@
             );
           }
           el.nomeLead.textContent = resumo.nmresponsavel || "Lead";
+          el.tituloEstabelecimento.textContent = `Estabelecimento: ${texto(estabelecimento.nmestabelecimento)}`;
+          el.dadosEstabelecimento.replaceChildren(
+            campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel),
+            campo("E-mail", estabelecimento.email_responsavel || estabelecimento.email || resumo.email),
+            campo("Telefone", estabelecimento.telefone_responsavel || estabelecimento.telefone || resumo.telefone),
+            campo("CPF/CNPJ", estabelecimento.cpfcnpj),
+            campo("Tipo", tipo(estabelecimento.tipo)),
+            campo("O que deseja vender", venda(estabelecimento.tipovenda)),
+            campo("CEP", estabelecimento.cep),
+            campo("Endereço", estabelecimento.endereco),
+            campo("Número", estabelecimento.numero),
+            campo("Bairro", estabelecimento.bairro),
+            campo("Complemento", estabelecimento.complemento),
+            campo("Cidade", estabelecimento.nmcidade),
+            campo("Estado", estabelecimento.sgestado),
+          );
           el.tituloContrato.textContent =
             `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
           el.textoContrato.textContent = contratoAtual.conteudocontrato;
           const assinar = document.getElementById("assinarContrato");
           assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;
           assinar.classList.toggle("hidden", contratoAtual.status === "ACEITO");
-          el.baixarPdf.classList.toggle("hidden", contratoAtual.status !== "ACEITO");
+          if (contratoAtual.status === "ACEITO") {
+            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="visualizar-contrato.html?leadestabelecimento_id=${estabelecimentoId}">Ver contrato assinado</a>`;
+            el.statusAssinado.classList.remove("hidden");
+          }
           el.carregando.classList.add("hidden");
           el.erro.classList.add("hidden");
           el.conteudo.classList.remove("hidden");
@@ -216,40 +252,6 @@
         }
       }
 
-      async function baixarPdf() {
-        try {
-          const resposta = await fetch(
-            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/pdf`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          if (!resposta.ok) {
-            throw new Error("Não foi possível gerar o PDF do contrato.");
-          }
-          const blob = await resposta.blob();
-          const arquivo = new File(
-            [blob],
-            `contrato-clubbar-${contratoAtual.leadestabelecimentocontrato_id}.pdf`,
-            { type: "application/pdf" },
-          );
-
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = arquivo.name;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 30000);
-        } catch (erro) {
-          const aviso = document.createElement("div");
-          aviso.className = "toast";
-          aviso.textContent = erro.message;
-          document.body.append(aviso);
-          setTimeout(() => aviso.remove(), 6500);
-        }
-      }
-
-      el.baixarPdf.addEventListener("click", baixarPdf);
       carregar();
     </script>
   </body>
