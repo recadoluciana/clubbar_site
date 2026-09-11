@@ -1436,7 +1436,7 @@
 
     <section class="modal hidden" id="modalEstabelecimento" role="dialog" aria-modal="true" aria-labelledby="tituloEstabelecimento">
       <div class="modal-card">
-        <header class="panel-head"><div><h2 id="tituloEstabelecimento">Novo estabelecimento</h2><p>Cadastre outra unidade para negociar separadamente.</p></div><button class="modal-close" type="button" data-fechar-modal aria-label="Fechar">×</button></header>
+        <header class="panel-head"><div><h2 id="tituloEstabelecimento">Novo estabelecimento</h2><p>Cadastre outra unidade para negociar separadamente.</p></div></header>
         <div class="panel-body">
           <form id="formEstabelecimento" class="new-establishment-card">
             <div class="new-establishment-head">
@@ -1455,6 +1455,10 @@
                 <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
                 <option value="CASA_EVENTOS">Casa de eventos</option>
               </select>
+            </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoDocumento">CPF ou CNPJ <span class="required">*</span></label>
+              <input class="form-control" id="novoEstabelecimentoDocumento" inputmode="numeric" required placeholder="Informe o CPF ou CNPJ" />
             </div>
             <fieldset class="new-establishment-choices">
               <legend>O que deseja vender? <span class="required">*</span></legend>
@@ -1490,7 +1494,6 @@
             </div>
             <div class="new-establishment-grid">
               <div class="new-establishment-field"><label for="novoEstabelecimentoEmailResponsavel">E-mail do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email" required></div>
-              <div class="new-establishment-field"><label for="novoEstabelecimentoDocumento">CPF/CNPJ</label><input class="form-control" id="novoEstabelecimentoDocumento"></div>
             </div>
             <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
           </form>
@@ -1785,10 +1788,8 @@
           tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
         }
         const formNovo = document.getElementById("formEstabelecimento");
-        const documentoNovo = document.getElementById("novoEstabelecimentoDocumento");
         const escolhaVenda = formNovo?.querySelector(".new-establishment-choices");
-        if (formNovo && documentoNovo && escolhaVenda && documentoNovo.parentElement.parentElement !== escolhaVenda.previousElementSibling) {
-          escolhaVenda.before(documentoNovo.parentElement.parentElement);
+        if (formNovo && escolhaVenda) {
           document.querySelector("#novoEstabelecimentoResponsavel")?.closest(".new-establishment-grid")?.classList.add("hidden");
           document.querySelector("#novoEstabelecimentoEmailResponsavel")?.closest(".new-establishment-grid")?.classList.add("hidden");
           const enderecoNovo = formNovo.querySelector(".new-establishment-address");
@@ -2393,7 +2394,36 @@
       async function cadastrarNovoEstabelecimento(evento) {
         evento.preventDefault();
         const tipoVenda = elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]:checked')?.value;
-        if (!elementos.novoEstabelecimentoCidade.value || !tipoVenda) return;
+        if (!elementos.novoEstabelecimentoNome.value.trim()) {
+          mostrarToast("Informe o nome do estabelecimento.", true);
+          elementos.novoEstabelecimentoNome.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoTipo.value) {
+          mostrarToast("Selecione o tipo do estabelecimento.", true);
+          elementos.novoEstabelecimentoTipo.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoDocumento.value.trim()) {
+          mostrarToast("Informe o CPF ou CNPJ do estabelecimento.", true);
+          elementos.novoEstabelecimentoDocumento.focus();
+          return;
+        }
+        if (!tipoVenda) {
+          mostrarToast("Selecione o que deseja vender.", true);
+          elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]')?.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoEstado.value) {
+          mostrarToast("Selecione o estado.", true);
+          elementos.novoEstabelecimentoEstado.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoCidade.value) {
+          mostrarToast("Selecione a cidade.", true);
+          elementos.novoEstabelecimentoCidade.focus();
+          return;
+        }
         try {
           await api("/portal-parceiro/estabelecimentos", {
             method: "POST",
