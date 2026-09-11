@@ -361,6 +361,7 @@
         }
       }
       .toast {
+        position: relative;
         position: fixed;
         z-index: 9999;
         top: 20px;
@@ -391,6 +392,7 @@
         line-height: 1.45;
       }
       .toast-action{display:inline-flex;padding:9px 16px;border-radius:10px;background:var(--gold);color:#111;font-weight:800;text-decoration:none}
+      .toast-close{position:absolute;top:8px;right:10px;width:28px;height:28px;padding:0;border:0;background:transparent;color:#fff;font-size:22px;line-height:1;cursor:pointer}
       .portal-loading {
         position: fixed;
         inset: 0;
@@ -647,9 +649,10 @@
         document.querySelectorAll(".toast").forEach((e) => e.remove());
         const d = document.createElement("div");
         d.className = "toast " + (type === "err" ? "err" : "");
-        d.innerHTML = `<div>${type === "err" ? "⚠️" : "✅"}</div><div><strong>${type === "err" ? "Não foi possível enviar" : "Cadastro enviado"}</strong><p>${text}</p></div>`;
+        d.innerHTML = `<button class="toast-close" type="button" aria-label="Fechar">×</button><div>${type === "err" ? "⚠️" : "✅"}</div><div><strong>${type === "err" ? "Não foi possível enviar" : "Cadastro enviado"}</strong><p>${text}</p></div>`;
         document.body.appendChild(d);
-        setTimeout(() => d.remove(), 8000);
+        d.querySelector(".toast-close").addEventListener("click", () => d.remove());
+        if (type !== "err") setTimeout(() => d.remove(), 12000);
       }
       async function json(res) {
         const t = await res.text();
@@ -903,7 +906,7 @@
           prepararPortal(d.acesso_portal);
         } catch (err) {
           if (err.message.includes("já está cadastrada") || err.message.includes("já está cadastrado")) {
-            toast('Cadastro não realizado.<br><br>Esta empresa já se encontra cadastrada. Para acessar seu painel de atendimento, clique no botão abaixo.<br><br><a class="toast-action" href="portal-lead.html">Já sou cadastrado</a>', "err");
+            toast('Cadastro não realizado.<br><br>Esta empresa já se encontra cadastrada. Para acessar seu painel de atendimento, clique no botão abaixo.<br><br><a class="toast-action" href="portal-lead.html">Já tenho cadastro. Faça login e prossiga.</a>', "err");
           } else {
             toast(err.message || "Erro inesperado.", "err");
           }
