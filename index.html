@@ -100,7 +100,7 @@
   if (sessionStorage.getItem('clubbar_portal_lead_token')) logoutIndex.classList.add('show');
   logoutIndex.onclick = () => { sessionStorage.removeItem('clubbar_portal_lead_token'); sessionStorage.removeItem('clubbar_portal_lead_activity'); logoutIndex.classList.remove('show'); };
   document.querySelector('.hero h1').textContent = 'Precisa realizar mais vendas e gerar mais lucratividade?';
-  document.querySelector('.hero p').innerHTML = 'Eu e minha parceira sabemos que ganhar dinheiro com lazer não é simples. Em bares, casas noturnas e eventos, cada cliente enfrenta o <span class="price-highlight">preço</span> da entrada, o <span class="price-highlight">preço</span> do que vai consumir e, muitas vezes, o “<span class="price-highlight">preço</span>” das filas para entrar ou consumir. O Clubbar foi criado para ajudar você a trabalhar melhor, atender com qualidade e fazer cada venda acontecer com mais tranquilidade — sem promessas prontas e sem complicar a sua operação.<br>';
+  document.querySelector('.hero p')?.remove();
   const botaoPlano = document.querySelector('.plan-action');
   if (botaoPlano) {
     botaoPlano.querySelector('span:first-child').textContent = 'Plano Clubbar';
@@ -121,7 +121,7 @@
     subtitulo.textContent = 'Faça seu cadastro inicial e aguarde confirmação por e-mail para prosseguir com seu interesse em contratar.';
     const badges = document.createElement('span');
     badges.className = 'signup-badges';
-    badges.innerHTML = '<span class="signup-badge">Plano único - Taxas cobradas</span><span class="signup-badge">SEM MENSALIDADE</span>';
+    badges.innerHTML = '<span class="signup-badge">Plano único</span><span class="signup-badge">Sem mensalidade</span>';
     botao.appendChild(badges);
   });
   const operacao = document.querySelector('.hero-card');
