@@ -70,6 +70,7 @@
         margin: 0 0 16px;
         font-size: 20px;
       }
+      .contract-title, .contract-text { display: none; }
       .establishment-title { margin: 0 0 16px; color: var(--blue); font-size: 22px; }
       .lead-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; margin-bottom:20px; }
       .lead-data div { padding:10px 12px; border-bottom:1px solid #edf0f2; color:#555; font-size:14px; }
@@ -211,10 +212,10 @@
           const estabelecimento = (resumo.estabelecimentos || []).find(
             (item) => item.leadestabelecimento_id === estabelecimentoId,
           );
-          contratoAtual = estabelecimento?.contratos?.[0];
-          if (!contratoAtual?.conteudocontrato) {
+          contratoAtual = estabelecimento?.contratos?.[0] || { status: "RASCUNHO" };
+          if (!estabelecimento) {
             throw new Error(
-              "O contrato ainda não foi disponibilizado para este estabelecimento.",
+              "Estabelecimento não encontrado.",
             );
           }
           el.nomeLead.textContent = `Lead #${resumo.leadparceiro_id || ""} ${resumo.nmresponsavel || ""}`.trim();
