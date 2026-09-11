@@ -253,7 +253,7 @@
           assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;
           assinar.classList.toggle("hidden", contratoAtual.status === "ACEITO");
           if (contratoAtual.status === "ACEITO") {
-            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="visualizar-contrato.html?leadestabelecimento_id=${estabelecimentoId}&modo=assinado">Ver contrato assinado</a>`;
+            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="contrato-assinado.html?leadestabelecimento_id=${estabelecimentoId}">Ver contrato assinado</a>`;
             el.statusAssinado.classList.remove("hidden");
           }
           el.carregando.classList.add("hidden");

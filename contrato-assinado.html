@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contrato assinado | Clubbar</title><link rel="icon" type="image/png" href="assets/images/coruja.png">
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#202124;font-family:Arial,Helvetica,sans-serif}.topbar{height:74px;padding:8px 18px;display:grid;grid-template-columns:42px 1fr 42px;align-items:center;background:#050505}.brand{display:flex;align-items:center;justify-content:center;gap:6px}.brand img{object-fit:contain}.brand .owl{width:46px;height:46px}.brand .logo{height:43px}.back{color:#fff;text-decoration:none;font-size:25px;font-weight:900}main{width:min(920px,calc(100% - 28px));margin:auto;padding:28px 0 48px}.lead{margin:0;color:#1976d2;font-size:clamp(25px,5vw,34px)}.estab{margin:7px 0 20px;color:#1976d2;font-size:21px;font-weight:800}.card{padding:clamp(18px,4vw,28px);border:1px solid #d9dde2;border-radius:20px;background:#fff;box-shadow:0 8px 24px #00000014}.status{margin:0 0 16px;color:#176b3b;font-weight:800}.contract{padding:20px;border:1px solid #d9dde2;border-radius:14px;background:#f8f9fa;white-space:pre-wrap;line-height:1.6;font-size:15px}.state{text-align:center;padding:60px 20px}.btn{display:block;width:100%;margin-top:20px;padding:14px;border:0;border-radius:12px;background:#ffc107;color:#111;text-align:center;text-decoration:none;font-weight:800;font-size:16px}
+  </style>
+</head>
+<body>
+  <header class="topbar"><a class="back" id="voltar" href="#">←</a><span class="brand"><img class="owl" src="assets/images/coruja.png" alt=""><img class="logo" src="assets/images/logo.png" alt="Clubbar"></span><span></span></header>
+  <div class="state" id="estado">Carregando contrato assinado...</div>
+  <main id="conteudo" hidden><h1 class="lead" id="lead"></h1><h2 class="estab" id="estabelecimento"></h2><section class="card"><p class="status">Contrato assinado digitalmente</p><div class="contract" id="contrato"></div><a class="btn" id="voltarBtn" href="#">Voltar</a></section></main>
+  <script src="js/config.js"></script><script src="js/session.js"></script>
+  <script>
+    const token=sessionStorage.getItem('clubbar_portal_lead_token');const id=Number(new URLSearchParams(location.search).get('leadestabelecimento_id'));const api=CLUBBAR_CONFIG.API_BASE_URL;const estado=document.getElementById('estado');const main=document.getElementById('conteudo');const voltar=`portal-lead.html?leadestabelecimento_id=${id}`;document.getElementById('voltar').href=voltar;document.getElementById('voltarBtn').href=voltar;
+    async function carregar(){if(!token||!id){location.href='portal-lead.html';return}try{const r=await fetch(`${api}/portal-parceiro/resumo?leadestabelecimento_id=${id}`,{headers:{Authorization:`Bearer ${token}`}});const d=await r.json();if(!r.ok)throw Error(d.detail||'Não foi possível carregar o contrato.');const e=(d.estabelecimentos||[]).find(x=>x.leadestabelecimento_id===id);const c=e?.contratos?.find(x=>x.status==='ACEITO')||e?.contratos?.[0];if(!e||!c?.conteudocontrato)throw Error('Contrato assinado não encontrado.');document.getElementById('lead').textContent=`Lead #${d.leadparceiro_id} ${d.nmresponsavel}`;document.getElementById('estabelecimento').textContent=`Estabelecimento: ${e.nmestabelecimento}`;document.getElementById('contrato').textContent=c.conteudocontrato;estado.hidden=true;main.hidden=false}catch(err){estado.textContent=err.message||'Não foi possível carregar o contrato.'}}carregar();
+  </script>
+</body>
+</html>
