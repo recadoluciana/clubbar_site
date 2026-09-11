@@ -217,7 +217,7 @@
               "O contrato ainda não foi disponibilizado para este estabelecimento.",
             );
           }
-          el.nomeLead.textContent = resumo.nmresponsavel || "Lead";
+          el.nomeLead.textContent = `Lead #${resumo.leadparceiro_id || ""} ${resumo.nmresponsavel || ""}`.trim();
           el.tituloEstabelecimento.textContent = `Estabelecimento: ${texto(estabelecimento.nmestabelecimento)}`;
           el.dadosEstabelecimento.replaceChildren(
             campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel),
@@ -233,6 +233,14 @@
             campo("Complemento", estabelecimento.complemento),
             campo("Cidade", estabelecimento.nmcidade),
             campo("Estado", estabelecimento.sgestado),
+            campo("Mensagem", estabelecimento.mensagem),
+            campo("Status", nomeStatus(estabelecimento.status)),
+            campo("Taxa de produtos", `${texto(estabelecimento.vrtaxaprod)}%`),
+            campo("Taxa de ingressos", `${texto(estabelecimento.vrtaxaing)}%`),
+            campo("Taxa mínima de ingresso", estabelecimento.vrtaxaminimaingresso),
+            campo("Data de criação", dataHora(estabelecimento.dtcriacao)),
+            campo("Última atualização", dataHora(estabelecimento.dtultatu)),
+            campo("Data de conversão", dataHora(estabelecimento.dtconversao)),
           );
           el.tituloContrato.textContent =
             `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
