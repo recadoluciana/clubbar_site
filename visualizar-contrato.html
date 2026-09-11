@@ -71,6 +71,7 @@
         font-size: 20px;
       }
       .contract-title, .contract-text { display: none; }
+      body.mostrar-contrato .contract-title, body.mostrar-contrato .contract-text { display: block; }
       .establishment-title { margin: 0 0 16px; color: var(--blue); font-size: 22px; }
       .lead-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; margin-bottom:20px; }
       .lead-data div { padding:10px 12px; border-bottom:1px solid #edf0f2; color:#555; font-size:14px; }
@@ -152,6 +153,8 @@
       const token = sessionStorage.getItem(STORAGE_KEY);
       const params = new URLSearchParams(window.location.search);
       const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
+      const modoAssinado = params.get("modo") === "assinado";
+      if (modoAssinado) document.body.classList.add("mostrar-contrato");
       let contratoAtual = null;
       const el = {
         voltar: document.getElementById("voltar"),
@@ -250,7 +253,7 @@
           assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;
           assinar.classList.toggle("hidden", contratoAtual.status === "ACEITO");
           if (contratoAtual.status === "ACEITO") {
-            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="visualizar-contrato.html?leadestabelecimento_id=${estabelecimentoId}">Ver contrato assinado</a>`;
+            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="visualizar-contrato.html?leadestabelecimento_id=${estabelecimentoId}&modo=assinado">Ver contrato assinado</a>`;
             el.statusAssinado.classList.remove("hidden");
           }
           el.carregando.classList.add("hidden");
