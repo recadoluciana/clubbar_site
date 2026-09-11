@@ -2391,6 +2391,74 @@
         }
       }
 
+      function documentoValido(valor) {
+        const numeros = (valor || "").replace(/\D/g, "");
+        if (/^(\d)\1+$/.test(numeros)) return false;
+        if (numeros.length === 11) {
+          let soma = 0;
+          for (let indice = 0; indice < 9; indice++) soma += Number(numeros[indice]) * (10 - indice);
+          let digito = (soma * 10) % 11;
+          if (digito === 10) digito = 0;
+          if (digito !== Number(numeros[9])) return false;
+          soma = 0;
+          for (let indice = 0; indice < 10; indice++) soma += Number(numeros[indice]) * (11 - indice);
+          digito = (soma * 10) % 11;
+          if (digito === 10) digito = 0;
+          return digito === Number(numeros[10]);
+        }
+        if (numeros.length === 14) {
+          let soma = 0;
+          let peso = 5;
+          for (let indice = 0; indice < 12; indice++) {
+            soma += Number(numeros[indice]) * peso;
+            peso = peso === 2 ? 9 : peso - 1;
+          }
+          let resto = soma % 11;
+          let digito = resto < 2 ? 0 : 11 - resto;
+          if (digito !== Number(numeros[12])) return false;
+          soma = 0;
+          peso = 6;
+          for (let indice = 0; indice < 13; indice++) {
+            soma += Number(numeros[indice]) * peso;
+            peso = peso === 2 ? 9 : peso - 1;
+          }
+          resto = soma % 11;
+          digito = resto < 2 ? 0 : 11 - resto;
+          return digito === Number(numeros[13]);
+        }
+        return false;
+      }
+
+      let cepEstabelecimentoTimer;
+      async function buscarCepEstabelecimento() {
+        const cep = elementos.novoEstabelecimentoCep.value.replace(/\D/g, "");
+        if (cep.length !== 8) return;
+        clearTimeout(cepEstabelecimentoTimer);
+        cepEstabelecimentoTimer = setTimeout(async () => {
+          try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const dados = await resposta.json();
+            if (!resposta.ok || dados.erro) throw new Error("CEP não encontrado.");
+            elementos.novoEstabelecimentoEndereco.value = dados.logradouro || "";
+            elementos.novoEstabelecimentoBairro.value = dados.bairro || "";
+            elementos.novoEstabelecimentoComplemento.value = dados.complemento || "";
+            const estado = [...elementos.novoEstabelecimentoEstado.options].find(
+              (opcao) => opcao.textContent.trim().toUpperCase() === dados.uf?.toUpperCase(),
+            );
+            if (estado) {
+              elementos.novoEstabelecimentoEstado.value = estado.value;
+              await carregarCidadesEstabelecimento(estado.value);
+              const cidade = [...elementos.novoEstabelecimentoCidade.options].find(
+                (opcao) => opcao.textContent.trim().toLowerCase() === dados.localidade?.toLowerCase(),
+              );
+              if (cidade) elementos.novoEstabelecimentoCidade.value = cidade.value;
+            }
+          } catch (erro) {
+            mostrarToast(erro.message || "Não foi possível consultar o CEP.", true);
+          }
+        }, 350);
+      }
+
       async function cadastrarNovoEstabelecimento(evento) {
         evento.preventDefault();
         const tipoVenda = elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]:checked')?.value;
@@ -2406,6 +2474,11 @@
         }
         if (!elementos.novoEstabelecimentoDocumento.value.trim()) {
           mostrarToast("Informe o CPF ou CNPJ do estabelecimento.", true);
+          elementos.novoEstabelecimentoDocumento.focus();
+          return;
+        }
+        if (!documentoValido(elementos.novoEstabelecimentoDocumento.value)) {
+          mostrarToast("Informe um CPF ou CNPJ válido.", true);
           elementos.novoEstabelecimentoDocumento.focus();
           return;
         }
@@ -2481,6 +2554,7 @@
       elementos.novoEstabelecimentoEstado.addEventListener("change", () =>
         carregarCidadesEstabelecimento(elementos.novoEstabelecimentoEstado.value),
       );
+      elementos.novoEstabelecimentoCep.addEventListener("input", buscarCepEstabelecimento);
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
         elementos.btnNovoAcesso.disabled = true;
