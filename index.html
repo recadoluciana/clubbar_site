@@ -139,7 +139,7 @@
     funcionalidades.className = 'functionalities-card';
     funcionalidades.innerHTML = '<h2>Funcionalidades</h2><div class="grid"></div>';
     funcionalidades.querySelector('.grid').append(...beneficios.querySelectorAll('.card'));
-    document.querySelector('.hero').after(funcionalidades);
+    operacao.before(funcionalidades);
     beneficios.parentElement.remove();
   }
   const planoCompleto = document.querySelector('.plan');
