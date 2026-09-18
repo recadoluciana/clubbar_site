@@ -2642,7 +2642,15 @@
           );
           const dados = await resposta.json();
           if (!resposta.ok) {
-            throw new Error(dados.detail || "Não foi possível enviar os dados.");
+            const detalhe = dados.detail;
+            const mensagem = Array.isArray(detalhe)
+              ? detalhe
+                  .map((item) => item.description || item.msg || JSON.stringify(item))
+                  .join(" ")
+              : detalhe && typeof detalhe === "object"
+                ? detalhe.description || detalhe.message || JSON.stringify(detalhe)
+                : detalhe || "Não foi possível enviar os dados.";
+            throw new Error(mensagem);
           }
           mostrarToast(dados.mensagem);
           elementos.formRecuperarDados.classList.add("hidden");
