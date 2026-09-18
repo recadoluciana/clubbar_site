@@ -757,13 +757,29 @@
         if (cep.length !== 8) return;
         const endereco = card.querySelector('[data-campo="endereco"]');
         const bairro = card.querySelector('[data-campo="bairro"]');
+        const estado = card.querySelector('[data-campo="estado_id"]');
+        const cidade = card.querySelector('[data-campo="cidade_id"]');
         try {
           const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          if (!resposta.ok) throw new Error("Não foi possível consultar o CEP.");
           const dados = await resposta.json();
-          if (dados.erro) return;
-          if (endereco && !endereco.value) endereco.value = dados.logradouro || "";
-          if (bairro && !bairro.value) bairro.value = dados.bairro || "";
-        } catch (_) {}
+          if (dados.erro || !dados.cep) throw new Error("CEP não encontrado.");
+          if (nums(campoCep.value) !== cep) return;
+          endereco.value = dados.logradouro || "";
+          bairro.value = dados.bairro || "";
+          const estadoEncontrado = estadosCache.find(x => x.sgestado === dados.uf);
+          if (!estadoEncontrado) throw new Error("Estado do CEP não encontrado no cadastro.");
+          estado.value = String(estadoEncontrado.estado_id);
+          await loadCities(estado.value, cidade);
+          if (nums(campoCep.value) !== cep) return;
+          const cidadeEncontrada = [...cidade.options].find(x => x.textContent.localeCompare(dados.localidade || "", "pt-BR", { sensitivity: "base" }) === 0);
+          if (!cidadeEncontrada) throw new Error("Cidade do CEP não encontrada no cadastro.");
+          cidade.value = cidadeEncontrada.value;
+          campoCep.dataset.cepValidado = cep;
+        } catch (erro) {
+          campoCep.dataset.cepValidado = "";
+          toast(erro.message, "err");
+        }
       }
       function criarEstabelecimento() {
         const indice = proximoEstabelecimento++;
@@ -778,13 +794,13 @@
           </div>
           <div class="group"><label for="cpfcnpj-${indice}">CPF ou CNPJ <span class="required">*</span></label><input id="cpfcnpj-${indice}" data-campo="cpfcnpj" required inputmode="numeric" maxlength="18" placeholder="Informe um CPF (11 dígitos) ou CNPJ (14 dígitos)"></div>
           <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
-          <section aria-label="Endereço completo opcional"><h3 style="margin:14px 0">Endereço completo (opcional)</h3>
-            <div class="grid"><div class="group"><label>CEP</label><input data-campo="cep" inputmode="numeric" maxlength="9"></div><div class="group"><label>Endereço</label><input data-campo="endereco" maxlength="255"></div></div>
-            <div class="grid"><div class="group"><label>Número</label><input data-campo="numero" maxlength="20"></div><div class="group"><label>Bairro</label><input data-campo="bairro" maxlength="120"></div></div>
+          <section aria-label="Endereço completo obrigatório"><h3 style="margin:14px 0">Endereço do estabelecimento</h3>
+            <div class="grid"><div class="group"><label>CEP <span class="required">*</span></label><input data-campo="cep" required inputmode="numeric" maxlength="9" placeholder="00000-000"></div><div class="group"><label>Endereço <span class="required">*</span></label><input data-campo="endereco" required maxlength="255"></div></div>
+            <div class="grid"><div class="group"><label>Número <span class="required">*</span></label><input data-campo="numero" required maxlength="20"></div><div class="group"><label>Bairro <span class="required">*</span></label><input data-campo="bairro" required maxlength="120"></div></div>
             <div class="group"><label>Complemento</label><input data-campo="complemento" maxlength="120"></div>
           <div class="grid">
-            <div class="group"><label>Estado</label><select data-campo="estado_id"></select></div>
-            <div class="group"><label>Cidade</label><select data-campo="cidade_id" disabled><option value="">Selecione primeiro o estado</option></select></div>
+            <div class="group"><label>Estado <span class="required">*</span></label><select data-campo="estado_id" required></select></div>
+            <div class="group"><label>Cidade <span class="required">*</span></label><select data-campo="cidade_id" required disabled><option value="">Selecione primeiro o estado</option></select></div>
           </div>
           </section>
           <div class="error" data-error></div>`;
@@ -794,6 +810,12 @@
         estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
         const campoCep = card.querySelector('[data-campo="cep"]');
         campoCep.addEventListener("input", () => {
+          campoCep.dataset.cepValidado = "";
+          card.querySelector('[data-campo="endereco"]').value = "";
+          card.querySelector('[data-campo="bairro"]').value = "";
+          estadoSelect.value = "";
+          cidadeSelect.innerHTML = '<option value="">Selecione primeiro o estado</option>';
+          cidadeSelect.disabled = true;
           const numeros = nums(campoCep.value).slice(0, 8);
           campoCep.value = numeros.length > 5 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : numeros;
           if (numeros.length === 8) buscarEnderecoPorCep(card, campoCep);
@@ -851,6 +873,17 @@
           }
           if (!item.tipo) erros.push("selecione o tipo");
           if (!item.tipovenda) erros.push("selecione o tipo de venda");
+          if (item.cep?.length !== 8 || card.querySelector('[data-campo="cep"]').dataset.cepValidado !== item.cep) {
+            erros.push("informe e confirme um CEP válido");
+            card.querySelector('[data-campo="cep"]').classList.add("invalid");
+          }
+          for (const campo of ["endereco", "numero", "bairro"]) {
+            if (!item[campo]) {
+              erros.push(`informe ${campo === "endereco" ? "o endereço" : campo === "numero" ? "o número" : "o bairro"}`);
+              card.querySelector(`[data-campo="${campo}"]`).classList.add("invalid");
+            }
+          }
+          if (!item.estado_id || !item.cidade_id) erros.push("selecione estado e cidade do CEP");
           if (item.email && !validEmail(item.email)) erros.push("informe um e-mail válido");
           if (item.telefone && ![10, 11].includes(item.telefone.length)) erros.push("informe um telefone válido");
           card.querySelector("[data-error]").textContent = erros.length ? `Revise este estabelecimento: ${erros.join(", ")}.` : "";

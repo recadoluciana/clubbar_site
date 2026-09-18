@@ -1471,16 +1471,16 @@
                 <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="AMBOS"><span>Produtos e ingressos</span></label>
               </div>
             </fieldset>
-            <details class="new-establishment-address">
-              <summary>Adicionar endereço</summary>
+            <div class="new-establishment-address">
+              <strong>Endereço do estabelecimento</strong>
               <div class="new-establishment-grid">
-                <div class="new-establishment-field"><label for="novoEstabelecimentoCep">CEP</label><input class="form-control" id="novoEstabelecimentoCep" inputmode="numeric" maxlength="9"></div>
-                <div class="new-establishment-field"><label for="novoEstabelecimentoEndereco">Endereço</label><input class="form-control" id="novoEstabelecimentoEndereco" maxlength="255"></div>
-                <div class="new-establishment-field"><label for="novoEstabelecimentoNumero">Número</label><input class="form-control" id="novoEstabelecimentoNumero" maxlength="20"></div>
-                <div class="new-establishment-field"><label for="novoEstabelecimentoBairro">Bairro</label><input class="form-control" id="novoEstabelecimentoBairro" maxlength="120"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoCep">CEP <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoCep" required inputmode="numeric" maxlength="9"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoEndereco">Endereço <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEndereco" required maxlength="255"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoNumero">Número <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoNumero" required maxlength="20"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoBairro">Bairro <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoBairro" required maxlength="120"></div>
               </div>
               <div class="new-establishment-field"><label for="novoEstabelecimentoComplemento">Complemento</label><input class="form-control" id="novoEstabelecimentoComplemento" maxlength="120"></div>
-            </details>
+            </div>
             <div class="new-establishment-grid">
               <div class="new-establishment-field">
                 <label for="novoEstabelecimentoEstado">Estado <span class="required">*</span></label>
@@ -2488,6 +2488,16 @@
         if (!tipoVenda) {
           mostrarToast("Selecione o que deseja vender.", true);
           elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]')?.focus();
+          return;
+        }
+        if (elementos.novoEstabelecimentoCep.value.replace(/\D/g, "").length !== 8) {
+          mostrarToast("Informe um CEP válido com 8 dígitos.", true);
+          elementos.novoEstabelecimentoCep.focus();
+          return;
+        }
+        if (![elementos.novoEstabelecimentoEndereco, elementos.novoEstabelecimentoNumero, elementos.novoEstabelecimentoBairro].every(campo => campo.value.trim())) {
+          mostrarToast("Complete o endereço, número e bairro.", true);
+          elementos.novoEstabelecimentoEndereco.focus();
           return;
         }
         if (!elementos.novoEstabelecimentoEstado.value) {
