@@ -247,7 +247,9 @@
             campo("Data de conversão", dataHora(estabelecimento.dtconversao)),
           );
           el.tituloContrato.textContent =
-            `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
+            contratoAtual.tipoinstrumento === "RETIFICACAO"
+              ? `Retificação nº ${contratoAtual.nrretificacao} - ${nomeStatus(contratoAtual.status)}`
+              : `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
           el.textoContrato.textContent = contratoAtual.conteudocontrato;
           const assinar = document.getElementById("assinarContrato");
           assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;

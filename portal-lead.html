@@ -1869,6 +1869,21 @@
           linkPartner.textContent = "Acessar Clubbar Partner ↗";
           celebracao.append(icone, titulo, mensagem);
           elementos.contratoEstabelecimento.append(celebracao);
+          if (contrato?.tipoinstrumento === "RETIFICACAO" && contrato.status === "ENVIADO") {
+            const aviso = document.createElement("div");
+            aviso.style.cssText = "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:14px;background:#f5f9ff";
+            const tituloRetificacao = document.createElement("strong");
+            tituloRetificacao.textContent = `Retificação nº ${contrato.nrretificacao} aguardando sua assinatura`;
+            const instrucao = document.createElement("p");
+            instrucao.textContent = "Revise as correções propostas no contrato. Elas só passarão a valer após sua assinatura.";
+            const assinar = document.createElement("button");
+            assinar.type = "button";
+            assinar.className = "decision-button accept";
+            assinar.textContent = "Revisar e assinar retificação";
+            assinar.addEventListener("click", visualizarContrato);
+            aviso.append(tituloRetificacao, instrucao, assinar);
+            elementos.contratoEstabelecimento.append(aviso);
+          }
         }
         elementos.contratoEstabelecimento.classList.toggle(
           "hidden",
@@ -1877,7 +1892,9 @@
         if (!parceriaAceita && fluxoAceiteAberto && contrato) {
           const cardContrato = document.createElement("div");
           const tituloContrato = document.createElement("strong");
-          tituloContrato.textContent = `Contrato ${contrato.versao} — ${contrato.status}`;
+          tituloContrato.textContent = contrato.tipoinstrumento === "RETIFICACAO"
+            ? `Retificação nº ${contrato.nrretificacao} — ${contrato.status}`
+            : `Contrato ${contrato.versao} — ${contrato.status}`;
           cardContrato.append(tituloContrato);
           const ferramentasContrato = document.createElement("div");
           ferramentasContrato.className = "contract-tools";
@@ -1903,11 +1920,7 @@
             aceitarContrato.className = "decision-button accept";
             aceitarContrato.style.marginTop = "14px";
             aceitarContrato.textContent = "Li e aceito o contrato";
-            aceitarContrato.addEventListener("click", () =>
-              registrarAceiteContrato(
-                contrato.leadestabelecimentocontrato_id,
-              ),
-            );
+            aceitarContrato.addEventListener("click", iniciarAceiteParceria);
             cardContrato.append(document.createElement("br"), aceitarContrato);
           }
           const cobranca = contrato.cobranca_implantacao;
@@ -2325,19 +2338,6 @@
           });
           await carregarResumo();
           mostrarToast("Sua decisão foi registrada.");
-        } catch (erro) {
-          mostrarToast(erro.message, true);
-        }
-      }
-
-      async function registrarAceiteContrato(contratoId) {
-        if (!window.confirm("Confirma o aceite deste contrato?")) return;
-        try {
-          await api(`/portal-parceiro/contratos/${contratoId}/aceitar`, {
-            method: "PATCH",
-          });
-          await carregarResumo();
-          mostrarToast("Contrato aceito com sucesso.");
         } catch (erro) {
           mostrarToast(erro.message, true);
         }

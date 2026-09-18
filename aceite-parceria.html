@@ -216,6 +216,23 @@
       </form>
     </dialog>
 
+    <dialog id="completarEndereco" style="border:0;border-radius:16px;padding:24px;width:min(480px,90vw);max-height:85vh;overflow:auto">
+      <form id="formEnderecoContrato" style="display:grid;gap:12px">
+        <h2>Endereço do estabelecimento</h2>
+        <p>Confirme o endereço completo que aparecerá no contrato antes de assinar. O complemento é opcional.</p>
+        <label>CEP <input id="cepAssinatura" required inputmode="numeric" maxlength="9" placeholder="00000-000" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Endereço <input id="enderecoAssinatura" required maxlength="255" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Número <input id="numeroAssinatura" required maxlength="20" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Bairro <input id="bairroAssinatura" required maxlength="120" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Complemento (opcional) <input id="complementoAssinatura" maxlength="120" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>Estado <select id="estadoAssinatura" required style="display:block;width:100%;padding:10px;box-sizing:border-box"></select></label>
+        <label>Cidade <select id="cidadeAssinatura" required style="display:block;width:100%;padding:10px;box-sizing:border-box"></select></label>
+        <p id="erroEndereco" role="alert" style="color:#b42318"></p>
+        <button class="button" type="submit">Atualizar e revisar contrato</button>
+        <button class="button secondary" id="cancelarEndereco" type="button">Cancelar e fechar</button>
+      </form>
+    </dialog>
+
     <script src="js/config.js"></script>
     <script src="js/session.js"></script>
     <script src="js/contact.js"></script>
@@ -298,15 +315,18 @@
         el.pagamento.replaceChildren();
         el.pagamento.classList.remove("hidden");
         const titulo = document.createElement("strong");
-        titulo.textContent = "Contrato aceito";
+        titulo.textContent = contratoAtual?.tipoinstrumento === "RETIFICACAO" ? "Retificação assinada" : "Contrato aceito";
         const descricao = document.createElement("p");
-        descricao.textContent =
-          "Conclua a parceria para que a equipe Clubbar possa converter o cadastro e iniciar a implantação.";
+        descricao.textContent = contratoAtual?.tipoinstrumento === "RETIFICACAO"
+          ? "Os dados corrigidos já estão registrados. O contrato original e esta retificação permanecem disponíveis para consulta."
+          : "Conclua a parceria para que a equipe Clubbar possa converter o cadastro e iniciar a implantação.";
         el.pagamento.append(titulo, descricao);
         const concluir = document.createElement("button");
         concluir.className = "button green";
-        concluir.textContent = "Concluir parceria";
-        concluir.addEventListener("click", concluirParceria);
+        concluir.textContent = contratoAtual?.tipoinstrumento === "RETIFICACAO" ? "Voltar ao portal" : "Concluir parceria";
+        concluir.addEventListener("click", contratoAtual?.tipoinstrumento === "RETIFICACAO"
+          ? () => { window.location.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`; }
+          : concluirParceria);
         el.pagamento.append(concluir);
       }
 
@@ -336,6 +356,78 @@
         });
       }
 
+      function enderecoPrecisaRevisao(estabelecimento, contrato) {
+        const cep = String(estabelecimento.cep || "").replace(/\D/g, "");
+        if (cep.length !== 8 || !estabelecimento.endereco?.trim() ||
+            !estabelecimento.numero?.trim() || !estabelecimento.bairro?.trim() ||
+            !estabelecimento.estado_id || !estabelecimento.cidade_id) return true;
+        return cep !== String(contrato.cepcontratante || "").replace(/\D/g, "") ||
+          estabelecimento.endereco !== contrato.enderecocontratante ||
+          estabelecimento.numero !== contrato.numerocontratante ||
+          estabelecimento.bairro !== contrato.bairrocontratante ||
+          Number(estabelecimento.estado_id) !== Number(contrato.estado_id_contratante) ||
+          Number(estabelecimento.cidade_id) !== Number(contrato.cidade_id_contratante);
+      }
+
+      async function solicitarEndereco(estabelecimento) {
+        const dialog = document.getElementById("completarEndereco");
+        const form = document.getElementById("formEnderecoContrato");
+        const campo = id => document.getElementById(id);
+        const estado = campo("estadoAssinatura");
+        const cidade = campo("cidadeAssinatura");
+        const respostaEstados = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`);
+        if (!respostaEstados.ok) throw new Error("Não foi possível carregar os estados.");
+        estado.replaceChildren(new Option("Selecione o estado", ""));
+        for (const item of await respostaEstados.json()) {
+          estado.add(new Option(`${item.sgestado} - ${item.nmestado}`, item.estado_id));
+        }
+        async function carregarCidades(estadoId, cidadeId) {
+          cidade.replaceChildren(new Option("Selecione a cidade", ""));
+          cidade.disabled = !estadoId;
+          if (!estadoId) return;
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`);
+          if (!resposta.ok) throw new Error("Não foi possível carregar as cidades.");
+          for (const item of await resposta.json()) cidade.add(new Option(item.nmcidade, item.cidade_id));
+          if (cidadeId) cidade.value = String(cidadeId);
+        }
+        campo("cepAssinatura").value = estabelecimento.cep || "";
+        campo("enderecoAssinatura").value = estabelecimento.endereco || "";
+        campo("numeroAssinatura").value = estabelecimento.numero || "";
+        campo("bairroAssinatura").value = estabelecimento.bairro || "";
+        campo("complementoAssinatura").value = estabelecimento.complemento || "";
+        estado.value = String(estabelecimento.estado_id || "");
+        await carregarCidades(estado.value, estabelecimento.cidade_id);
+        campo("erroEndereco").textContent = "";
+        el.carregando.classList.add("hidden");
+        return new Promise(resolve => {
+          const terminar = valor => { dialog.close(); resolve(valor); };
+          estado.onchange = () => carregarCidades(estado.value).catch(erro => {
+            campo("erroEndereco").textContent = erro.message;
+          });
+          form.onsubmit = event => {
+            event.preventDefault();
+            const cep = campo("cepAssinatura").value.replace(/\D/g, "");
+            if (cep.length !== 8) {
+              campo("erroEndereco").textContent = "Informe um CEP com 8 dígitos.";
+              campo("cepAssinatura").focus();
+              return;
+            }
+            terminar({
+              cep,
+              endereco: campo("enderecoAssinatura").value.trim(),
+              numero: campo("numeroAssinatura").value.trim(),
+              bairro: campo("bairroAssinatura").value.trim(),
+              complemento: campo("complementoAssinatura").value.trim() || null,
+              estado_id: Number(estado.value),
+              cidade_id: Number(cidade.value),
+            });
+          };
+          campo("cancelarEndereco").onclick = () => terminar(null);
+          dialog.oncancel = event => { event.preventDefault(); terminar(null); };
+          dialog.showModal();
+        });
+      }
+
       async function renderizar(resumo) {
         const estabelecimento = (resumo.estabelecimentos || []).find(
           (item) => item.leadestabelecimento_id === estabelecimentoId,
@@ -346,7 +438,9 @@
         }
         el.nomeLead.textContent = resumo.nmresponsavel || "Lead";
         el.nomeEstabelecimento.textContent = estabelecimento.nmestabelecimento || "Estabelecimento";
-        el.tituloContrato.textContent = `Contrato ${contratoAtual.versao}`;
+        el.tituloContrato.textContent = contratoAtual.tipoinstrumento === "RETIFICACAO"
+          ? `Retificação nº ${contratoAtual.nrretificacao} do contrato`
+          : `Contrato ${contratoAtual.versao}`;
         el.textoContrato.textContent = contratoAtual.conteudocontrato;
         if (contratoAtual.status === "RASCUNHO") {
           let dados = {
@@ -362,6 +456,17 @@
           }
           contratoAtual = await api(`/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/dados`, {
             method: "PATCH", body: JSON.stringify(dados),
+          });
+          el.textoContrato.textContent = contratoAtual.conteudocontrato;
+        }
+        if (contratoAtual.tipoinstrumento !== "RETIFICACAO" && contratoAtual.status !== "ACEITO" && enderecoPrecisaRevisao(estabelecimento, contratoAtual)) {
+          const endereco = await solicitarEndereco(estabelecimento);
+          if (!endereco) {
+            window.location.replace(`portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`);
+            return;
+          }
+          contratoAtual = await api(`/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/endereco`, {
+            method: "PATCH", body: JSON.stringify(endereco),
           });
           el.textoContrato.textContent = contratoAtual.conteudocontrato;
         }
