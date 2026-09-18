@@ -621,6 +621,7 @@
       let estadosCache = [];
       const ids = ["nmresponsavel", "nmorganizacao", "telefone", "email"];
       const nums = (v) => v.replace(/\D/g, "");
+      const documentoFiscal = (v) => String(v || "").replace(/[^0-9a-z]/gi, "").toUpperCase();
       function mask(v) {
         const n = nums(v).slice(0, 11);
         if (n.length <= 2) return n;
@@ -792,7 +793,7 @@
             <div class="group"><label>Nome <span class="required">*</span></label><input data-campo="nmestabelecimento" maxlength="160" placeholder="Ex.: Adega Bar"></div>
             <div class="group"><label>Tipo <span class="required">*</span></label><select data-campo="tipo"><option value="">Selecione</option><option value="BAR">Bar</option><option value="CASA_NOTURNA">Casa noturna</option><option value="PRODUTOR_EVENTOS">Produtor de eventos</option><option value="CASA_EVENTOS">Casa de eventos</option></select></div>
           </div>
-          <div class="group"><label for="cpfcnpj-${indice}">CPF ou CNPJ <span class="required">*</span></label><input id="cpfcnpj-${indice}" data-campo="cpfcnpj" required inputmode="numeric" maxlength="18" placeholder="Informe um CPF (11 dígitos) ou CNPJ (14 dígitos)"></div>
+          <div class="group"><label for="cpfcnpj-${indice}">CPF ou CNPJ <span class="required">*</span></label><input id="cpfcnpj-${indice}" data-campo="cpfcnpj" required inputmode="text" autocapitalize="characters" maxlength="18" placeholder="Informe um CPF ou CNPJ"></div>
           <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
           <section aria-label="Endereço completo obrigatório"><h3 style="margin:14px 0">Endereço do estabelecimento</h3>
             <div class="grid"><div class="group"><label>CEP <span class="required">*</span></label><input data-campo="cep" required inputmode="numeric" maxlength="9" placeholder="00000-000"></div><div class="group"><label>Endereço <span class="required">*</span></label><input data-campo="endereco" required maxlength="255"></div></div>
@@ -827,7 +828,7 @@
           nmestabelecimento: card.querySelector('[data-campo="nmestabelecimento"]').value.trim(),
           tipo: card.querySelector('[data-campo="tipo"]').value,
           tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
-          cpfcnpj: nums(card.querySelector('[data-campo="cpfcnpj"]').value),
+          cpfcnpj: documentoFiscal(card.querySelector('[data-campo="cpfcnpj"]').value),
           telefone: null,
           email: null,
           cep: nums(card.querySelector('[data-campo="cep"]').value) || null,

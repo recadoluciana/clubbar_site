@@ -208,7 +208,7 @@
       <form id="formDadosContrato" style="display:grid;gap:14px">
         <h2>Complete os dados do contrato</h2>
         <p>Informe os dados abaixo para revisar o contrato e assinar. Se cancelar, a assinatura será encerrada.</p>
-        <label>CPF ou CNPJ <input id="documentoAssinatura" required maxlength="18" inputmode="numeric" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <label>CPF ou CNPJ <input id="documentoAssinatura" required maxlength="18" inputmode="text" autocapitalize="characters" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
         <label>Nome completo ou razão social <input id="nomeAssinatura" required minlength="2" maxlength="160" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
         <p id="erroPreenchimento" role="alert" style="color:#b42318"></p>
         <button class="button" type="submit">Continuar para o contrato</button>
@@ -342,7 +342,7 @@
           const terminar = value => { dialog.close(); resolve(value); };
           form.onsubmit = event => {
             event.preventDefault();
-            const cpfcnpj = documento.value.replace(/\D/g, "");
+            const cpfcnpj = documento.value.replace(/[^0-9a-z]/gi, "").toUpperCase();
             const nmrazaosocial = nome.value.trim();
             if (![11, 14].includes(cpfcnpj.length) || nmrazaosocial.length < 2) {
               document.getElementById("erroPreenchimento").textContent = "Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos e o nome completo ou razão social.";
@@ -447,7 +447,7 @@
             cpfcnpj: contratoAtual.cpfcnpjcontratante || estabelecimento.cpfcnpj || "",
             nmrazaosocial: contratoAtual.nmrazaosocial || "",
           };
-          if (![11, 14].includes(dados.cpfcnpj.replace(/\D/g, "").length) || dados.nmrazaosocial.trim().length < 2) {
+          if (![11, 14].includes(dados.cpfcnpj.replace(/[^0-9a-z]/gi, "").length) || dados.nmrazaosocial.trim().length < 2) {
             dados = await solicitarDados(dados);
             if (!dados) {
               window.location.replace(`portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`);

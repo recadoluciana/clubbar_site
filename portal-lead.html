@@ -1392,6 +1392,14 @@
                 >
                   Assinar seu contrato
                 </button>
+                <button
+                  class="decision-button analyzing"
+                  id="btnDocumentosContratuais"
+                  type="button"
+                  disabled
+                >
+                  Documentos contratuais
+                </button>
                 <button class="decision-button analyzing" id="btnBaixarContrato" type="button" disabled>Baixar contrato em PDF</button>
               </div>
             </div>
@@ -1461,7 +1469,7 @@
             </div>
             <div class="new-establishment-field">
               <label for="novoEstabelecimentoDocumento">CPF ou CNPJ <span class="required">*</span></label>
-              <input class="form-control" id="novoEstabelecimentoDocumento" inputmode="numeric" required placeholder="Informe o CPF ou CNPJ" />
+              <input class="form-control" id="novoEstabelecimentoDocumento" inputmode="text" autocapitalize="characters" required placeholder="Informe o CPF ou CNPJ" />
             </div>
             <fieldset class="new-establishment-choices">
               <legend>O que deseja vender? <span class="required">*</span></legend>
@@ -1544,6 +1552,7 @@
         ),
         btnVisualizarContrato: document.getElementById("btnVisualizarContrato"),
         btnAceitarParceria: document.getElementById("btnAceitarParceria"),
+        btnDocumentosContratuais: document.getElementById("btnDocumentosContratuais"),
         formEstabelecimento: document.getElementById("formEstabelecimento"),
         novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
         novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
@@ -1994,6 +2003,13 @@
         );
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
         elementos.btnVisualizarContrato.textContent = "Visualizar/assinar seu contrato";
+        const documentosAssinados = (estabelecimento.contratos || []).filter(
+          item => item.status === "ACEITO" && item.conteudocontrato,
+        );
+        elementos.btnDocumentosContratuais.disabled = !documentosAssinados.length;
+        elementos.btnDocumentosContratuais.textContent = documentosAssinados.length
+          ? `Documentos contratuais (${documentosAssinados.length})`
+          : "Documentos contratuais";
         const baixar = document.getElementById("btnBaixarContrato");
         const contratoAceito = estabelecimento.contratos?.find(item => item.status === "ACEITO");
         baixar.disabled = !contratoAceito;
@@ -2395,6 +2411,8 @@
       }
 
       function documentoValido(valor) {
+        const fiscal = String(valor || "").replace(/[^0-9a-z]/gi, "").toUpperCase();
+        if (/[A-Z]/.test(fiscal)) return /^[A-Z0-9]{12}\d{2}$/.test(fiscal);
         const numeros = (valor || "").replace(/\D/g, "");
         if (/^(\d)\1+$/.test(numeros)) return false;
         if (numeros.length === 11) {
@@ -2520,7 +2538,7 @@
               nmresponsavel: elementos.novoEstabelecimentoResponsavel.value.trim(),
               telefone_responsavel: elementos.novoEstabelecimentoTelefoneResponsavel.value.trim(),
               email_responsavel: elementos.novoEstabelecimentoEmailResponsavel.value.trim(),
-              cpfcnpj: elementos.novoEstabelecimentoDocumento.value.trim() || null,
+              cpfcnpj: elementos.novoEstabelecimentoDocumento.value.replace(/[^0-9a-z]/gi, "").toUpperCase() || null,
               cep: elementos.novoEstabelecimentoCep.value.replace(/\D/g, "") || null,
               endereco: elementos.novoEstabelecimentoEndereco.value.trim() || null,
               numero: elementos.novoEstabelecimentoNumero.value.trim() || null,
@@ -2667,6 +2685,11 @@
 
       elementos.btnAceitarParceria.addEventListener("click", iniciarAceiteParceria);
       elementos.btnVisualizarContrato.addEventListener("click", visualizarContrato);
+      elementos.btnDocumentosContratuais.addEventListener("click", () => {
+        const destino = new URL("contrato-assinado.html", window.location.href);
+        destino.searchParams.set("leadestabelecimento_id", estabelecimentoSelecionadoId);
+        window.location.href = destino.href;
+      });
 
       document.querySelectorAll("[data-status]").forEach((botao) => {
         botao.addEventListener("click", () =>
