@@ -44,7 +44,7 @@
     .topbar-control{width:132px;height:36px;padding:7px 12px;align-items:center;justify-content:center;gap:7px;border-radius:11px;color:#fff;font-family:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap}
     .topbar-link{display:inline-flex;border:1px solid #146c43;background:#146c43}
     .topbar-link:hover{color:#fff;background:#0f5132;border-color:#0f5132}
-    .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;border:1px solid #c62828;background:#c62828;cursor:pointer}.logout-link.show{display:inline-flex}.logout-link:hover{background:#a91f1f;border-color:#a91f1f;color:#fff}.logout-link svg{width:17px;height:17px;flex:0 0 17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;border:1px solid #c62828;background:#c62828;cursor:pointer}.logout-link.show{display:inline-flex}.logout-link:hover{background:#a91f1f;border-color:#a91f1f;color:#fff}.topbar-control svg{width:17px;height:17px;flex:0 0 17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .recovery-dialog{width:min(430px,calc(100% - 32px));margin:auto;padding:0;border:1px solid #ddd;border-radius:18px;background:#fff;box-shadow:0 24px 70px #0005}.recovery-dialog::backdrop{background:#0008}.recovery-dialog form{display:grid;gap:10px;padding:22px;text-align:center}.recovery-dialog h2{font-size:20px}.recovery-dialog input{min-height:46px;padding:10px;border:1px solid #ccc;border-radius:9px;text-align:left}.recovery-dialog button{min-height:42px;border:0;border-radius:10px;background:#ffbf00;font-weight:700;cursor:pointer}.recovery-close{background:#f2f2f2!important}
     .recovery-help{font-size:11px;line-height:1.45;color:#666}
     .price-highlight{color:var(--blue);font-weight:800}
@@ -68,7 +68,7 @@
     .hero-card .card:hover{transform:none;border-color:#e2e2e2}
     .functionalities-card{max-width:1120px;margin:0 auto;padding:22px;border:1px solid #dedede;border-radius:21px;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.1)}.functionalities-card h2{margin:0 0 16px;color:var(--blue);font-size:25px}.functionalities-card .grid{grid-template-columns:repeat(3,1fr)}
     @media(max-width:900px){.functionalities-card .grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:640px){.functionalities-card{margin:22px 16px 0;padding:16px}.functionalities-card .grid{grid-template-columns:1fr}}
-    @media(max-width:640px){header{width:100%;height:56px;min-width:0;overflow:hidden;padding:5px 8px;gap:6px}.header-brand{min-width:0}.brand-logo{height:27px;max-width:100%;transform:none}.brand-owl{width:31px;height:31px}.header-brand{gap:4px}.topbar-side{min-width:0}.topbar-control{width:102px;height:32px;padding:6px 8px;gap:5px;font-size:11px}.logout-link svg{width:15px;height:15px;flex-basis:15px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
+    @media(max-width:640px){header{width:100%;height:56px;min-width:0;overflow:hidden;padding:5px 8px;gap:6px}.header-brand{min-width:0}.brand-logo{height:27px;max-width:100%;transform:none}.brand-owl{width:31px;height:31px}.header-brand{gap:4px}.topbar-side{min-width:0}.topbar-control{width:102px;height:32px;padding:6px 8px;gap:5px;font-size:11px}.topbar-control svg{width:15px;height:15px;flex-basis:15px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
     @media(max-width:380px){header{gap:4px;padding-left:5px;padding-right:5px}.brand-logo{height:23px}.brand-owl{width:27px;height:27px}.topbar-control{width:91px;padding-left:5px;padding-right:5px;font-size:10px}}
   </style>
 </head>
@@ -82,7 +82,10 @@
   </div>
   <a class="header-brand" href="index.html"><img class="brand-owl" src="assets/images/coruja.png" alt=""><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar"></a>
   <nav class="topbar-side topbar-right" aria-label="Acesso do parceiro">
-    <a class="topbar-control topbar-link" href="portal-lead.html">Já me cadastrei</a>
+    <a class="topbar-control topbar-link" href="portal-lead.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path></svg>
+      <span>Entrar</span>
+    </a>
   </nav>
 </header>
 <section class="intro-index" aria-label="Apresentação do Clubbar">
