@@ -956,6 +956,11 @@
         font-size: 14px;
         font-weight: 600;
       }
+      .implantation-exemption-badge.paid {
+        color: #0b67c7;
+        background: #eef6ff;
+        border-color: rgba(11, 103, 199, 0.35);
+      }
 
       .portal-actions {
         margin-top: 18px;
@@ -1914,9 +1919,10 @@
           ) || contrato;
           const cobrancaImplantacao = contratoOriginal?.cobranca_implantacao;
           const implantacaoIsenta = cobrancaImplantacao?.status === "ISENTA";
+          const implantacaoPaga = cobrancaImplantacao?.status === "PAGA";
           const implantacaoLiberada =
             Number(contratoOriginal?.vrimplantacao || 0) <= 0 ||
-            cobrancaImplantacao?.status === "PAGA" ||
+            implantacaoPaga ||
             implantacaoIsenta;
           const celebracao = document.createElement("div");
           celebracao.className = "partnership-celebration";
@@ -1941,6 +1947,11 @@
             avisoIsencao.className = "implantation-exemption-badge";
             avisoIsencao.textContent = "✓ Taxa de implantação isenta";
             celebracao.append(avisoIsencao);
+          } else if (implantacaoPaga) {
+            const avisoPagamento = document.createElement("div");
+            avisoPagamento.className = "implantation-exemption-badge paid";
+            avisoPagamento.textContent = "✓ Taxa de implantação paga";
+            celebracao.append(avisoPagamento);
           }
           if (implantacaoLiberada) celebracao.append(linkPartner);
           elementos.contratoEstabelecimento.append(celebracao);
