@@ -193,7 +193,7 @@
 
         <p class="decision-copy">
           Esta decisão será registrada somente para o estabelecimento selecionado.
-          Depois de conhecer a proposta e o contrato, confirme o aceite para continuar.
+          Ao assinar o contrato, a parceria será aceita automaticamente.
         </p>
 
         <button class="button" id="confirmarAceite" type="button" disabled>
@@ -319,14 +319,14 @@
         const descricao = document.createElement("p");
         descricao.textContent = contratoAtual?.tipoinstrumento === "RETIFICACAO"
           ? "Os dados corrigidos já estão registrados. O contrato original e esta retificação permanecem disponíveis para consulta."
-          : "Conclua a parceria para que a equipe Clubbar possa converter o cadastro e iniciar a implantação.";
+          : "A assinatura também registrou o aceite da parceria. Não é necessária outra confirmação.";
         el.pagamento.append(titulo, descricao);
         const concluir = document.createElement("button");
         concluir.className = "button green";
-        concluir.textContent = contratoAtual?.tipoinstrumento === "RETIFICACAO" ? "Voltar ao portal" : "Concluir parceria";
-        concluir.addEventListener("click", contratoAtual?.tipoinstrumento === "RETIFICACAO"
-          ? () => { window.location.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`; }
-          : concluirParceria);
+        concluir.textContent = "Voltar ao portal";
+        concluir.addEventListener("click", () => {
+          window.location.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
+        });
         el.pagamento.append(concluir);
       }
 
@@ -502,23 +502,14 @@
         el.confirmarAceite.disabled = true;
         try {
           await api(`/portal-parceiro/contratos/${contratoAtual.leadestabelecimentocontrato_id}/aceitar`, { method: "PATCH" });
-          toast("Contrato aceito com sucesso.");
+          toast(contratoAtual.tipoinstrumento === "RETIFICACAO"
+            ? "Retificação assinada com sucesso."
+            : "Contrato assinado e parceria aceita com sucesso.");
           await carregar();
         } catch (erro) {
           toast(erro.message, true);
           el.confirmarAceite.disabled = false;
         }
-      }
-
-      async function concluirParceria() {
-        try {
-          await api("/portal-parceiro/status", {
-            method: "PATCH",
-            body: JSON.stringify({ leadestabelecimento_id: estabelecimentoId, status: "ACEITOU_PARCERIA" }),
-          });
-          toast("Parceria aceita com sucesso.");
-          setTimeout(() => { window.location.href = el.voltar.href; }, 900);
-        } catch (erro) { toast(erro.message, true); }
       }
 
       async function baixarPdf() {
