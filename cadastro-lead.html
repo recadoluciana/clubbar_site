@@ -305,6 +305,42 @@
       .choice-group.invalid .choice-card span {
         border-color: var(--error);
       }
+      .responsible-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 12px;
+        padding: 12px 14px;
+        border: 1px solid #383838;
+        border-radius: 12px;
+        background: #f7f7f7;
+        color: #222;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 750;
+      }
+      .responsible-toggle input {
+        width: 20px;
+        height: 20px;
+        min-height: 20px;
+        margin: 0;
+        padding: 0;
+        accent-color: var(--gold);
+        flex: 0 0 auto;
+      }
+      .responsible-toggle:has(input:checked) {
+        border-color: var(--gold);
+        background: #fff5cf;
+      }
+      .responsible-help {
+        margin: -4px 0 12px;
+        color: #666;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .responsible-fields[hidden] {
+        display: none !important;
+      }
       .invalid {
         border-color: var(--error) !important;
         box-shadow: 0 0 0 3px rgba(224, 82, 82, 0.12) !important;
@@ -795,6 +831,18 @@
           </div>
           <div class="group"><label for="cpfcnpj-${indice}">CPF ou CNPJ <span class="required">*</span></label><input id="cpfcnpj-${indice}" data-campo="cpfcnpj" required inputmode="text" autocapitalize="characters" maxlength="18" placeholder="Informe um CPF ou CNPJ"></div>
           <fieldset class="choice-group"><legend>O que deseja vender? <span class="required">*</span></legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
+          <label class="responsible-toggle">
+            <input type="checkbox" data-campo="informar_responsavel">
+            <span>Informar um responsável específico deste estabelecimento</span>
+          </label>
+          <p class="responsible-help">Opcional. Se não informar, serão usados os dados do responsável principal da empresa.</p>
+          <div class="responsible-fields" data-responsible-fields hidden>
+            <div class="grid">
+              <div class="group"><label>Nome do responsável <span class="optional">(opcional)</span></label><input data-campo="nmresponsavel" maxlength="120" autocomplete="name"></div>
+              <div class="group"><label>Telefone do responsável <span class="optional">(opcional)</span></label><input data-campo="telefone_responsavel" type="tel" inputmode="numeric" maxlength="15" autocomplete="tel"></div>
+            </div>
+            <div class="group"><label>E-mail do responsável <span class="optional">(opcional)</span></label><input data-campo="email_responsavel" type="email" maxlength="160" autocomplete="email"></div>
+          </div>
           <section aria-label="Endereço completo obrigatório"><h3 style="margin:14px 0">Endereço do estabelecimento</h3>
             <div class="grid"><div class="group"><label>CEP <span class="required">*</span></label><input data-campo="cep" required inputmode="numeric" maxlength="9" placeholder="00000-000"></div><div class="group"><label>Endereço <span class="required">*</span></label><input data-campo="endereco" required maxlength="255"></div></div>
             <div class="grid"><div class="group"><label>Número <span class="required">*</span></label><input data-campo="numero" required maxlength="20"></div><div class="group"><label>Bairro <span class="required">*</span></label><input data-campo="bairro" required maxlength="120"></div></div>
@@ -810,6 +858,15 @@
         preencherEstados(estadoSelect);
         estadoSelect.addEventListener("change", () => loadCities(estadoSelect.value, cidadeSelect));
         const campoCep = card.querySelector('[data-campo="cep"]');
+        const informarResponsavel = card.querySelector('[data-campo="informar_responsavel"]');
+        const camposResponsavel = card.querySelector('[data-responsible-fields]');
+        const telefoneResponsavel = card.querySelector('[data-campo="telefone_responsavel"]');
+        informarResponsavel.addEventListener("change", () => {
+          camposResponsavel.hidden = !informarResponsavel.checked;
+        });
+        telefoneResponsavel.addEventListener("input", () => {
+          telefoneResponsavel.value = mask(telefoneResponsavel.value);
+        });
         campoCep.addEventListener("input", () => {
           campoCep.dataset.cepValidado = "";
           card.querySelector('[data-campo="endereco"]').value = "";
@@ -824,8 +881,13 @@
         listaEstabelecimentos.appendChild(card);
       }
       function dadosEstabelecimentos() {
-        return [...listaEstabelecimentos.querySelectorAll(".estabelecimento-card")].map((card) => ({
+        return [...listaEstabelecimentos.querySelectorAll(".estabelecimento-card")].map((card) => {
+          const informarResponsavel = card.querySelector('[data-campo="informar_responsavel"]').checked;
+          return {
           nmestabelecimento: card.querySelector('[data-campo="nmestabelecimento"]').value.trim(),
+          nmresponsavel: informarResponsavel ? card.querySelector('[data-campo="nmresponsavel"]').value.trim() || null : null,
+          telefone_responsavel: informarResponsavel ? nums(card.querySelector('[data-campo="telefone_responsavel"]').value) || null : null,
+          email_responsavel: informarResponsavel ? card.querySelector('[data-campo="email_responsavel"]').value.trim().toLowerCase() || null : null,
           tipo: card.querySelector('[data-campo="tipo"]').value,
           tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
           cpfcnpj: documentoFiscal(card.querySelector('[data-campo="cpfcnpj"]').value),
@@ -838,7 +900,8 @@
           complemento: card.querySelector('[data-campo="complemento"]').value.trim() || null,
           estado_id: Number(card.querySelector('[data-campo="estado_id"]').value) || null,
           cidade_id: Number(card.querySelector('[data-campo="cidade_id"]').value) || null,
-        }));
+          };
+        });
       }
       function validate() {
         clearAll();
@@ -885,6 +948,9 @@
             }
           }
           if (!item.estado_id || !item.cidade_id) erros.push("selecione estado e cidade do CEP");
+          if (item.nmresponsavel && item.nmresponsavel.length < 3) erros.push("informe um nome de responsável válido");
+          if (item.email_responsavel && !validEmail(item.email_responsavel)) erros.push("informe um e-mail de responsável válido");
+          if (item.telefone_responsavel && ![10, 11].includes(item.telefone_responsavel.length)) erros.push("informe um telefone de responsável válido com DDD");
           if (item.email && !validEmail(item.email)) erros.push("informe um e-mail válido");
           if (item.telefone && ![10, 11].includes(item.telefone.length)) erros.push("informe um telefone válido");
           card.querySelector("[data-error]").textContent = erros.length ? `Revise este estabelecimento: ${erros.join(", ")}.` : "";
