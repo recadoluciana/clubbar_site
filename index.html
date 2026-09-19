@@ -1437,7 +1437,7 @@
           document.getElementById("taxaIngresso").textContent =
             `${Number(t.pctaxaingresso).toLocaleString("pt-BR")}%`;
           document.getElementById("regraTaxaIngresso").textContent =
-            `Taxa acrescentada à venda de ingressos e cobrada do cliente final. Em cada ingresso será cobrado ${Number(t.pctaxaingresso).toLocaleString("pt-BR")}% ou o mínimo de ${Number(t.vrtaxaminimaingresso).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}, prevalecendo o maior valor.`;
+            `Taxa aplicada sobre a venda de ingressos, no valor mínimo de ${Number(t.vrtaxaminimaingresso).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}, cobrada do cliente final.`;
         })
         .catch(() => {});
     </script>
