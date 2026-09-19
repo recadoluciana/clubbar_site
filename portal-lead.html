@@ -1430,7 +1430,7 @@
                   id="btnVisualizarContrato"
                   type="button"
                 >
-                  Visualizar/assinar seu contrato
+                  Conferir e editar dados do seu contrato
                 </button>
                 <button
                   class="decision-button accept"
@@ -2089,7 +2089,7 @@
           parceriaAceita || contrato?.status === "ACEITO",
         );
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
-        elementos.btnVisualizarContrato.textContent = "Visualizar/assinar seu contrato";
+        elementos.btnVisualizarContrato.textContent = "Visualizar e assinar seu contrato";
         const documentosAssinados = (estabelecimento.contratos || []).filter(
           item => item.status === "ACEITO" && item.conteudocontrato,
         );
