@@ -1371,7 +1371,6 @@
           "Faça seu cadastro inicial e aguarde confirmação por e-mail para prosseguir com seu interesse em contratar.";
       });
       const operacao = document.querySelector(".hero-card");
-      operacao?.querySelector(":scope > h3")?.remove();
 
       const beneficios = document.querySelector(".features .grid");
       if (beneficios) {
@@ -1382,16 +1381,19 @@
         funcionalidades
           .querySelector(".grid")
           .append(...beneficios.querySelectorAll(".card"));
-        operacao.before(funcionalidades);
+        document.querySelector("main")?.appendChild(funcionalidades);
         beneficios.parentElement.remove();
       }
+      // O aside original ficou sem conteúdo após a reorganização dos cards.
+      operacao?.remove();
       const planoCompleto = document.querySelector(".plan");
       const custos = planoCompleto?.querySelector(".fees");
       const planoSecao = document.getElementById("plano");
       const acoes = document.querySelector(".actions");
+      let taxasCard;
       if (custos && acoes) {
         custos.id = "custos";
-        const taxasCard = document.createElement("section");
+        taxasCard = document.createElement("section");
         taxasCard.className = "fees-card";
         const labelTaxas = document.querySelector(".fees-label");
         if (labelTaxas) taxasCard.appendChild(labelTaxas);
@@ -1412,6 +1414,9 @@
         }
         planoSecao?.remove();
       }
+      // Exibe os benefícios primeiro e o quadro completo do plano logo abaixo.
+      const quadroBeneficios = document.querySelector(".functionalities-card");
+      if (quadroBeneficios && taxasCard) quadroBeneficios.after(taxasCard);
       const aplicativos = document.querySelector(".app-showcase");
       const plano = document.getElementById("plano");
       if (aplicativos && plano) plano.after(aplicativos);
