@@ -2089,7 +2089,7 @@
           parceriaAceita || contrato?.status === "ACEITO",
         );
         elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
-        elementos.btnVisualizarContrato.textContent = "Visualizar e assinar seu contrato";
+        elementos.btnVisualizarContrato.textContent = "Conferir e editar dados do seu contrato";
         const documentosAssinados = (estabelecimento.contratos || []).filter(
           item => item.status === "ACEITO" && item.conteudocontrato,
         );
