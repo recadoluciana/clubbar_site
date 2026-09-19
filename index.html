@@ -32,16 +32,19 @@
     .actions .plan-action{width:100%}
     .interest-action .interest-caption{margin:0;font-size:12px;line-height:1.45;font-weight:500;color:inherit}
     .actions{align-items:flex-start}
-    header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-left:10px;padding-right:10px}
-    .header-brand{grid-column:1;grid-row:1;justify-self:start}
+    header{height:64px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;padding:6px 16px}
+    .header-brand{grid-column:2;grid-row:1;justify-self:center}
     .header-brand{display:flex;align-items:center;gap:6px}
-    .brand-owl{width:48px;height:48px;object-fit:contain}
+    .brand-owl{width:36px;height:36px;object-fit:contain}
     .brand-logo{margin-left:0;max-width:46vw}
-    .brand-logo{height:43px;transform:none}
-    .topbar-actions{grid-column:2;grid-row:1;justify-self:end;display:flex;align-items:center;gap:10px}
-    .topbar-link{height:38px;padding:9px 14px;display:inline-flex;align-items:center;border:1px solid #146c43;border-radius:11px;color:#fff;background:#146c43;font-weight:400;white-space:nowrap}
+    .brand-logo{height:32px;transform:none}
+    .topbar-side{grid-row:1;display:flex;align-items:center;min-width:0}
+    .topbar-left{grid-column:1;justify-self:start}
+    .topbar-right{grid-column:3;justify-self:end}
+    .topbar-control{width:132px;height:36px;padding:7px 12px;align-items:center;justify-content:center;gap:7px;border-radius:11px;color:#fff;font-family:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap}
+    .topbar-link{display:inline-flex;border:1px solid #146c43;background:#146c43}
     .topbar-link:hover{color:#fff;background:#0f5132;border-color:#0f5132}
-    .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;height:38px;padding:7px 14px;border:1px solid #c62828;border-radius:11px;background:#c62828;color:#fff;font-family:inherit;font-size:16px;font-weight:400;cursor:pointer;align-items:center}.logout-link.show{display:inline-flex}.logout-link:hover{background:#c62828;color:#fff}
+    .not-received{padding:10px 20px;text-align:center;background:#fffaf0;border-bottom:1px solid #f0d27a;font-size:12px;line-height:1.45;color:#555}.not-received button{margin-top:6px;padding:6px 11px;border:1px solid #dcae24;border-radius:9px;background:#fff;color:#8a6500;font-size:11px;font-weight:700;cursor:pointer}.logout-link{display:none;border:1px solid #c62828;background:#c62828;cursor:pointer}.logout-link.show{display:inline-flex}.logout-link:hover{background:#a91f1f;border-color:#a91f1f;color:#fff}.logout-link svg{width:17px;height:17px;flex:0 0 17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .recovery-dialog{width:min(430px,calc(100% - 32px));margin:auto;padding:0;border:1px solid #ddd;border-radius:18px;background:#fff;box-shadow:0 24px 70px #0005}.recovery-dialog::backdrop{background:#0008}.recovery-dialog form{display:grid;gap:10px;padding:22px;text-align:center}.recovery-dialog h2{font-size:20px}.recovery-dialog input{min-height:46px;padding:10px;border:1px solid #ccc;border-radius:9px;text-align:left}.recovery-dialog button{min-height:42px;border:0;border-radius:10px;background:#ffbf00;font-weight:700;cursor:pointer}.recovery-close{background:#f2f2f2!important}
     .recovery-help{font-size:11px;line-height:1.45;color:#666}
     .price-highlight{color:var(--blue);font-weight:800}
@@ -65,16 +68,21 @@
     .hero-card .card:hover{transform:none;border-color:#e2e2e2}
     .functionalities-card{max-width:1120px;margin:0 auto;padding:22px;border:1px solid #dedede;border-radius:21px;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.1)}.functionalities-card h2{margin:0 0 16px;color:var(--blue);font-size:25px}.functionalities-card .grid{grid-template-columns:repeat(3,1fr)}
     @media(max-width:900px){.functionalities-card .grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:640px){.functionalities-card{margin:22px 16px 0;padding:16px}.functionalities-card .grid{grid-template-columns:1fr}}
-    @media(max-width:640px){header{width:100%;min-width:0;overflow:hidden}.header-brand{min-width:0}.brand-logo{height:40px;max-width:100%;transform:none}.topbar-actions{min-width:0}.topbar-link,.logout-link{height:30px;padding:7px 8px;font-size:11px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
-    @media(max-width:640px){.brand-owl{width:40px;height:40px}.header-brand{gap:6px}}
+    @media(max-width:640px){header{width:100%;height:56px;min-width:0;overflow:hidden;padding:5px 8px;gap:6px}.header-brand{min-width:0}.brand-logo{height:27px;max-width:100%;transform:none}.brand-owl{width:31px;height:31px}.header-brand{gap:4px}.topbar-side{min-width:0}.topbar-control{width:102px;height:32px;padding:6px 8px;gap:5px;font-size:11px}.logout-link svg{width:15px;height:15px;flex-basis:15px}.app-showcase{width:calc(100% - 32px);padding:10px}.app-download{grid-template-columns:48px minmax(0,1fr);padding:10px;gap:8px}.app-download img{width:48px;height:48px}.app-download small{overflow-wrap:anywhere}}
+    @media(max-width:380px){header{gap:4px;padding-left:5px;padding-right:5px}.brand-logo{height:23px}.brand-owl{width:27px;height:27px}.topbar-control{width:91px;padding-left:5px;padding-right:5px;font-size:10px}}
   </style>
 </head>
 <body>
 <header>
+  <div class="topbar-side topbar-left">
+    <button class="topbar-control logout-link" id="logoutIndex" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"></path></svg>
+      <span>Sair</span>
+    </button>
+  </div>
   <a class="header-brand" href="index.html"><img class="brand-owl" src="assets/images/coruja.png" alt=""><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar"></a>
-  <nav class="topbar-actions" aria-label="Acesso do parceiro">
-    <a class="topbar-link" href="portal-lead.html">Já me cadastrei</a>
-    <button class="logout-link" id="logoutIndex" type="button">Sair</button>
+  <nav class="topbar-side topbar-right" aria-label="Acesso do parceiro">
+    <a class="topbar-control topbar-link" href="portal-lead.html">Já me cadastrei</a>
   </nav>
 </header>
 <section class="intro-index" aria-label="Apresentação do Clubbar">
