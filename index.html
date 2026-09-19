@@ -874,7 +874,8 @@
       }
       .fees-card {
         width: 100%;
-        margin-top: 18px;
+        max-width: 1120px;
+        margin: 18px auto 0;
         padding: 14px;
         border: 1px solid #dedede;
         border-radius: 21px;
@@ -1417,6 +1418,11 @@
       // Exibe os benefícios primeiro e o quadro completo do plano logo abaixo.
       const quadroBeneficios = document.querySelector(".functionalities-card");
       if (quadroBeneficios && taxasCard) quadroBeneficios.after(taxasCard);
+      const cardsTaxas = taxasCard?.querySelectorAll(".fee");
+      const listaTaxas = taxasCard?.querySelector(".fees");
+      if (cardsTaxas?.length >= 2 && listaTaxas) {
+        listaTaxas.append(cardsTaxas[1], cardsTaxas[0]);
+      }
       const aplicativos = document.querySelector(".app-showcase");
       const plano = document.getElementById("plano");
       if (aplicativos && plano) plano.after(aplicativos);
