@@ -171,7 +171,7 @@
       taxasCard.prepend(textoTaxas);
       const condicoesPlano = document.createElement('p');
       condicoesPlano.className = 'plan-terms-note';
-      condicoesPlano.innerHTML = '<strong>Sem mensalidade e sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).</strong>';
+      condicoesPlano.textContent = 'Sem mensalidade e sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).';
       textoTaxas.after(condicoesPlano);
     }
     planoSecao?.remove();
