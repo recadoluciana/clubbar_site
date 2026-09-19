@@ -1189,6 +1189,34 @@
         box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.13);
       }
 
+      .responsible-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 16px;
+        padding: 13px 14px;
+        border: 1px solid #383838;
+        border-radius: 14px;
+        background: #f7f7f7;
+        color: #222;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .responsible-toggle input {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        accent-color: var(--gold);
+        flex: 0 0 auto;
+      }
+
+      .responsible-toggle:has(input:checked) {
+        border-color: var(--gold);
+        background: #fff5cf;
+      }
+
       .new-establishment-address summary {
         margin-bottom: 14px;
         color: #111;
@@ -1479,6 +1507,19 @@
                 <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="AMBOS"><span>Produtos e ingressos</span></label>
               </div>
             </fieldset>
+            <label class="responsible-toggle">
+              <input id="novoEstabelecimentoUsarResponsavelPrincipal" type="checkbox" checked>
+              <span>Usar o responsável principal da empresa</span>
+            </label>
+            <div class="hidden" id="dadosResponsavelEstabelecimento">
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoResponsavel">Responsável pelo estabelecimento <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoResponsavel"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoTelefoneResponsavel">Telefone do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" inputmode="tel"></div>
+              </div>
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoEmailResponsavel">E-mail do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email"></div>
+              </div>
+            </div>
             <div class="new-establishment-address">
               <strong>Endereço do estabelecimento</strong>
               <div class="new-establishment-grid">
@@ -1497,19 +1538,6 @@
               <div class="new-establishment-field">
                 <label for="novoEstabelecimentoCidade">Cidade <span class="required">*</span></label>
                 <select class="form-control" id="novoEstabelecimentoCidade" required disabled><option value="">Selecione primeiro o estado</option></select>
-              </div>
-            </div>
-            <label class="new-establishment-choice">
-              <input id="novoEstabelecimentoUsarResponsavelPrincipal" type="checkbox" checked>
-              <span>Usar o responsável principal da empresa</span>
-            </label>
-            <div class="hidden" id="dadosResponsavelEstabelecimento">
-              <div class="new-establishment-grid">
-                <div class="new-establishment-field"><label for="novoEstabelecimentoResponsavel">Responsável pelo estabelecimento <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoResponsavel"></div>
-                <div class="new-establishment-field"><label for="novoEstabelecimentoTelefoneResponsavel">Telefone do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" inputmode="tel"></div>
-              </div>
-              <div class="new-establishment-grid">
-                <div class="new-establishment-field"><label for="novoEstabelecimentoEmailResponsavel">E-mail do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email"></div>
               </div>
             </div>
             <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
