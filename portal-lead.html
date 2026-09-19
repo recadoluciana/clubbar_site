@@ -942,6 +942,20 @@
       }
       .partnership-celebration h3 { color: #078a35; font-size: 24px; }
       .partnership-celebration a { margin-top: 14px; display: inline-flex; }
+      .implantation-exemption-badge {
+        display: flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        margin: 14px auto 0;
+        padding: 8px 14px;
+        color: #086b2c;
+        background: #effbf3;
+        border: 1px solid rgba(8, 138, 53, 0.35);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+      }
 
       .portal-actions {
         margin-top: 18px;
@@ -1899,10 +1913,11 @@
             (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
           ) || contrato;
           const cobrancaImplantacao = contratoOriginal?.cobranca_implantacao;
+          const implantacaoIsenta = cobrancaImplantacao?.status === "ISENTA";
           const implantacaoLiberada =
             Number(contratoOriginal?.vrimplantacao || 0) <= 0 ||
             cobrancaImplantacao?.status === "PAGA" ||
-            cobrancaImplantacao?.status === "ISENTA";
+            implantacaoIsenta;
           const celebracao = document.createElement("div");
           celebracao.className = "partnership-celebration";
           const icone = document.createElement("span");
@@ -1921,6 +1936,12 @@
           linkPartner.rel = "noopener noreferrer";
           linkPartner.textContent = "Acessar Clubbar Partner ↗";
           celebracao.append(icone, titulo, mensagem);
+          if (implantacaoIsenta) {
+            const avisoIsencao = document.createElement("div");
+            avisoIsencao.className = "implantation-exemption-badge";
+            avisoIsencao.textContent = "✓ Taxa de implantação isenta";
+            celebracao.append(avisoIsencao);
+          }
           if (implantacaoLiberada) celebracao.append(linkPartner);
           elementos.contratoEstabelecimento.append(celebracao);
           if (!implantacaoLiberada && contratoOriginal) {
