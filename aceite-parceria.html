@@ -132,8 +132,7 @@
       .payment p { margin: 7px 0 14px; color: var(--muted); line-height: 1.45; }
       .payment-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       body.contrato-aceito main > :not(.card),
-      body.contrato-aceito .card > :not(#pagamento),
-      body.contrato-aceito #clubbar-whatsapp {
+      body.contrato-aceito .card > :not(#pagamento) {
         display: none !important;
       }
       body.contrato-aceito .payment {
@@ -247,7 +246,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/session.js"></script>
-    <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
       const token = sessionStorage.getItem(STORAGE_KEY);

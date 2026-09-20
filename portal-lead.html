@@ -1572,7 +1572,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/session.js"></script>
-    <script src="js/contact.js"></script>
     <script>
       document.querySelectorAll('input[type="tel"], input[inputmode="tel"]').forEach((campo) => {
         campo.addEventListener("input", () => {
@@ -1684,6 +1683,7 @@
       let resumoAtual = null;
       let estabelecimentoSelecionadoId = estabelecimentoInicialId || null;
       let fluxoAceiteAberto = false;
+      let implantacaoVerificada = false;
 
       if (token && !paginaAtual && !estabelecimentoSelecionadoId) {
         window.location.replace("portal-lead-estabelecimentos.html");
@@ -1908,6 +1908,33 @@
         const parceriaAceita =
           estabelecimento.status === "ACEITOU_PARCERIA" ||
           estabelecimento.status === "CONVERTIDO";
+        const contratoOriginalResumo = (estabelecimento.contratos || []).find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
+        );
+        const cobrancaResumo = contratoOriginalResumo?.cobranca_implantacao;
+        if (
+          parceriaAceita &&
+          contratoOriginalResumo &&
+          cobrancaResumo?.status === "PENDENTE" &&
+          !implantacaoVerificada
+        ) {
+          implantacaoVerificada = true;
+          const retornoAsaas =
+            parametrosPagina.get("gateway") === "asaas" ||
+            parametrosPagina.get("pagamento") === "sucesso" ||
+            parametrosPagina.has("checkout_id");
+          const tentativas = retornoAsaas ? 5 : 1;
+          for (let tentativa = 0; tentativa < tentativas; tentativa += 1) {
+            const cobrancaAtualizada = await api(
+              `/portal-parceiro/contratos/${contratoOriginalResumo.leadestabelecimentocontrato_id}/implantacao`,
+            );
+            contratoOriginalResumo.cobranca_implantacao = cobrancaAtualizada;
+            if (["PAGA", "ISENTA"].includes(cobrancaAtualizada.status)) break;
+            if (tentativa < tentativas - 1) {
+              await new Promise((resolve) => setTimeout(resolve, 1200));
+            }
+          }
+        }
         document.getElementById("textoDecisao").classList.toggle(
           "hidden",
           parceriaAceita,
