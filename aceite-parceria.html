@@ -251,6 +251,7 @@
       const token = sessionStorage.getItem(STORAGE_KEY);
       const params = new URLSearchParams(window.location.search);
       const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
+      const contratoId = Number(params.get("contrato_id"));
       let contratoAtual = null;
 
       const el = {
@@ -435,7 +436,15 @@
         const estabelecimento = (resumo.estabelecimentos || []).find(
           (item) => item.leadestabelecimento_id === estabelecimentoId,
         );
-        contratoAtual = estabelecimento?.contratos?.[0];
+        contratoAtual = contratoId
+          ? estabelecimento?.contratos?.find(
+              item => Number(item.leadestabelecimentocontrato_id) === contratoId,
+            )
+          : estabelecimento?.contratos?.find(
+              item => item.tipoinstrumento === "RETIFICACAO" && ["RASCUNHO", "ENVIADO"].includes(item.status),
+            ) || estabelecimento?.contratos?.find(
+              item => item.tipoinstrumento !== "RETIFICACAO" && item.status !== "ACEITO",
+            ) || estabelecimento?.contratos?.[0];
         if (!estabelecimento || !contratoAtual?.conteudocontrato) {
           throw new Error("O contrato ainda não foi disponibilizado para este estabelecimento.");
         }

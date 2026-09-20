@@ -166,6 +166,7 @@
       const token = sessionStorage.getItem(STORAGE_KEY);
       const params = new URLSearchParams(window.location.search);
       const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
+      const contratoId = Number(params.get("contrato_id"));
       const modoAssinado = params.get("modo") === "assinado";
       if (modoAssinado) document.body.classList.add("mostrar-contrato");
       let contratoAtual = null;
@@ -337,7 +338,13 @@
           const estabelecimento = (resumo.estabelecimentos || []).find(
             (item) => item.leadestabelecimento_id === estabelecimentoId,
           );
-          contratoAtual = estabelecimento?.contratos?.[0] || { status: "RASCUNHO" };
+          contratoAtual = (contratoId
+            ? estabelecimento?.contratos?.find(
+                item => Number(item.leadestabelecimentocontrato_id) === contratoId,
+              )
+            : estabelecimento?.contratos?.find(
+                item => item.tipoinstrumento !== "RETIFICACAO" && item.status !== "ACEITO",
+              ) || estabelecimento?.contratos?.[0]) || { status: "RASCUNHO" };
           if (!estabelecimento) {
             throw new Error(
               "Estabelecimento não encontrado.",

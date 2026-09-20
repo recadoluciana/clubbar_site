@@ -1434,7 +1434,7 @@
                   type="button"
                   hidden
                 >
-                  Conferir e editar dados do seu contrato
+                  Conferir e editar dados do seu cadastro
                 </button>
                 <button
                   class="decision-button accept"
@@ -1684,6 +1684,8 @@
       let resumoAtual = null;
       let estabelecimentoSelecionadoId = estabelecimentoInicialId || null;
       let fluxoAceiteAberto = false;
+      let contratoAcaoId = null;
+      let contratoEdicaoId = null;
       let implantacaoVerificada = false;
 
       if (token && !paginaAtual && !estabelecimentoSelecionadoId) {
@@ -1905,11 +1907,23 @@
             estabelecimento.nmestabelecimento || "Estabelecimento";
         });
         elementos.contratoEstabelecimento.replaceChildren();
-        const contrato = estabelecimento.contratos?.[0];
+        const contratos = estabelecimento.contratos || [];
+        const contratoOriginalPendente = contratos.find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status !== "ACEITO",
+        );
+        const retificacaoPendente = contratos.find(
+          (item) => item.tipoinstrumento === "RETIFICACAO" &&
+            ["RASCUNHO", "ENVIADO"].includes(item.status),
+        );
+        const contratoOriginalAceito = contratos.find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
+        );
+        const contrato = retificacaoPendente || contratoOriginalPendente ||
+          contratoOriginalAceito || contratos[0];
         const parceriaAceita =
           estabelecimento.status === "ACEITOU_PARCERIA" ||
           estabelecimento.status === "CONVERTIDO";
-        const contratoOriginalResumo = (estabelecimento.contratos || []).find(
+        const contratoOriginalResumo = contratos.find(
           (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
         );
         const cobrancaResumo = contratoOriginalResumo?.cobranca_implantacao;
@@ -1947,7 +1961,7 @@
         if (parceriaAceita) {
           fluxoAceiteAberto = false;
           elementos.contratoEstabelecimento.classList.remove("hidden");
-          const contratoOriginal = (estabelecimento.contratos || []).find(
+          const contratoOriginal = contratos.find(
             (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
           ) || contrato;
           const cobrancaImplantacao = contratoOriginal?.cobranca_implantacao;
@@ -2010,21 +2024,6 @@
             );
             pagamento.append(pagar);
             elementos.contratoEstabelecimento.append(pagamento);
-          }
-          if (contrato?.tipoinstrumento === "RETIFICACAO" && contrato.status === "ENVIADO") {
-            const aviso = document.createElement("div");
-            aviso.style.cssText = "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:14px;background:#f5f9ff";
-            const tituloRetificacao = document.createElement("strong");
-            tituloRetificacao.textContent = `Retificação nº ${contrato.nrretificacao} aguardando sua assinatura`;
-            const instrucao = document.createElement("p");
-            instrucao.textContent = "Revise as correções propostas no contrato. Elas só passarão a valer após sua assinatura.";
-            const assinar = document.createElement("button");
-            assinar.type = "button";
-            assinar.className = "decision-button accept";
-            assinar.textContent = "Revisar e assinar retificação";
-            assinar.addEventListener("click", visualizarContrato);
-            aviso.append(tituloRetificacao, instrucao, assinar);
-            elementos.contratoEstabelecimento.append(aviso);
           }
         }
         elementos.contratoEstabelecimento.classList.toggle(
@@ -2107,27 +2106,34 @@
             estabelecimento.status === "CONVERTIDO" ||
             botao.dataset.status === estabelecimento.status;
         });
-        const contratoAssinado = Boolean(
-          (estabelecimento.contratos || []).some((item) => item.status === "ACEITO"),
-        );
-        const podeEditarContrato = Boolean(contrato?.conteudocontrato) && !contratoAssinado;
-        const podeAssinarContrato = Boolean(
-          contrato?.conteudocontrato && contrato.status === "ENVIADO" && !contratoAssinado,
-        );
-        elementos.btnVisualizarContrato.disabled = !podeEditarContrato;
-        elementos.btnVisualizarContrato.hidden = !podeEditarContrato;
-        elementos.btnAceitarParceria.disabled = !podeAssinarContrato;
-        elementos.btnAceitarParceria.hidden = !podeAssinarContrato;
-        elementos.btnVisualizarContrato.textContent = "Conferir e editar dados do seu contrato";
-        const documentosAssinados = (estabelecimento.contratos || []).filter(
+        const contratoAssinado = Boolean(contratoOriginalAceito);
+        const podeEditarCadastro = Boolean(contratoOriginalPendente) && !contratoAssinado;
+        const documentoPendenteAssinatura = retificacaoPendente || contratoOriginalPendente;
+        const podeAssinarDocumento = Boolean(documentoPendenteAssinatura?.conteudocontrato);
+        contratoAcaoId = documentoPendenteAssinatura?.leadestabelecimentocontrato_id || null;
+        contratoEdicaoId = contratoOriginalPendente?.leadestabelecimentocontrato_id || null;
+        elementos.btnVisualizarContrato.disabled = !podeEditarCadastro;
+        elementos.btnVisualizarContrato.hidden = !podeEditarCadastro;
+        elementos.btnAceitarParceria.disabled = !podeAssinarDocumento;
+        elementos.btnAceitarParceria.hidden = !documentoPendenteAssinatura;
+        elementos.btnAceitarParceria.title = podeAssinarDocumento
+          ? ""
+          : "O documento ainda está sendo preparado para assinatura";
+        elementos.btnVisualizarContrato.textContent = "Conferir e editar dados do seu cadastro";
+        elementos.btnAceitarParceria.textContent = retificacaoPendente
+          ? `Visualizar e assinar retificação nº ${retificacaoPendente.nrretificacao}`
+          : "Visualizar e assinar contrato";
+        const documentosAssinados = contratos.filter(
           item => item.status === "ACEITO" && item.conteudocontrato,
         );
         elementos.btnDocumentosContratuais.disabled = !documentosAssinados.length;
+        elementos.btnDocumentosContratuais.hidden = false;
         elementos.btnDocumentosContratuais.textContent = documentosAssinados.length
           ? `Documentos contratuais (${documentosAssinados.length})`
           : "Documentos contratuais";
         const baixar = document.getElementById("btnBaixarContrato");
-        const contratoAceito = estabelecimento.contratos?.find(item => item.status === "ACEITO");
+        const contratoAceito = contratos.find(item => item.status === "ACEITO");
+        baixar.hidden = true;
         baixar.disabled = !contratoAceito;
         baixar.title = contratoAceito ? "Baixar o contrato aceito" : "Disponível após assinar o contrato";
         baixar.onclick = () => {
@@ -2412,6 +2418,9 @@
           "leadestabelecimento_id",
           estabelecimentoSelecionadoId,
         );
+        if (contratoAcaoId) {
+          destino.searchParams.set("contrato_id", contratoAcaoId);
+        }
         window.location.href = destino.href;
       }
 
@@ -2421,6 +2430,9 @@
           "leadestabelecimento_id",
           estabelecimentoSelecionadoId,
         );
+        if (contratoEdicaoId) {
+          destino.searchParams.set("contrato_id", contratoEdicaoId);
+        }
         window.location.href = destino.href;
       }
 
