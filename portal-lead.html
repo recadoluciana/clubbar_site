@@ -814,6 +814,15 @@
         background: #258e50;
       }
 
+      #acoesDecisao #btnVisualizarContrato {
+        border-color: #1565c0;
+        background: #1976d2;
+      }
+
+      #acoesDecisao #btnVisualizarContrato:not(:disabled):hover {
+        background: #1565c0;
+      }
+
       #acoesDecisao .decision-button.decline {
         color: #fff;
         border-color: #b92f2f;
@@ -1416,9 +1425,7 @@
               </div>
               <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
               <p class="decision-copy hidden" id="textoDecisao">
-                Esta decisão será registrada somente para o estabelecimento
-                selecionado. Depois de ler o contrato, informe como deseja
-                prosseguir.
+                Escolha uma opção abaixo:
               </p>
               <div class="decision-actions" id="acoesDecisao">
                 <button
