@@ -1970,21 +1970,17 @@
             descricaoPagamento.textContent =
               "Pague com Pix ou cartão no ambiente seguro do Asaas. Este pagamento não altera o aceite da parceria já registrado.";
             pagamento.append(tituloPagamento, descricaoPagamento);
-            if (cobrancaImplantacao?.checkout_url) {
-              const pagar = document.createElement("a");
-              pagar.className = "decision-button accept";
-              pagar.href = cobrancaImplantacao.checkout_url;
-              pagar.textContent = "Pagar implantação no Asaas";
-              pagamento.append(pagar);
-            }
-            const atualizar = document.createElement("button");
-            atualizar.type = "button";
-            atualizar.className = "decision-button analyzing";
-            atualizar.textContent = cobrancaImplantacao ? "Já paguei" : "Gerar pagamento da implantação";
-            atualizar.addEventListener("click", () =>
-              verificarPagamentoImplantacao(contratoOriginal.leadestabelecimentocontrato_id),
+            const pagar = document.createElement("button");
+            pagar.type = "button";
+            pagar.className = "decision-button accept";
+            pagar.textContent = "Pagar taxa de implantação no Asaas";
+            pagar.addEventListener("click", () =>
+              abrirPagamentoImplantacao(
+                contratoOriginal.leadestabelecimentocontrato_id,
+                pagar,
+              ),
             );
-            pagamento.append(atualizar);
+            pagamento.append(pagar);
             elementos.contratoEstabelecimento.append(pagamento);
           }
           if (contrato?.tipoinstrumento === "RETIFICACAO" && contrato.status === "ENVIADO") {
@@ -2057,20 +2053,18 @@
               ? "Pagamento confirmado. A parceria já pode ser concluída."
               : "Pague com Pix ou cartão no ambiente seguro do Asaas para liberar a implantação.";
             pagamento.append(tituloPagamento, descricaoPagamento);
-            if (!implantacaoLiberada && cobranca?.checkout_url) {
-              const acoesPagamento = document.createElement("div");
-              acoesPagamento.className = "implantation-actions";
-              const pagar = document.createElement("a");
+            if (!implantacaoLiberada) {
+              const pagar = document.createElement("button");
+              pagar.type = "button";
               pagar.className = "decision-button accept";
-              pagar.href = cobranca.checkout_url;
-              pagar.textContent = "Pagar implantação no Asaas";
-              const verificar = document.createElement("button");
-              verificar.type = "button";
-              verificar.className = "decision-button analyzing";
-              verificar.textContent = "Já paguei";
-              verificar.addEventListener("click", () => verificarPagamentoImplantacao(contrato.leadestabelecimentocontrato_id));
-              acoesPagamento.append(pagar, verificar);
-              pagamento.append(acoesPagamento);
+              pagar.textContent = "Pagar taxa de implantação no Asaas";
+              pagar.addEventListener("click", () =>
+                abrirPagamentoImplantacao(
+                  contrato.leadestabelecimentocontrato_id,
+                  pagar,
+                ),
+              );
+              pagamento.append(pagar);
             }
             cardContrato.append(pagamento);
           }
@@ -2470,13 +2464,29 @@
         }
       }
 
-      async function verificarPagamentoImplantacao(contratoId) {
+      async function abrirPagamentoImplantacao(contratoId, botao) {
+        const textoOriginal = botao.textContent;
+        botao.disabled = true;
+        botao.textContent = "Preparando pagamento...";
         try {
           const cobranca = await api(`/portal-parceiro/contratos/${contratoId}/implantacao`);
-          await carregarResumo();
-          mostrarToast(cobranca.status === "PAGA" ? "Pagamento confirmado com sucesso." : "O pagamento ainda não foi confirmado pelo Asaas.", cobranca.status !== "PAGA" && cobranca.status !== "ISENTA");
+          if (cobranca.status === "PAGA" || cobranca.status === "ISENTA") {
+            await carregarResumo();
+            mostrarToast(
+              cobranca.status === "PAGA"
+                ? "Pagamento confirmado com sucesso."
+                : "Taxa de implantação isenta.",
+            );
+            return;
+          }
+          if (!cobranca.checkout_url) {
+            throw new Error("Não foi possível abrir o pagamento no Asaas.");
+          }
+          window.location.href = cobranca.checkout_url;
         } catch (erro) {
           mostrarToast(erro.message, true);
+          botao.disabled = false;
+          botao.textContent = textoOriginal;
         }
       }
 
