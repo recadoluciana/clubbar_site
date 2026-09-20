@@ -76,6 +76,16 @@
       .lead-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; margin-bottom:20px; }
       .lead-data div { padding:10px 12px; border-bottom:1px solid #edf0f2; color:#555; font-size:14px; }
       .lead-data strong { display:block; margin-bottom:3px; color:#202124; font-size:12px; }
+      .edit-card { margin: 0 0 14px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+      .edit-card h3 { margin: 0 0 14px; color: var(--blue); font-size: 18px; }
+      .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+      .edit-field { display:flex; flex-direction:column; gap:5px; }
+      .edit-field.full { grid-column:1 / -1; }
+      .edit-field label { color:#333; font-size:12px; font-weight:700; }
+      .edit-field input, .edit-field select { min-height:42px; padding:9px 11px; border:1px solid #bfc5ca; border-radius:9px; background:#fff; color:#202124; font:inherit; }
+      .edit-field input:disabled, .edit-field select:disabled { background:#f1f3f4; color:#62666b; }
+      .readonly-note { margin:0 0 12px; color:#666; font-size:12px; }
+      .save-button { width:100%; min-height:48px; margin-top:4px; border:0; border-radius:12px; color:#fff; background:#168a4a; font-weight:900; }
       .contract-text {
         max-height: 560px;
         overflow: auto;
@@ -137,7 +147,8 @@
       <p class="subtitle">Visualizar contrato</p>
       <section class="card">
         <h2 class="establishment-title" id="tituloEstabelecimento"></h2>
-        <div class="lead-data" id="dadosEstabelecimento"></div>
+        <div id="dadosEstabelecimento"></div>
+        <button class="save-button" id="salvarDados" type="button">Salvar alterações</button>
         <h2 class="contract-title" id="tituloContrato"></h2>
         <div class="contract-text" id="textoContrato"></div>
         <a id="assinarContrato" class="pdf-button sign-button" style="display:block;text-align:center;text-decoration:none">Visualizar e assinar seu contrato</a>
@@ -166,6 +177,7 @@
         textoContrato: document.getElementById("textoContrato"),
         tituloEstabelecimento: document.getElementById("tituloEstabelecimento"),
         dadosEstabelecimento: document.getElementById("dadosEstabelecimento"),
+        salvarDados: document.getElementById("salvarDados"),
         statusAssinado: document.getElementById("statusAssinado"),
       };
       el.voltar.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
@@ -195,7 +207,77 @@
       function tipo(valor) { return { BAR: "Bar", CASA_NOTURNA: "Casa noturna", PRODUTOR_EVENTOS: "Produtor de eventos", CASA_EVENTOS: "Casa de eventos" }[valor] || texto(valor); }
       function venda(valor) { return { PRODUTOS: "Somente produtos", INGRESSOS: "Somente ingressos", AMBOS: "Produtos e ingressos" }[valor] || texto(valor); }
       function dataHora(valor) { if (!valor) return ""; const data = new Date(valor); return Number.isNaN(data.getTime()) ? texto(valor) : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(data); }
-      function campo(rotulo, valor) { const div = document.createElement("div"); div.innerHTML = `<strong>${rotulo}</strong>${texto(valor)}`; return div; }
+      function campo(rotulo, valor, opcoes = {}) {
+        const div = document.createElement("div");
+        div.className = `edit-field${opcoes.full ? " full" : ""}`;
+        const label = document.createElement("label"); label.textContent = rotulo;
+        const input = document.createElement(opcoes.select ? "select" : "input");
+        input.dataset.campo = opcoes.campo || "";
+        if (!opcoes.select) { input.value = valor ?? ""; input.type = opcoes.type || "text"; }
+        if (opcoes.disabled) input.disabled = true;
+        if (opcoes.options) opcoes.options.forEach(([value, labelTexto]) => { const option = document.createElement("option"); option.value = value; option.textContent = labelTexto; input.append(option); });
+        if (opcoes.select) input.value = valor ?? "";
+        div.append(label, input); return div;
+      }
+
+      const tipos = [["BAR", "Bar"], ["CASA_NOTURNA", "Casa noturna"], ["PRODUTOR_EVENTOS", "Produtor de eventos"], ["CASA_EVENTOS", "Casa de eventos"]];
+      const vendas = [["PRODUTOS", "Somente produtos"], ["INGRESSOS", "Somente ingressos"], ["AMBOS", "Produtos e ingressos"]];
+      let estabelecimentoAtual = null;
+      async function carregarLocalidades(estadoId, cidadeId) {
+        const estados = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`).then(r => r.json());
+        const estadoSelect = el.dadosEstabelecimento.querySelector('[data-campo="estado_id"]');
+        estados.forEach(item => { const option = document.createElement("option"); option.value = item.estado_id; option.textContent = `${item.sgestado} - ${item.nmestado}`; estadoSelect.append(option); });
+        estadoSelect.value = estadoId || "";
+        const cidades = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`).then(r => r.json());
+        const cidadeSelect = el.dadosEstabelecimento.querySelector('[data-campo="cidade_id"]');
+        cidades.forEach(item => { const option = document.createElement("option"); option.value = item.cidade_id; option.textContent = item.nmcidade; cidadeSelect.append(option); });
+        cidadeSelect.value = cidadeId || "";
+        estadoSelect.onchange = async () => { cidadeSelect.replaceChildren(); const lista = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoSelect.value}/cidades`).then(r => r.json()); lista.forEach(item => { const option = document.createElement("option"); option.value = item.cidade_id; option.textContent = item.nmcidade; cidadeSelect.append(option); }); };
+      }
+
+      function renderizarDados(estabelecimento, resumo) {
+        const telefone = estabelecimento.telefone_responsavel || estabelecimento.telefone || resumo.telefone || "";
+        el.dadosEstabelecimento.replaceChildren();
+        const cardDados = document.createElement("section"); cardDados.className = "edit-card";
+        cardDados.innerHTML = "<h3>Dados do estabelecimento</h3><div class='edit-grid'></div>";
+        const dadosGrid = cardDados.querySelector(".edit-grid");
+        dadosGrid.append(
+          campo("E-mail", estabelecimento.email_responsavel || estabelecimento.email || resumo.email, { campo:"email", type:"email", disabled:true }),
+          campo("Telefone", telefone, { campo:"telefone_responsavel", type:"tel" }),
+          campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel, { campo:"nmresponsavel" }),
+          campo("CPF/CNPJ", estabelecimento.cpfcnpj, { campo:"cpfcnpj" }),
+          campo("Tipo de estabelecimento", estabelecimento.tipo, { campo:"tipo", select:true, options:tipos }),
+          campo("O que deseja vender", estabelecimento.tipovenda, { campo:"tipovenda", select:true, options:vendas }),
+        );
+        const cardEndereco = document.createElement("section"); cardEndereco.className = "edit-card";
+        cardEndereco.innerHTML = "<h3>Endereço</h3><div class='edit-grid'></div>";
+        const enderecoGrid = cardEndereco.querySelector(".edit-grid");
+        enderecoGrid.append(
+          campo("CEP", estabelecimento.cep, { campo:"cep" }),
+          campo("Endereço", estabelecimento.endereco, { campo:"endereco" }),
+          campo("Número", estabelecimento.numero, { campo:"numero" }),
+          campo("Bairro", estabelecimento.bairro, { campo:"bairro" }),
+          campo("Complemento", estabelecimento.complemento, { campo:"complemento", full:true }),
+          campo("Estado", estabelecimento.estado_id, { campo:"estado_id", select:true }),
+          campo("Cidade", estabelecimento.cidade_id, { campo:"cidade_id", select:true }),
+        );
+        const cardTaxas = document.createElement("section"); cardTaxas.className = "edit-card";
+        cardTaxas.innerHTML = `<h3>Taxas e datas</h3><p class="readonly-note">Estas informações são definidas no contrato e não podem ser alteradas nesta tela.</p><div class="edit-grid"></div>`;
+        const taxasGrid = cardTaxas.querySelector(".edit-grid");
+        taxasGrid.append(campo("Taxa de produtos", `${texto(estabelecimento.vrtaxaprod)}%`, { disabled:true }), campo("Taxa de ingressos", `${texto(estabelecimento.vrtaxaing)}%`, { disabled:true }), campo("Valor mínimo cobrado por ingresso", moeda(estabelecimento.vrtaxaminimaingresso), { disabled:true }), campo("Data de criação", dataHora(estabelecimento.dtcriacao), { disabled:true }), campo("Última atualização", dataHora(estabelecimento.dtultatu), { disabled:true }), campo("Data de conversão", dataHora(estabelecimento.dtconversao), { disabled:true }));
+        el.dadosEstabelecimento.append(cardDados, cardEndereco, cardTaxas);
+        carregarLocalidades(estabelecimento.estado_id, estabelecimento.cidade_id).catch(() => {});
+      }
+
+      async function salvarDados() {
+        const valor = campo => el.dadosEstabelecimento.querySelector(`[data-campo="${campo}"]`)?.value || null;
+        el.salvarDados.disabled = true; el.salvarDados.textContent = "Salvando...";
+        try {
+          await api(`/portal-parceiro/estabelecimentos/${estabelecimentoId}`, { method:"PATCH", body: JSON.stringify({ nmresponsavel:valor("nmresponsavel"), telefone_responsavel:valor("telefone_responsavel"), tipo:valor("tipo"), tipovenda:valor("tipovenda"), cpfcnpj:valor("cpfcnpj"), estado_id:Number(valor("estado_id")), cidade_id:Number(valor("cidade_id")), cep:(valor("cep") || "").replace(/\D/g, ""), endereco:valor("endereco"), numero:valor("numero"), complemento:valor("complemento"), bairro:valor("bairro") }) });
+          await carregar();
+        } catch (erro) { mostrarErro(erro.message); } finally { el.salvarDados.disabled = false; el.salvarDados.textContent = "Salvar alterações"; }
+      }
+      el.salvarDados.addEventListener("click", salvarDados);
 
       function mostrarErro(mensagem) {
         el.carregando.classList.add("hidden");
@@ -224,27 +306,8 @@
           }
           el.nomeLead.textContent = `Lead #${resumo.leadparceiro_id || ""} ${resumo.nmresponsavel || ""}`.trim();
           el.tituloEstabelecimento.textContent = `Estabelecimento: ${texto(estabelecimento.nmestabelecimento)}`;
-          el.dadosEstabelecimento.replaceChildren(
-            campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel),
-            campo("E-mail", estabelecimento.email_responsavel || estabelecimento.email || resumo.email),
-            campo("Telefone", estabelecimento.telefone_responsavel || estabelecimento.telefone || resumo.telefone),
-            campo("CPF/CNPJ", estabelecimento.cpfcnpj),
-            campo("Tipo", tipo(estabelecimento.tipo)),
-            campo("O que deseja vender", venda(estabelecimento.tipovenda)),
-            campo("CEP", estabelecimento.cep),
-            campo("Endereço", estabelecimento.endereco),
-            campo("Número", estabelecimento.numero),
-            campo("Bairro", estabelecimento.bairro),
-            campo("Complemento", estabelecimento.complemento),
-            campo("Cidade", estabelecimento.nmcidade),
-            campo("Estado", estabelecimento.sgestado),
-            campo("Taxa de produtos", `${texto(estabelecimento.vrtaxaprod)}%`),
-            campo("Taxa de ingressos", `${texto(estabelecimento.vrtaxaing)}%`),
-            campo("Valor mínimo cobrado por ingresso", moeda(estabelecimento.vrtaxaminimaingresso)),
-            campo("Data de criação", dataHora(estabelecimento.dtcriacao)),
-            campo("Última atualização", dataHora(estabelecimento.dtultatu)),
-            campo("Data de conversão", dataHora(estabelecimento.dtconversao)),
-          );
+          estabelecimentoAtual = estabelecimento;
+          renderizarDados(estabelecimento, resumo);
           el.tituloContrato.textContent =
             contratoAtual.tipoinstrumento === "RETIFICACAO"
               ? `Retificação nº ${contratoAtual.nrretificacao} - ${nomeStatus(contratoAtual.status)}`
