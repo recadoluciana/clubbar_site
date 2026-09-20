@@ -114,8 +114,10 @@
       .state { padding: 60px 20px; text-align: center; }
       .toast {
         position: fixed;
-        right: 18px;
-        bottom: 18px;
+        z-index: 1000;
+        top: 90px;
+        left: 50%;
+        transform: translateX(-50%);
         max-width: min(430px, calc(100% - 36px));
         padding: 14px 18px;
         border-radius: 12px;
@@ -159,7 +161,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/session.js"></script>
-    <script src="js/contact.js"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
       const token = sessionStorage.getItem(STORAGE_KEY);
