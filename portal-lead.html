@@ -1429,6 +1429,7 @@
                   class="decision-button accept"
                   id="btnVisualizarContrato"
                   type="button"
+                  hidden
                 >
                   Conferir e editar dados do seu contrato
                 </button>
@@ -1436,8 +1437,9 @@
                   class="decision-button accept"
                   id="btnAceitarParceria"
                   type="button"
+                  hidden
                 >
-                  Assinar seu contrato
+                  Assinar contrato
                 </button>
                 <button
                   class="decision-button analyzing"
@@ -2080,15 +2082,17 @@
             estabelecimento.status === "CONVERTIDO" ||
             botao.dataset.status === estabelecimento.status;
         });
-        elementos.btnAceitarParceria.disabled =
-          !contrato ||
-          estabelecimento.status === "CONVERTIDO" ||
-          estabelecimento.status === "ACEITOU_PARCERIA";
-        elementos.btnAceitarParceria.classList.toggle(
-          "hidden",
-          parceriaAceita || contrato?.status === "ACEITO",
+        const contratoAssinado = Boolean(
+          (estabelecimento.contratos || []).some((item) => item.status === "ACEITO"),
         );
-        elementos.btnVisualizarContrato.disabled = !contrato?.conteudocontrato;
+        const podeEditarContrato = Boolean(contrato?.conteudocontrato) && !contratoAssinado;
+        const podeAssinarContrato = Boolean(
+          contrato?.conteudocontrato && contrato.status === "ENVIADO" && !contratoAssinado,
+        );
+        elementos.btnVisualizarContrato.disabled = !podeEditarContrato;
+        elementos.btnVisualizarContrato.hidden = !podeEditarContrato;
+        elementos.btnAceitarParceria.disabled = !podeAssinarContrato;
+        elementos.btnAceitarParceria.hidden = !podeAssinarContrato;
         elementos.btnVisualizarContrato.textContent = "Conferir e editar dados do seu contrato";
         const documentosAssinados = (estabelecimento.contratos || []).filter(
           item => item.status === "ACEITO" && item.conteudocontrato,
