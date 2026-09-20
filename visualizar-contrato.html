@@ -151,7 +151,6 @@
         <button class="save-button" id="salvarDados" type="button">Salvar alterações</button>
         <h2 class="contract-title" id="tituloContrato"></h2>
         <div class="contract-text" id="textoContrato"></div>
-        <a id="assinarContrato" class="pdf-button sign-button" style="display:block;text-align:center;text-decoration:none">Visualizar e assinar seu contrato</a>
         <div class="signed-status hidden" id="statusAssinado"></div>
       </section>
     </main>
@@ -313,9 +312,6 @@
               ? `Retificação nº ${contratoAtual.nrretificacao} - ${nomeStatus(contratoAtual.status)}`
               : `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
           el.textoContrato.textContent = contratoAtual.conteudocontrato;
-          const assinar = document.getElementById("assinarContrato");
-          assinar.href = `aceite-parceria.html?leadestabelecimento_id=${estabelecimentoId}`;
-          assinar.classList.toggle("hidden", contratoAtual.status === "ACEITO");
           if (contratoAtual.status === "ACEITO") {
             el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="contrato-assinado.html?leadestabelecimento_id=${estabelecimentoId}">Ver contrato assinado</a>`;
             el.statusAssinado.classList.remove("hidden");
