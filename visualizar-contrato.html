@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizar contrato | Clubbar</title>
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+    <style>
+      :root {
+        --blue: #1976d2;
+        --line: #d9dde2;
+        --red: #d93232;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #202124;
+        background: #f4f5f7;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      button { font: inherit; cursor: pointer; }
+      .hidden { display: none !important; }
+      .topbar {
+        height: 74px;
+        padding: 8px max(18px, 6vw);
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        align-items: center;
+        background: #000;
+      }
+      .topbar img {
+        width: auto;
+        height: 58px;
+        max-width: 68vw;
+        object-fit: contain;
+        justify-self: center;
+        transform: scale(1.25);
+      }
+      .topbar-brand{display:flex;align-items:center;justify-content:center;gap:6px}.topbar-brand .brand-owl{width:48px;height:48px;transform:none}.topbar-brand .brand-logo{height:43px;transform:none}
+      .back {
+        color: #fff;
+        text-decoration: none;
+        font-size: 24px;
+        font-weight: 900;
+      }
+      main {
+        width: min(920px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 28px 0 50px;
+      }
+      .lead-name {
+        margin: 0;
+        color: var(--blue);
+        font-size: clamp(25px, 5vw, 34px);
+      }
+      .subtitle {
+        margin: 7px 0 22px;
+        color: #444;
+        font-size: 17px;
+      }
+      .card {
+        padding: clamp(18px, 4vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+      }
+      .contract-title {
+        margin: 0 0 16px;
+        font-size: 20px;
+      }
+      .contract-title, .contract-text { display: none; }
+      body.mostrar-contrato .contract-title, body.mostrar-contrato .contract-text { display: block; }
+      .establishment-title { margin: 0 0 16px; color: var(--blue); font-size: 22px; }
+      .lead-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; margin-bottom:20px; }
+      .lead-data div { padding:10px 12px; border-bottom:1px solid #edf0f2; color:#555; font-size:14px; }
+      .lead-data strong { display:block; margin-bottom:3px; color:#202124; font-size:12px; }
+      .edit-card { margin: 0 0 14px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+      .edit-card h3 { margin: 0 0 14px; color: var(--blue); font-size: 18px; }
+      .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+      .edit-field { display:flex; flex-direction:column; gap:5px; }
+      .edit-field.full { grid-column:1 / -1; }
+      .edit-field label { color:#333; font-size:12px; font-weight:700; }
+      .edit-field input, .edit-field select { min-height:42px; padding:9px 11px; border:1px solid #bfc5ca; border-radius:9px; background:#fff; color:#202124; font:inherit; }
+      .edit-field input:disabled, .edit-field select:disabled { background:#f1f3f4; color:#62666b; }
+      .readonly-note { margin:0 0 12px; color:#666; font-size:12px; }
+      .save-button { width:100%; min-height:48px; margin-top:4px; border:0; border-radius:12px; color:#fff; background:#168a4a; font-weight:900; }
+      .contract-text {
+        max-height: 560px;
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8f9fa;
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+      .pdf-button {
+        width: 100%;
+        min-height: 50px;
+        margin-top: 16px;
+        padding: 12px 16px;
+        border: 1px solid #333;
+        border-radius: 13px;
+        color: #000;
+        background: #fff;
+        font-weight: 900;
+      }
+      .sign-button { border:0; color:#fff; background:#168a4a; }
+      .sign-button:hover { background:#116d3b; }
+      .signed-status { margin-top:18px; padding:14px; border-radius:12px; color:#176b3b; background:#e8f5ec; font-weight:700; }
+      .signed-status a { display:block; margin-top:8px; color:#1468bd; font-weight:800; }
+      .state { padding: 60px 20px; text-align: center; }
+      .toast {
+        position: fixed;
+        z-index: 1000;
+        top: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: min(430px, calc(100% - 36px));
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #fff;
+        background: var(--red);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, .25);
+        font-weight: 800;
+      }
+      .toast.success { background: #168a4a; }
+      @media (max-width: 560px) {
+        main { padding-top: 20px; }
+        .contract-text { max-height: 500px; padding: 13px; font-size: 14px; }
+        .lead-data { grid-template-columns:1fr; }
+      }
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back" id="voltar" href="portal-lead.html" aria-label="Voltar">←</a>
+      <span class="topbar-brand"><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar Lead" /></span>
+      <span></span>
+    </header>
+
+    <div class="state" id="carregando">Carregando contrato...</div>
+    <div class="state hidden" id="erro"></div>
+    <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+    <main class="hidden" id="conteudo">
+      <h1 class="lead-name" id="nomeLead"></h1>
+      <p class="subtitle">Visualizar contrato</p>
+      <section class="card">
+        <h2 class="establishment-title" id="tituloEstabelecimento"></h2>
+        <div id="dadosEstabelecimento"></div>
+        <button class="save-button" id="salvarDados" type="button">Salvar alterações</button>
+        <h2 class="contract-title" id="tituloContrato"></h2>
+        <div class="contract-text" id="textoContrato"></div>
+        <div class="signed-status hidden" id="statusAssinado"></div>
+      </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script>
+      const STORAGE_KEY = "clubbar_portal_lead_token";
+      const token = sessionStorage.getItem(STORAGE_KEY);
+      const params = new URLSearchParams(window.location.search);
+      const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
+      const contratoId = Number(params.get("contrato_id"));
+      const modoAssinado = params.get("modo") === "assinado";
+      if (modoAssinado) document.body.classList.add("mostrar-contrato");
+      let contratoAtual = null;
+      const el = {
+        voltar: document.getElementById("voltar"),
+        carregando: document.getElementById("carregando"),
+        erro: document.getElementById("erro"),
+        conteudo: document.getElementById("conteudo"),
+        nomeLead: document.getElementById("nomeLead"),
+        tituloContrato: document.getElementById("tituloContrato"),
+        textoContrato: document.getElementById("textoContrato"),
+        tituloEstabelecimento: document.getElementById("tituloEstabelecimento"),
+        dadosEstabelecimento: document.getElementById("dadosEstabelecimento"),
+        salvarDados: document.getElementById("salvarDados"),
+        statusAssinado: document.getElementById("statusAssinado"),
+        toast: document.getElementById("toast"),
+      };
+      el.voltar.href = `portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`;
+
+      async function api(caminho, options = {}) {
+        const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}${caminho}`, {
+          ...options,
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        const dados = await resposta.json().catch(() => ({}));
+        if (!resposta.ok) {
+          throw new Error(
+            typeof dados.detail === "string"
+              ? dados.detail
+              : "Não foi possível carregar o contrato.",
+          );
+        }
+        return dados;
+      }
+
+      function nomeStatus(status) {
+        return { RASCUNHO: "Não assinado", ENVIADO: "Pronto para assinar", ACEITO: "Aceito" }[status] || status;
+      }
+
+      function texto(valor) { return String(valor ?? "").trim() || "Não informado"; }
+      function moeda(valor) { const numero = Number(valor); return Number.isFinite(numero) ? numero.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : texto(valor); }
+      function tipo(valor) { return { BAR: "Bar", CASA_NOTURNA: "Casa noturna", PRODUTOR_EVENTOS: "Produtor de eventos", CASA_EVENTOS: "Casa de eventos" }[valor] || texto(valor); }
+      function venda(valor) { return { PRODUTOS: "Somente produtos", INGRESSOS: "Somente ingressos", AMBOS: "Produtos e ingressos" }[valor] || texto(valor); }
+      function dataHora(valor) { if (!valor) return ""; const data = new Date(valor); return Number.isNaN(data.getTime()) ? texto(valor) : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(data); }
+      function campo(rotulo, valor, opcoes = {}) {
+        const div = document.createElement("div");
+        div.className = `edit-field${opcoes.full ? " full" : ""}`;
+        const label = document.createElement("label"); label.textContent = rotulo;
+        const input = document.createElement(opcoes.select ? "select" : "input");
+        input.dataset.campo = opcoes.campo || "";
+        if (!opcoes.select) { input.value = valor ?? ""; input.type = opcoes.type || "text"; }
+        if (opcoes.disabled) input.disabled = true;
+        if (opcoes.options) opcoes.options.forEach(([value, labelTexto]) => { const option = document.createElement("option"); option.value = value; option.textContent = labelTexto; input.append(option); });
+        if (opcoes.select) input.value = valor ?? "";
+        div.append(label, input); return div;
+      }
+
+      const tipos = [["BAR", "Bar"], ["CASA_NOTURNA", "Casa noturna"], ["PRODUTOR_EVENTOS", "Produtor de eventos"], ["CASA_EVENTOS", "Casa de eventos"]];
+      const vendas = [["PRODUTOS", "Somente produtos"], ["INGRESSOS", "Somente ingressos"], ["AMBOS", "Produtos e ingressos"]];
+      let estabelecimentoAtual = null;
+      let ultimoCepConsultado = "";
+
+      function mostrarToast(mensagem, sucesso = false) {
+        el.toast.textContent = mensagem;
+        el.toast.classList.toggle("success", sucesso);
+        el.toast.classList.remove("hidden");
+      }
+
+      async function carregarLocalidades(estadoId, cidadeId) {
+        const estados = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`).then(r => r.json());
+        const estadoSelect = el.dadosEstabelecimento.querySelector('[data-campo="estado_id"]');
+        estadoSelect.replaceChildren();
+        estados.forEach(item => { const option = document.createElement("option"); option.value = item.estado_id; option.textContent = `${item.sgestado} - ${item.nmestado}`; estadoSelect.append(option); });
+        estadoSelect.value = estadoId || "";
+        const cidades = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`).then(r => r.json());
+        const cidadeSelect = el.dadosEstabelecimento.querySelector('[data-campo="cidade_id"]');
+        cidadeSelect.replaceChildren();
+        cidades.forEach(item => { const option = document.createElement("option"); option.value = item.cidade_id; option.textContent = item.nmcidade; cidadeSelect.append(option); });
+        cidadeSelect.value = cidadeId || "";
+      }
+
+      async function consultarCep() {
+        const cepInput = el.dadosEstabelecimento.querySelector('[data-campo="cep"]');
+        const cep = (cepInput.value || "").replace(/\D/g, "");
+        if (cep.length !== 8) throw new Error("Informe um CEP válido com 8 dígitos.");
+        if (cep === ultimoCepConsultado) return;
+        const dados = await api(`/localidades/cep/${cep}`);
+        el.dadosEstabelecimento.querySelector('[data-campo="endereco"]').value = dados.endereco;
+        el.dadosEstabelecimento.querySelector('[data-campo="bairro"]').value = dados.bairro;
+        await carregarLocalidades(dados.estado_id, dados.cidade_id);
+        cepInput.value = `${cep.slice(0, 5)}-${cep.slice(5)}`;
+        ultimoCepConsultado = cep;
+      }
+
+      function renderizarDados(estabelecimento, resumo) {
+        const telefone = estabelecimento.telefone_responsavel || estabelecimento.telefone || resumo.telefone || "";
+        el.dadosEstabelecimento.replaceChildren();
+        const cardDados = document.createElement("section"); cardDados.className = "edit-card";
+        cardDados.innerHTML = "<h3>Dados do estabelecimento</h3><div class='edit-grid'></div>";
+        const dadosGrid = cardDados.querySelector(".edit-grid");
+        dadosGrid.append(
+          campo("E-mail", estabelecimento.email_responsavel || estabelecimento.email || resumo.email, { campo:"email", type:"email", disabled:true }),
+          campo("Telefone", telefone, { campo:"telefone_responsavel", type:"tel" }),
+          campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel, { campo:"nmresponsavel" }),
+          campo("CPF/CNPJ", estabelecimento.cpfcnpj, { campo:"cpfcnpj" }),
+          campo("Tipo de estabelecimento", estabelecimento.tipo, { campo:"tipo", select:true, options:tipos }),
+          campo("O que deseja vender", estabelecimento.tipovenda, { campo:"tipovenda", select:true, options:vendas }),
+        );
+        const cardEndereco = document.createElement("section"); cardEndereco.className = "edit-card";
+        cardEndereco.innerHTML = "<h3>Endereço</h3><div class='edit-grid'></div>";
+        const enderecoGrid = cardEndereco.querySelector(".edit-grid");
+        enderecoGrid.append(
+          campo("CEP", estabelecimento.cep, { campo:"cep" }),
+          campo("Endereço", estabelecimento.endereco, { campo:"endereco", disabled:true }),
+          campo("Número", estabelecimento.numero, { campo:"numero" }),
+          campo("Bairro", estabelecimento.bairro, { campo:"bairro", disabled:true }),
+          campo("Complemento", estabelecimento.complemento, { campo:"complemento", full:true }),
+          campo("Estado", estabelecimento.estado_id, { campo:"estado_id", select:true, disabled:true }),
+          campo("Cidade", estabelecimento.cidade_id, { campo:"cidade_id", select:true, disabled:true }),
+        );
+        const cardTaxas = document.createElement("section"); cardTaxas.className = "edit-card";
+        cardTaxas.innerHTML = `<h3>Taxas e datas</h3><p class="readonly-note">Estas informações são definidas no contrato e não podem ser alteradas nesta tela.</p><div class="edit-grid"></div>`;
+        const taxasGrid = cardTaxas.querySelector(".edit-grid");
+        taxasGrid.append(campo("Taxa de produtos", `${texto(estabelecimento.vrtaxaprod)}%`, { disabled:true }), campo("Taxa de ingressos", `${texto(estabelecimento.vrtaxaing)}%`, { disabled:true }), campo("Valor mínimo cobrado por ingresso", moeda(estabelecimento.vrtaxaminimaingresso), { disabled:true }), campo("Data de criação", dataHora(estabelecimento.dtcriacao), { disabled:true }), campo("Última atualização", dataHora(estabelecimento.dtultatu), { disabled:true }), campo("Data de conversão", dataHora(estabelecimento.dtconversao), { disabled:true }));
+        el.dadosEstabelecimento.append(cardDados, cardEndereco, cardTaxas);
+        ultimoCepConsultado = String(estabelecimento.cep || "").replace(/\D/g, "");
+        const cepInput = el.dadosEstabelecimento.querySelector('[data-campo="cep"]');
+        if (ultimoCepConsultado.length === 8) cepInput.value = `${ultimoCepConsultado.slice(0, 5)}-${ultimoCepConsultado.slice(5)}`;
+        cepInput.addEventListener("input", () => {
+          const numeros = cepInput.value.replace(/\D/g, "").slice(0, 8);
+          cepInput.value = numeros.length > 5 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : numeros;
+        });
+        cepInput.addEventListener("blur", () => consultarCep().catch(erro => mostrarToast(erro.message)));
+        carregarLocalidades(estabelecimento.estado_id, estabelecimento.cidade_id).catch(() => {});
+      }
+
+      async function salvarDados() {
+        const valor = campo => el.dadosEstabelecimento.querySelector(`[data-campo="${campo}"]`)?.value || null;
+        el.salvarDados.disabled = true; el.salvarDados.textContent = "Salvando...";
+        try {
+          await consultarCep();
+          await api(`/portal-parceiro/estabelecimentos/${estabelecimentoId}`, { method:"PATCH", body: JSON.stringify({ nmresponsavel:valor("nmresponsavel"), telefone_responsavel:valor("telefone_responsavel"), tipo:valor("tipo"), tipovenda:valor("tipovenda"), cpfcnpj:valor("cpfcnpj"), estado_id:Number(valor("estado_id")), cidade_id:Number(valor("cidade_id")), cep:(valor("cep") || "").replace(/\D/g, ""), endereco:valor("endereco"), numero:valor("numero"), complemento:valor("complemento"), bairro:valor("bairro") }) });
+          mostrarToast("Informações salvas com sucesso.", true);
+          setTimeout(() => { window.location.href = el.voltar.href; }, 1000);
+        } catch (erro) {
+          mostrarToast(erro.message);
+          el.salvarDados.disabled = false;
+          el.salvarDados.textContent = "Salvar alterações";
+        }
+      }
+      el.salvarDados.addEventListener("click", salvarDados);
+
+      function mostrarErro(mensagem) {
+        el.carregando.classList.add("hidden");
+        el.conteudo.classList.add("hidden");
+        el.erro.textContent = mensagem;
+        el.erro.classList.remove("hidden");
+      }
+
+      async function carregar() {
+        if (!token || !estabelecimentoId) {
+          window.location.href = "portal-lead.html";
+          return;
+        }
+        try {
+          const resumo = await api(
+            `/portal-parceiro/resumo?leadestabelecimento_id=${estabelecimentoId}`,
+          );
+          const estabelecimento = (resumo.estabelecimentos || []).find(
+            (item) => item.leadestabelecimento_id === estabelecimentoId,
+          );
+          contratoAtual = (contratoId
+            ? estabelecimento?.contratos?.find(
+                item => Number(item.leadestabelecimentocontrato_id) === contratoId,
+              )
+            : estabelecimento?.contratos?.find(
+                item => item.tipoinstrumento !== "RETIFICACAO" && item.status !== "ACEITO",
+              ) || estabelecimento?.contratos?.[0]) || { status: "RASCUNHO" };
+          if (!estabelecimento) {
+            throw new Error(
+              "Estabelecimento não encontrado.",
+            );
+          }
+          el.nomeLead.textContent = `Lead #${resumo.leadparceiro_id || ""} ${resumo.nmresponsavel || ""}`.trim();
+          el.tituloEstabelecimento.textContent = `Estabelecimento: ${texto(estabelecimento.nmestabelecimento)}`;
+          estabelecimentoAtual = estabelecimento;
+          renderizarDados(estabelecimento, resumo);
+          el.tituloContrato.textContent =
+            contratoAtual.tipoinstrumento === "RETIFICACAO"
+              ? `Retificação nº ${contratoAtual.nrretificacao} - ${nomeStatus(contratoAtual.status)}`
+              : `Contrato ${contratoAtual.versao} - ${nomeStatus(contratoAtual.status)}`;
+          el.textoContrato.textContent = contratoAtual.conteudocontrato;
+          if (contratoAtual.status === "ACEITO") {
+            el.statusAssinado.innerHTML = `Contrato assinado em ${dataHora(contratoAtual.dtaceite)}.<a href="contrato-assinado.html?leadestabelecimento_id=${estabelecimentoId}">Ver contrato assinado</a>`;
+            el.statusAssinado.classList.remove("hidden");
+          }
+          el.carregando.classList.add("hidden");
+          el.erro.classList.add("hidden");
+          el.conteudo.classList.remove("hidden");
+        } catch (erro) {
+          mostrarErro(erro.message);
+        }
+      }
+
+      carregar();
+    </script>
+  </body>
+</html>

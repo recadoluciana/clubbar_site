@@ -1,68 +1,1473 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clubbar | Venda digital para bares e eventos</title>
-  <meta name="description" content="Venda ingressos e produtos, reduza filas e acompanhe sua operação pelo Clubbar.">
-  <link rel="icon" type="image/png" href="assets/images/coruja.png">
-  <style>
-    :root{--bg:#050505;--card:#141414;--line:#2b2b2b;--gold:#f5c542;--gold2:#dcae24;--blue:#1683ff;--txt:#e9e9e9;--muted:#aaa}
-    *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}html{scroll-behavior:smooth}body{background:var(--bg);color:#fff;line-height:1.55}a{text-decoration:none;color:inherit}
-    header{position:sticky;top:0;z-index:10;min-height:84px;padding:7px 7%;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.94);border-bottom:1px solid #202020;backdrop-filter:blur(10px)}header img{height:68px}.nav{display:flex;align-items:center;gap:22px}.nav a{font-size:14px;font-weight:800;color:#ddd}.nav a:hover{color:var(--gold)}
-    .hero{padding:86px 7%;background:radial-gradient(circle at 80% 20%,rgba(22,131,255,.18),transparent 28%),radial-gradient(circle at 15% 80%,rgba(245,197,66,.12),transparent 30%),linear-gradient(135deg,#050505,#161616)}.hero-grid{max-width:1120px;margin:auto;display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}.hero h1{font-size:clamp(40px,5vw,66px);line-height:1.04;letter-spacing:-1.6px;margin-bottom:22px}.hero h1 span{color:var(--blue)}.hero p{max-width:710px;color:#d0d0d0;font-size:18px;line-height:1.75;margin-bottom:31px}.actions{display:flex;gap:14px;flex-wrap:wrap}.btn{min-height:52px;padding:15px 27px;display:inline-flex;align-items:center;justify-content:center;border-radius:16px;background:var(--gold);color:#000;font-weight:900;transition:.2s}.btn:hover{transform:translateY(-2px);background:var(--gold2)}.btn.outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}.btn.portal-action{background:var(--blue);color:#fff}.btn.portal-action:hover{background:#0f6fdc}
-    .hero-card{padding:29px;border-radius:27px;background:linear-gradient(145deg,#191919,#0b0b0b);border:1px solid #303030;box-shadow:0 18px 60px rgba(0,0,0,.45)}.hero-card h3{color:var(--gold);margin-bottom:14px}.item{padding:16px 0;display:flex;gap:13px;border-bottom:1px solid #292929}.item:last-child{border:0}.item i{width:42px;height:42px;display:grid;place-items:center;flex:0 0 42px;border-radius:13px;background:rgba(245,197,66,.12);font-style:normal}.item strong{display:block}.item small{color:var(--muted)}
-    section.content{padding:82px 7%}.heading{max-width:760px;margin:0 auto 42px;text-align:center}.heading span{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:1px}.heading h2{font-size:clamp(30px,4vw,44px);margin:9px 0 12px}.heading p{color:var(--muted);font-size:17px}.features{background:#090909}.grid{max-width:1120px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:21px}.card{min-height:220px;padding:27px;border-radius:21px;background:var(--card);border:1px solid var(--line);transition:.2s}.card:hover{transform:translateY(-4px);border-color:var(--gold)}.card .icon{font-size:27px;margin-bottom:17px}.card h3{color:var(--gold);margin-bottom:9px}.card p{color:#c9c9c9;font-size:15px}
-    .plan{max-width:850px;margin:auto;border:2px solid var(--gold);border-radius:29px;overflow:hidden;background:linear-gradient(145deg,#171717,#0b0b0b);box-shadow:0 18px 60px rgba(0,0,0,.45)}.plan-head{padding:32px 36px;display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #303030}.plan-head h3{font-size:29px}.plan-head p{color:var(--muted)}.badge{padding:8px 14px;height:max-content;border-radius:999px;background:var(--gold);color:#000;font-size:12px;font-weight:900}.fees{padding:33px 36px;display:grid;grid-template-columns:1fr 1fr;gap:25px}.fee{padding:22px;border-radius:19px;background:#111;border:1px solid #292929}.fee strong{display:block;color:var(--gold);font-size:34px}.fee h4{margin:4px 0 8px}.fee p{color:#bbb;font-size:14px}.plan-foot{padding:0 36px 36px;text-align:center}.plan-foot p{color:#aaa;margin-bottom:18px}
-    .cta{padding:85px 7%;text-align:center;background:linear-gradient(135deg,#171717,#060606)}.cta h2{font-size:clamp(31px,4vw,45px);margin-bottom:12px}.cta p{max-width:680px;margin:0 auto 25px;color:#bbb}footer{padding:27px;text-align:center;color:#777;background:#000;border-top:1px solid #1f1f1f;font-size:13px}.owl-glide{position:absolute;top:100px;right:16px;z-index:8;width:64px;height:64px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55));transition:top .14s linear;will-change:top}
-    @media(max-width:900px){header{padding:8px 16px 12px;flex-direction:column;gap:8px}header img{height:62px}.nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.nav a{min-height:38px;padding:8px 6px;display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid #303030;border-radius:12px;font-size:12px}.hero-grid{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:640px){header img{height:60px}.hero,section.content{padding:60px 20px}.grid,.fees{grid-template-columns:1fr}.actions .btn{width:100%}.plan-head{flex-direction:column}.plan-head,.fees,.plan-foot{padding-left:23px;padding-right:23px}.owl-glide{right:7px;width:48px;height:48px;opacity:.88}}@media(prefers-reduced-motion:reduce){.owl-glide{transition:none}}
-  </style>
-</head>
-<body>
-<header>
-  <a href="index.html"><img src="assets/images/clubbar_topbar.png" alt="Clubbar"></a>
-  <nav class="nav">
-    <a href="#funcionalidades">Funcionalidades</a><a href="#plano">Plano</a>
-  </nav>
-</header>
-<img class="owl-glide" id="corujaDeslizante" src="assets/images/coruja.png" alt="" aria-hidden="true">
-<main>
-  <section class="hero"><div class="hero-grid"><div><h1>Venda digital para <span>bares, casas noturnas e eventos.</span></h1><p>Venda ingressos e produtos, reduza filas, simplifique a operação e acompanhe os resultados do seu negócio em um painel completo.</p><div class="actions"><a class="btn" href="cadastro-parceiro.html">Quero ser parceiro</a><a class="btn portal-action" id="portalParceiro" href="https://parceiro.clubbar.com.br" target="_blank" rel="noopener">Portal Parceiro</a><a class="btn outline" href="#plano">Conhecer o plano</a></div></div><aside class="hero-card"><h3>Uma operação mais simples</h3><div class="item"><i>🎟️</i><div><strong>Ingressos digitais</strong><small>Venda antecipada, lotes e validação de entrada.</small></div></div><div class="item"><i>🍹</i><div><strong>Produtos e bebidas</strong><small>Venda bebidas, porções e experiências.</small></div></div><div class="item"><i>📊</i><div><strong>Gestão centralizada</strong><small>Acompanhe vendas, retiradas e usuários.</small></div></div></aside></div></section>
-  <section class="content features" id="funcionalidades"><div class="heading"><span>FUNCIONALIDADES CLUBBAR</span><h2>Mais agilidade para sua equipe e seus clientes</h2><p>Venda, divulgação e operação em uma experiência simples para o parceiro e para o público.</p></div><div class="grid"><article class="card"><div class="icon">💰</div><h3>Mais vendas</h3><p>Venda ingressos, bebidas, produtos e experiências com antecedência ou no local.</p></article><article class="card"><div class="icon">⚡</div><h3>Menos filas</h3><p>Reduza o tempo de atendimento e melhore a experiência de compra e retirada.</p></article><article class="card"><div class="icon">📢</div><h3>Divulgação</h3><p>Divulgue sua agenda, eventos, cardápio e produtos em uma única plataforma.</p></article><article class="card"><div class="icon">📊</div><h3>Painel gerencial</h3><p>Acompanhe vendas, entradas, retiradas, usuários e resultados da operação.</p></article><article class="card"><div class="icon">✅</div><h3>Gestão simples</h3><p>Organize lojas, usuários, produtos, categorias, eventos e lotes.</p></article><article class="card"><div class="icon">📱</div><h3>Web e celular</h3><p>Acesso pelo navegador e pelos aplicativos Clubbar.</p></article></div></section>
-  <section class="content" id="plano"><div class="heading"><span>PLANO CLUBBAR</span><h2>Um modelo simples e transparente</h2><p>Um único plano, com taxas proporcionais às vendas realizadas.</p></div><div class="plan"><div class="plan-head"><div><h3>Plano Clubbar</h3><p>Venda digital, divulgação e gestão da operação.</p></div><div class="badge">PLANO ÚNICO</div></div><div class="fees"><div class="fee"><strong>5%</strong><h4>Venda de produtos</h4><p>Taxa aplicada sobre as vendas de produtos realizadas pela plataforma.</p></div><div class="fee"><strong>5%</strong><h4>Taxa de conveniência</h4><p>Acrescentada ao ingresso e cobrada diretamente do cliente.</p></div></div><div class="plan-foot"><p>Fale com nossa equipe para conhecer o processo de implantação.</p><a class="btn" href="cadastro-parceiro.html">Quero conhecer o Clubbar</a></div></div></section>
-  <section class="cta"><h2>Pronto para transformar sua operação?</h2><p>Envie seus dados. Nossa equipe entrará em contato para entender seu negócio e apresentar o Clubbar.</p><a class="btn" href="cadastro-parceiro.html">Cadastrar interesse</a></section>
-</main>
-<footer>© 2026 Clubbar. Todos os direitos reservados.</footer>
-<script src="js/config.js"></script><script>
-  const portalParceiro=document.getElementById('portalParceiro');
-  portalParceiro.href=CLUBBAR_CONFIG.PARTNER_URL;
-  const acompanhar=document.createElement('a');
-  acompanhar.className='btn outline';
-  acompanhar.href='portal-parceiro.html';
-  acompanhar.textContent='Acompanhar proposta';
-  portalParceiro.parentElement.insertBefore(acompanhar,portalParceiro);
-  (()=>{
-    const coruja=document.getElementById('corujaDeslizante');
-    const cabecalho=document.querySelector('header');
-    const rodape=document.querySelector('footer');
-    let agendado=false;
-    function posicionarCoruja(){
-      agendado=false;
-      const maximoRolagem=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);
-      const progresso=Math.min(Math.max(window.scrollY/maximoRolagem,0),1);
-      const inicio=cabecalho.offsetHeight+16;
-      const fim=rodape.offsetTop-(coruja.offsetHeight/2);
-      coruja.style.top=`${inicio+((fim-inicio)*progresso)}px`;
-    }
-    function solicitarPosicao(){
-      if(agendado)return;
-      agendado=true;
-      requestAnimationFrame(posicionarCoruja);
-    }
-    addEventListener('scroll',solicitarPosicao,{passive:true});
-    addEventListener('resize',solicitarPosicao);
-    addEventListener('load',posicionarCoruja);
-    posicionarCoruja();
-  })();
-</script>
-</body></html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clubbar</title>
+    <meta
+      name="description"
+      content="Venda ingressos e produtos, reduza filas e acompanhe sua operação pelo Clubbar."
+    />
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+    <style>
+      :root {
+        --bg: #050505;
+        --card: #141414;
+        --line: #2b2b2b;
+        --gold: #f5c542;
+        --gold2: #dcae24;
+        --blue: #1683ff;
+        --txt: #e9e9e9;
+        --muted: #aaa;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: #fff;
+        line-height: 1.55;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        height: 78px;
+        padding: 7px 7% 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background: rgba(0, 0, 0, 0.96);
+        border-bottom: 1px solid #292929;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(10px);
+      }
+      .brand-logo {
+        margin-left: 16px;
+        width: auto;
+        height: 58px;
+        display: block;
+        object-fit: contain;
+        transform: scale(1.25);
+      }
+      .login-lead,
+      .logout-lead {
+        padding: 9px 14px;
+        border-radius: 11px;
+        font-weight: 850;
+      }
+      .login-lead {
+        border: 1px solid var(--blue);
+        color: #fff;
+        background: rgba(22, 131, 255, 0.18);
+      }
+      .login-lead:hover {
+        background: var(--blue);
+      }
+      .logout-lead {
+        display: none;
+        border: 1px solid #e05a5a;
+        color: #ffd6d6;
+        background: rgba(224, 82, 82, 0.12);
+        cursor: pointer;
+      }
+      .logout-lead.show {
+        display: inline-flex;
+      }
+      .logout-lead:hover {
+        background: #b72f2f;
+        color: #fff;
+      }
+      .hero {
+        padding: 66px 7% 86px;
+        background:
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(22, 131, 255, 0.18),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 15% 80%,
+            rgba(245, 197, 66, 0.12),
+            transparent 30%
+          ),
+          linear-gradient(135deg, #050505, #161616);
+      }
+      .hero-grid {
+        max-width: 1120px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 48px;
+        align-items: center;
+      }
+      .hero h1 {
+        font-size: clamp(40px, 5vw, 66px);
+        line-height: 1.04;
+        letter-spacing: -1.6px;
+        margin-bottom: 22px;
+      }
+      .hero h1 span {
+        color: var(--blue);
+      }
+      .hero p {
+        max-width: 710px;
+        color: #d0d0d0;
+        font-size: 18px;
+        line-height: 1.75;
+        margin-bottom: 31px;
+      }
+      .actions {
+        display: flex;
+        align-items: stretch;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        min-height: 52px;
+        padding: 15px 27px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: var(--gold);
+        color: #000;
+        font-weight: 900;
+        transition: 0.2s;
+      }
+      .btn.two-line {
+        flex-direction: column;
+        gap: 2px;
+        line-height: 1.2;
+      }
+      .btn-subtitle {
+        font-size: 11px;
+        font-weight: 700;
+        opacity: 0.76;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        background: var(--gold2);
+      }
+      .btn.plan-action {
+        background: var(--blue);
+        color: #fff;
+      }
+      .btn.plan-action:hover {
+        background: #0b6fdd;
+      }
+      .app-showcase {
+        margin-top: 22px;
+        padding: 14px;
+        border: 1px solid #3a3a3a;
+        border-radius: 21px;
+        background: rgba(10, 10, 10, 0.72);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      }
+      .apps-title {
+        margin: 0 0 12px;
+        text-align: center;
+        color: #fff;
+        font-size: 17px;
+      }
+      .app-downloads {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .app-download {
+        min-height: 184px;
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 62px minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #343434;
+        border-radius: 17px;
+        background: #131313;
+        color: #fff;
+      }
+      .app-download img {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+        border-radius: 13px;
+      }
+      .app-download strong {
+        display: block;
+        color: var(--gold);
+        font-size: 15px;
+        margin-bottom: 3px;
+      }
+      .app-download small {
+        display: block;
+        color: #bbb;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .app-options {
+        grid-column: 1/-1;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .app-access {
+        min-height: 40px;
+        padding: 8px 9px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 11px;
+        font-size: 11px;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+      .app-access.download {
+        border: 1px solid #444;
+        background: #1b1b1b;
+        color: #ddd;
+      }
+      .app-access span {
+        display: block;
+        margin-top: 2px;
+        color: var(--gold);
+        font-size: 10px;
+      }
+      .hero-card {
+        padding: 29px;
+        border-radius: 27px;
+        background: linear-gradient(145deg, #191919, #0b0b0b);
+        border: 1px solid #303030;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      }
+      .hero-card h3 {
+        color: var(--gold);
+        margin-bottom: 14px;
+      }
+      .item {
+        padding: 16px 0;
+        display: flex;
+        gap: 13px;
+        border-bottom: 1px solid #292929;
+      }
+      .item:last-child {
+        border: 0;
+      }
+      .item i {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 42px;
+        border-radius: 13px;
+        background: rgba(245, 197, 66, 0.12);
+        font-style: normal;
+      }
+      .item strong {
+        display: block;
+      }
+      .item small {
+        color: var(--muted);
+      }
+      section.content {
+        padding: 64px 7%;
+      }
+      .heading {
+        max-width: 760px;
+        margin: 0 auto 34px;
+        text-align: center;
+      }
+      .heading-icon {
+        width: 92px;
+        height: 92px;
+        margin: 0 auto 16px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #e2e6ea;
+        border-radius: 50%;
+        color: var(--blue);
+        background: #fff;
+        box-shadow: 0 12px 30px rgba(22, 131, 255, 0.14);
+        font-size: 48px;
+        line-height: 1;
+      }
+      .heading span {
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 1px;
+      }
+      .heading h2 {
+        font-size: clamp(30px, 4vw, 44px);
+        margin: 0 0 12px;
+      }
+      .heading p {
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .features {
+        padding-top: 24px !important;
+        padding-bottom: 34px !important;
+        background: #090909;
+      }
+      .plan-section {
+        padding-top: 34px !important;
+      }
+      .grid {
+        max-width: 1120px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 21px;
+      }
+      .card {
+        min-height: 155px;
+        padding: 20px 22px;
+        border-radius: 21px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        transition: 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        border-color: var(--gold);
+      }
+      .card-title {
+        margin-bottom: 9px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .card .icon {
+        font-size: 25px;
+        line-height: 1;
+      }
+      .card h3 {
+        color: var(--gold);
+      }
+      .card p {
+        color: #c9c9c9;
+        font-size: 15px;
+      }
+      .plan {
+        max-width: 850px;
+        margin: auto;
+        border: 2px solid var(--gold);
+        border-radius: 29px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #171717, #0b0b0b);
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      }
+      .plan-head {
+        padding: 32px 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        text-align: center;
+        border-bottom: 1px solid #303030;
+      }
+      .plan-head h3 {
+        font-size: 29px;
+      }
+      .badge {
+        min-width: 116px;
+        padding: 8px 14px;
+        height: max-content;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        box-shadow: 0 8px 20px rgba(22, 131, 255, 0.28);
+      }
+      .fees {
+        padding: 28px 36px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+      .fee {
+        padding: 22px;
+        border-radius: 19px;
+        background: #111;
+        border: 1px solid #292929;
+      }
+      .fee-title {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .fee strong {
+        color: var(--gold);
+        font-size: 31px;
+        line-height: 1;
+      }
+      .fee h4 {
+        font-size: 17px;
+      }
+      .fee p {
+        color: #bbb;
+        font-size: 14px;
+      }
+      .plan-foot {
+        padding: 0 36px 32px;
+        text-align: center;
+      }
+      .plan-foot p {
+        color: #aaa;
+        margin-bottom: 18px;
+      }
+      footer {
+        padding: 27px;
+        text-align: center;
+        color: #777;
+        background: #000;
+        border-top: 1px solid #1f1f1f;
+        font-size: 13px;
+      }
+      .dora-chat {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #090909;
+        border-bottom: 1px solid #202020;
+        filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+        transition: transform 0.2s;
+      }
+      .dora-chat:hover {
+        transform: translateY(-2px);
+      }
+      .dora-message {
+        padding: 10px 14px;
+        border: 1px solid var(--gold);
+        border-radius: 15px 15px 4px 15px;
+        background: #151515;
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+      .dora-message strong {
+        display: block;
+        color: var(--gold);
+        font-size: 14px;
+      }
+      .dora-chat img {
+        width: 66px;
+        height: 66px;
+        padding: 5px;
+        border: 2px solid var(--gold);
+        border-radius: 50%;
+        background: #fff;
+        object-fit: contain;
+      }
+      @media (max-width: 900px) {
+        header {
+          height: 78px;
+          padding: 8px 16px 12px;
+        }
+        .brand-logo {
+          height: 58px;
+        }
+        .hero {
+          padding-top: 52px;
+        }
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .brand-logo {
+          height: 58px;
+          max-width: 62vw;
+        }
+        .hero,
+        section.content {
+          padding: 52px 20px 60px;
+        }
+        .grid,
+        .fees,
+        .app-downloads {
+          grid-template-columns: 1fr;
+        }
+        .actions .btn {
+          width: 100%;
+        }
+        .plan-head {
+          flex-direction: column;
+        }
+        .plan-head,
+        .fees,
+        .plan-foot {
+          padding-left: 23px;
+          padding-right: 23px;
+        }
+        .dora-chat {
+          padding: 12px 10px;
+        }
+        .dora-message {
+          max-width: 220px;
+          padding: 8px 10px;
+          font-size: 11px;
+        }
+        .dora-message strong {
+          font-size: 13px;
+        }
+        .dora-chat img {
+          width: 56px;
+          height: 56px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .dora-chat {
+          transition: none;
+        }
+      }
+      /* Tema claro */
+      :root {
+        --bg: #fff;
+        --card: #fff;
+        --line: #dedede;
+        --txt: #202124;
+        --muted: #666;
+      }
+      body {
+        background: #fff;
+        color: #202124;
+      }
+      .hero {
+        background:
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(22, 131, 255, 0.1),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 15% 80%,
+            rgba(245, 197, 66, 0.13),
+            transparent 32%
+          ),
+          #fff;
+      }
+      .hero p,
+      .card p,
+      .fee p,
+      .plan-foot p {
+        color: #5f6368;
+      }
+      .hero-card,
+      .app-showcase,
+      .app-download,
+      .card,
+      .plan,
+      .fee {
+        background: #fff;
+        color: #202124;
+        border-color: #dedede;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      }
+      .apps-title,
+      .app-download {
+        color: #202124;
+      }
+      .app-download small {
+        color: #666;
+      }
+      .app-access.download {
+        border-color: #d5d5d5;
+        background: #f6f7f9;
+        color: #333;
+      }
+      .hero-card {
+        background: linear-gradient(145deg, #fff, #f7f8fa);
+      }
+      .item {
+        border-bottom-color: #e2e2e2;
+      }
+      .features {
+        background: #f7f8fa;
+      }
+      .plan {
+        background: linear-gradient(145deg, #fff, #f8f9fb);
+      }
+      .plan-head {
+        border-bottom-color: #dedede;
+      }
+      .fee {
+        background: #f8f9fb;
+      }
+      footer {
+        background: #fff;
+        color: #666;
+        border-top-color: #dedede;
+      }
+      .dora-chat {
+        background: #f7f8fa;
+        border-bottom-color: #dedede;
+        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.1));
+      }
+      .dora-message {
+        background: #fff;
+        color: #202124;
+      }
+      .logged-lead {
+        background: #eef6ff;
+        color: #24374a;
+        border-bottom-color: #c9def4;
+      }
+      .logged-lead a {
+        color: #0b67c7;
+        background: #fff;
+      }
+      .interest-action {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        max-width: none;
+        text-align: center;
+      }
+      .interest-action > span:first-child {
+        margin-bottom: 8px;
+      }
+      .actions .plan-action {
+        width: 100%;
+      }
+      .interest-action .interest-caption {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.45;
+        font-weight: 500;
+        color: inherit;
+      }
+      .actions {
+        align-items: flex-start;
+      }
+      header {
+        height: 64px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 12px;
+        padding: 6px 16px;
+      }
+      .header-brand {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: center;
+      }
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .brand-owl {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+      }
+      .brand-logo {
+        margin-left: 0;
+        max-width: 46vw;
+      }
+      .brand-logo {
+        height: 32px;
+        transform: none;
+      }
+      .topbar-side {
+        grid-row: 1;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+      }
+      .topbar-left {
+        grid-column: 1;
+        justify-self: start;
+      }
+      .topbar-right {
+        grid-column: 3;
+        justify-self: end;
+      }
+      .topbar-control {
+        width: 132px;
+        height: 36px;
+        padding: 7px 12px;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border-radius: 11px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .topbar-link {
+        display: inline-flex;
+        border: 1px solid #146c43;
+        background: #146c43;
+      }
+      .topbar-link:hover {
+        color: #fff;
+        background: #0f5132;
+        border-color: #0f5132;
+      }
+      .not-received {
+        padding: 10px 20px;
+        text-align: center;
+        background: #fffaf0;
+        border-bottom: 1px solid #f0d27a;
+        font-size: 12px;
+        line-height: 1.45;
+        color: #555;
+      }
+      .not-received button {
+        margin-top: 6px;
+        padding: 6px 11px;
+        border: 1px solid #dcae24;
+        border-radius: 9px;
+        background: #fff;
+        color: #8a6500;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .logout-link {
+        display: none;
+        border: 1px solid #c62828;
+        background: #c62828;
+        cursor: pointer;
+      }
+      .logout-link.show {
+        display: inline-flex;
+      }
+      .logout-link:hover {
+        background: #a91f1f;
+        border-color: #a91f1f;
+        color: #fff;
+      }
+      .topbar-control svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .recovery-dialog {
+        width: min(430px, calc(100% - 32px));
+        margin: auto;
+        padding: 0;
+        border: 1px solid #ddd;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 24px 70px #0005;
+      }
+      .recovery-dialog::backdrop {
+        background: #0008;
+      }
+      .recovery-dialog form {
+        display: grid;
+        gap: 10px;
+        padding: 22px;
+        text-align: center;
+      }
+      .recovery-dialog h2 {
+        font-size: 20px;
+      }
+      .recovery-dialog input {
+        min-height: 46px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 9px;
+        text-align: left;
+      }
+      .recovery-dialog button {
+        min-height: 42px;
+        border: 0;
+        border-radius: 10px;
+        background: #ffbf00;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .recovery-close {
+        background: #f2f2f2 !important;
+      }
+      .recovery-help {
+        font-size: 11px;
+        line-height: 1.45;
+        color: #666;
+      }
+      .price-highlight {
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .intro-index {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px 24px 8px;
+        text-align: center;
+        color: #202124;
+        line-height: 1.5;
+      }
+      .intro-index strong {
+        display: block;
+      }
+      .intro-index .intro-platform {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      .intro-index p {
+        margin: 5px 0;
+        font-size: 17px;
+        font-weight: 400;
+      }
+      .intro-index p strong {
+        font-weight: 400;
+      }
+      .fees-label {
+        width: 100%;
+        padding: 15px 27px 8px;
+        color: var(--blue);
+        font-size: 18px;
+        font-weight: 900;
+        text-align: center;
+      }
+      .plan-terms-note {
+        margin: 0 auto 10px;
+        padding: 0 20px;
+        text-align: left;
+        color: #343434;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .interest-action > span:first-child {
+        color: var(--blue);
+        font-size: calc(1em + 3px);
+      }
+      .fees-card {
+        width: 100%;
+        max-width: 1120px;
+        margin: 18px auto 0;
+        padding: 14px;
+        border: 1px solid #dedede;
+        border-radius: 21px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+      }
+      .fees-card .fees-label {
+        padding: 5px 10px 12px;
+        text-align: left;
+      }
+      .fees-card .fees {
+        padding: 12px 10px 4px;
+      }
+      .signup-badges {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .signup-badge {
+        padding: 8px 13px;
+        border-radius: 999px;
+        background: #c62828;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 10px #c6282833;
+      }
+      .app-showcase {
+        width: calc(100% - 40px);
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+      }
+      .app-download {
+        min-width: 0;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-card {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+      .hero h1 {
+        font-size: clamp(22px, 2.8vw, 36px);
+        line-height: 1.35;
+        letter-spacing: -0.4px;
+      }
+      .hero p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .hero {
+        padding-top: 24px;
+        padding-bottom: 28px;
+      }
+      .hero-card > h3 {
+        color: var(--blue);
+      }
+      .hero-card .card {
+        min-height: 0;
+        padding: 10px 0;
+        border: 0;
+        border-bottom: 1px solid #e2e2e2;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+      .hero-card .card:last-child {
+        border-bottom: 0;
+      }
+      .hero-card .card:hover {
+        transform: none;
+        border-color: #e2e2e2;
+      }
+      .functionalities-card {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 22px;
+        border: 1px solid #dedede;
+        border-radius: 21px;
+        background: #fff;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      }
+      .functionalities-card h2 {
+        margin: 0 0 16px;
+        color: var(--blue);
+        font-size: 25px;
+      }
+      .functionalities-card .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 900px) {
+        .functionalities-card .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .functionalities-card {
+          margin: 22px 16px 0;
+          padding: 16px;
+        }
+        .functionalities-card .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 640px) {
+        header {
+          width: 100%;
+          height: 56px;
+          min-width: 0;
+          overflow: hidden;
+          padding: 5px 8px;
+          gap: 6px;
+        }
+        .header-brand {
+          min-width: 0;
+        }
+        .brand-logo {
+          height: 27px;
+          max-width: 100%;
+          transform: none;
+        }
+        .brand-owl {
+          width: 31px;
+          height: 31px;
+        }
+        .header-brand {
+          gap: 4px;
+        }
+        .topbar-side {
+          min-width: 0;
+        }
+        .topbar-control {
+          width: 102px;
+          height: 32px;
+          padding: 6px 8px;
+          gap: 5px;
+          font-size: 11px;
+        }
+        .topbar-control svg {
+          width: 15px;
+          height: 15px;
+          flex-basis: 15px;
+        }
+        .app-showcase {
+          width: calc(100% - 32px);
+          padding: 10px;
+        }
+        .app-download {
+          grid-template-columns: 48px minmax(0, 1fr);
+          padding: 10px;
+          gap: 8px;
+        }
+        .app-download img {
+          width: 48px;
+          height: 48px;
+        }
+        .app-download small {
+          overflow-wrap: anywhere;
+        }
+      }
+      @media (max-width: 380px) {
+        header {
+          gap: 4px;
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+        .brand-logo {
+          height: 23px;
+        }
+        .brand-owl {
+          width: 27px;
+          height: 27px;
+        }
+        .topbar-control {
+          width: 91px;
+          padding-left: 5px;
+          padding-right: 5px;
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topbar-side topbar-left">
+        <button
+          class="topbar-control logout-link"
+          id="logoutIndex"
+          type="button"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 17l5-5-5-5"></path>
+            <path d="M15 12H3"></path>
+            <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"></path>
+          </svg>
+          <span>Sair</span>
+        </button>
+      </div>
+      <a class="header-brand" href="index.html"
+        ><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img
+          class="brand-logo"
+          src="assets/images/logo.png"
+          alt="Clubbar"
+      /></a>
+      <nav class="topbar-side topbar-right" aria-label="Acesso do parceiro">
+        <a class="topbar-control topbar-link" href="portal-lead.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <path d="M10 17l5-5-5-5"></path>
+            <path d="M15 12H3"></path>
+          </svg>
+          <span>Entrar</span>
+        </a>
+      </nav>
+    </header>
+    <section class="intro-index" aria-label="Apresentação do Clubbar">
+      <strong class="intro-platform"
+        >A plataforma de venda digital para bares, casas noturnas e
+        eventos</strong
+      >
+      <p>
+        <strong
+          >Venda de ingressos, produtos e experiências, antecipadamente ou no
+          local.</strong
+        >
+      </p>
+      <p>
+        <strong
+          >Redução de filas, redução de custos operacionais e aumento do
+          faturamento.</strong
+        >
+      </p>
+      <p>
+        <strong>Gestão do seu negócio através de painéis completos.</strong>
+      </p>
+    </section>
+    <div class="not-received">
+      Para acessar sua página de atendimento, você precisa digitar o e-mail
+      usado no cadastro e o número do telefone com DDD. Caso não se lembre,
+      clique no botão abaixo para resgatar suas informações. Basta digitar seu
+      e-mail de cadastro. Se nem o e-mail você lembrar, é melhor fazer novamente
+      o cadastro. Lembre-se: não aceitamos duas pessoas com o mesmo e-mail.<br /><button
+        type="button"
+        id="naoRecebiEmail"
+      >
+        Resgatar minhas informações
+      </button>
+    </div>
+    <main>
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <h1>
+              Venda digital para <span>bares, casas noturnas e eventos.</span>
+            </h1>
+            <p>
+              Venda ingressos e produtos, reduza filas, simplifique a operação e
+              acompanhe os resultados do seu negócio em um painel completo.
+            </p>
+            <div class="actions">
+              <a class="btn two-line interest-action" href="cadastro-lead.html"
+                ><span>Quero conhecer o Clubbar</span
+                ><span class="interest-caption"
+                  >Faça seu cadastro inicial e aguarde confirmação por e-mail
+                  para prosseguir com seu interesse em contratar.</span
+                ></a
+              >
+              <a class="btn two-line plan-action" href="#plano"
+                ><span>Plano único</span
+                ><span class="btn-subtitle"
+                  >Plano único sem mensalidade</span
+                ></a
+              >
+            </div>
+            <div class="app-showcase" aria-label="Aplicativos Clubbar">
+              <h3 class="apps-title">Aplicativos disponíveis</h3>
+              <div class="app-downloads">
+                <div class="app-download">
+                  <img
+                    src="assets/images/icone_clubbar.png"
+                    alt="Ícone Clubbar Client"
+                  />
+                  <div>
+                    <strong>Clubbar Client</strong
+                    ><small
+                      >App para o cliente final realizar suas compras de
+                      ingressos e produtos antecipadamente e armazená-las em uma
+                      carteira digital para uso futuro.</small
+                    >
+                  </div>
+                  <div class="app-options">
+                    <div class="app-access download">
+                      Baixe o aplicativo<span>Em breve</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-download">
+                  <img
+                    src="assets/images/icone_partner.png"
+                    alt="Ícone Clubbar Partner"
+                  />
+                  <div>
+                    <strong>Clubbar Partner</strong
+                    ><small
+                      >App do estabelecimento para criar seu cardápio digital e
+                      sua agenda de eventos, além de gerenciar suas
+                      vendas.</small
+                    >
+                  </div>
+                  <div class="app-options">
+                    <div class="app-access download">
+                      Baixe o aplicativo<span>Em breve</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <aside class="hero-card">
+            <h3>Uma operação mais simples</h3>
+            
+          </aside>
+        </div>
+      </section>
+      <section class="content features" id="funcionalidades">
+        <div class="heading">
+          <div class="heading-icon" role="img" aria-label="Agilidade">⚡</div>
+          <h2>Mais agilidade para sua equipe e seus clientes</h2>
+          <p>
+            Venda, divulgação e operação em uma experiência simples para você,
+            dono do estabelecimento, e para os seus clientes.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">💰</div>
+              <h3>Mais Vendas</h3>
+            </div>
+            <p>
+              Permita que seus clientes comprem ingressos, produtos e
+              experiências, antecipadamente ou no local, via web ou app no
+              celular, tablet ou totem.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">⚡</div>
+              <h3>Menos Filas</h3>
+            </div>
+            <p>Agilize o atendimento e melhore a experiência do cliente.</p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">📢</div>
+              <h3>Divulgação</h3>
+            </div>
+            <p>Divulgue seu estabelecimento, sua agenda de shows e eventos e benefícios.</p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">📊</div>
+              <h3>Gestão Inteligente em Tempo Real</h3>
+            </div>
+            <p>
+              Inclua e atualize sua agenda e seu cardápio digitais de forma simples e prática e acompanhe vendas, entradas, retiradas, faturamento e relatórios
+              gerenciais.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">✅</div>
+              <h3>Adesão e Implantação Simples</h3>
+            </div>
+            <p>
+              Cadastro rápido, contrato digital e planos flexíveis para o seu
+              negócio.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">🎁</div>
+              <h3>Benefícios</h3>
+            </div>
+            <p>Ofereça ingressos vips, promoções e cashbacks.</p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">📱</div>
+              <h3>App e Navegador Web</h3>
+            </div>
+            <p>
+              Aplicativos disponíveis para Android e iOS e navegador Web.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">📲</div>
+              <h3>Aplicativo para o cliente final</h3>
+            </div>
+            <p>
+              <strong>Clubbar Client</strong><br />
+              App para o cliente final realizar suas compras de ingressos e
+              produtos antecipadamente ou no estabelecimento e armazená-las em
+              uma carteira digital.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-title">
+              <div class="icon">📲</div>
+              <h3>Aplicativo para o parceiro</h3>
+            </div>
+            <p>
+              <strong>Clubbar Partner</strong><br />
+              App do estabelecimento para gerenciar sua agenda de eventos, cardápio de produtos e vendas.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section class="content plan-section" id="plano">
+        <div class="plan">
+          <div class="plan-head">
+            <h3>Plano Clubbar</h3>
+            <div class="badge">PLANO ÚNICO - SEM MENSALIDADE</div>
+          </div>
+          <div class="fees">
+            <div class="fee">
+              <div class="fee-title">
+                <strong id="taxaProduto">—</strong>
+                <h4>sobre a venda de produtos</h4>
+              </div>
+              <p>
+                Taxa aplicada sobre a venda de produtos (exceto ingressos) e
+                cobrada do parceiro no momento do pagamento, utilizando a
+                tecnologia de split de valores do gateway Asaas, com repasse
+                imediato.
+              </p>
+            </div>
+            <div class="fee">
+              <div class="fee-title">
+                <strong id="taxaIngresso">—</strong>
+                <h4>de taxa de conveniência na venda de ingressos</h4>
+              </div>
+              <p id="regraTaxaIngresso">
+                Taxa aplicada sobre a venda de ingressos, no valor mínimo de R$
+                2,99, cobrada do cliente final.
+              </p>
+            </div>
+          </div>
+          <div class="plan-foot">
+            <p>
+              Fale com nossa equipe para conhecer o processo de implantação.
+            </p>
+            <a class="btn two-line interest-action" href="cadastro-lead.html"
+              ><span>Quero conhecer o Clubbar</span
+              ><span class="interest-caption"
+                >Faça seu cadastro inicial e aguarde confirmação por e-mail para
+                prosseguir com seu interesse em contratar.</span
+              ></a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>© 2026 Clubbar. Todos os direitos reservados.</footer>
+    <dialog class="recovery-dialog" id="recoveryDialog">
+      <form id="recoveryForm">
+        <h2>Acesse seu cadastro</h2>
+        <input
+          id="recoveryEmail"
+          type="email"
+          required
+          placeholder="E-mail usado no cadastro"
+        /><input
+          id="recoveryPhone"
+          type="tel"
+          required
+          placeholder="Telefone com DDD"
+        /><button type="submit">Enviar novo acesso</button
+        ><button class="recovery-close" id="recoveryClose" type="button">
+          Fechar
+        </button>
+        <p id="recoveryMessage" role="status"></p>
+      </form>
+    </dialog>
+    <script src="js/config.js"></script>
+    <script src="js/contact.js"></script>
+    <script>
+      const recoveryDialog = document.getElementById("recoveryDialog");
+      document.querySelector(".not-received")?.remove();
+      recoveryDialog?.remove();
+      const logoutIndex = document.getElementById("logoutIndex");
+      if (sessionStorage.getItem("clubbar_portal_lead_token"))
+        logoutIndex.classList.add("show");
+      logoutIndex.onclick = () => {
+        sessionStorage.removeItem("clubbar_portal_lead_token");
+        sessionStorage.removeItem("clubbar_portal_lead_activity");
+        logoutIndex.classList.remove("show");
+      };
+      document.querySelector(".hero h1")?.remove();
+      document.querySelector(".hero p")?.remove();
+      
+      document.querySelector(".features .heading")?.remove();
+      document.querySelector(".plan-foot p")?.remove();
+      document.querySelector(".plan-foot .interest-action")?.remove();
+      document.querySelector(".app-showcase")?.remove();
+      document.querySelector(".plan .badge")?.remove();
+      const tituloPlano = document.querySelector(".plan-head h3");
+      if (tituloPlano) tituloPlano.textContent = "O que eu vou gastar?";
+      document.querySelectorAll(".interest-action").forEach((botao) => {
+        const titulo = botao.querySelector("span:first-child");
+        const subtitulo = botao.querySelector(".interest-caption");
+        if (!titulo || !subtitulo) return;
+        titulo.textContent = "Quero conhecer o Clubbar";
+        subtitulo.textContent =
+          "Faça seu cadastro inicial e aguarde confirmação por e-mail para prosseguir com seu interesse em contratar.";
+      });
+      const operacao = document.querySelector(".hero-card");
+
+      const beneficios = document.querySelector(".features .grid");
+      if (beneficios) {
+        const funcionalidades = document.createElement("section");
+        funcionalidades.className = "functionalities-card";
+        funcionalidades.innerHTML =
+          '<h2>Por que usar o Clubbar?</h2><div class="grid"></div>';
+        funcionalidades
+          .querySelector(".grid")
+          .append(...beneficios.querySelectorAll(".card"));
+        document.querySelector("main")?.appendChild(funcionalidades);
+        beneficios.parentElement.remove();
+      }
+      // O aside original ficou sem conteúdo após a reorganização dos cards.
+      operacao?.remove();
+      const planoCompleto = document.querySelector(".plan");
+      const custos = planoCompleto?.querySelector(".fees");
+      const planoSecao = document.getElementById("plano");
+      const acoes = document.querySelector(".actions");
+      let taxasCard;
+      if (custos && acoes) {
+        custos.id = "custos";
+        taxasCard = document.createElement("section");
+        taxasCard.className = "fees-card";
+        const labelTaxas = document.querySelector(".fees-label");
+        if (labelTaxas) taxasCard.appendChild(labelTaxas);
+        taxasCard.appendChild(custos);
+        acoes.after(taxasCard);
+        const botaoPlano = document.querySelector(".plan-action");
+        if (botaoPlano) {
+          const textoTaxas = document.createElement("div");
+          textoTaxas.className = "fees-label";
+          textoTaxas.textContent = "Plano Único Clubbar";
+          botaoPlano.replaceWith(textoTaxas);
+          taxasCard.prepend(textoTaxas);
+          const condicoesPlano = document.createElement("p");
+          condicoesPlano.className = "plan-terms-note";
+          condicoesPlano.textContent =
+            "Sem mensalidade e sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).";
+          textoTaxas.after(condicoesPlano);
+        }
+        planoSecao?.remove();
+      }
+      // Exibe os benefícios primeiro e o quadro completo do plano logo abaixo.
+      const quadroBeneficios = document.querySelector(".functionalities-card");
+      if (quadroBeneficios && taxasCard) quadroBeneficios.after(taxasCard);
+      const cardsTaxas = taxasCard?.querySelectorAll(".fee");
+      const listaTaxas = taxasCard?.querySelector(".fees");
+      if (cardsTaxas?.length >= 2 && listaTaxas) {
+        listaTaxas.append(cardsTaxas[1], cardsTaxas[0]);
+      }
+      const aplicativos = document.querySelector(".app-showcase");
+      const plano = document.getElementById("plano");
+      if (aplicativos && plano) plano.after(aplicativos);
+      fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/taxas-padrao/vigente`)
+        .then((r) => {
+          if (!r.ok) throw new Error();
+          return r.json();
+        })
+        .then((t) => {
+          document.getElementById("taxaProduto").textContent =
+            `${Number(t.pctaxaproduto).toLocaleString("pt-BR")}%`;
+          document.getElementById("taxaIngresso").textContent =
+            `${Number(t.pctaxaingresso).toLocaleString("pt-BR")}%`;
+          document.getElementById("regraTaxaIngresso").textContent =
+            `Taxa aplicada sobre a venda de ingressos, no valor mínimo de ${Number(t.vrtaxaminimaingresso).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}, cobrada do cliente final.`;
+        })
+        .catch(() => {});
+    </script>
+  </body>
+</html>

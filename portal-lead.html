@@ -1,0 +1,2908 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal do Lead | Clubbar</title>
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+
+    <style>
+      :root {
+        --bg: #080808;
+        --card: #131313;
+        --card-soft: #191919;
+        --line: #2d2d2d;
+        --gold: #f5c542;
+        --gold-dark: #d5a91f;
+        --text: #ffffff;
+        --muted: #aaaaaa;
+        --success: #31b66a;
+        --danger: #e05252;
+        --info: #3287ff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at 10% 10%,
+            rgba(245, 197, 66, 0.09),
+            transparent 27%
+          ),
+          radial-gradient(
+            circle at 90% 75%,
+            rgba(50, 135, 255, 0.08),
+            transparent 30%
+          ),
+          var(--bg);
+      }
+
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+
+      .topbar {
+        height: 74px;
+        padding: 8px max(18px, 6vw);
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 18px;
+        background: #000;
+        border-bottom: 1px solid #222;
+      }
+
+      .topbar img {
+        width: auto;
+        height: 40px;
+        max-width: 68vw;
+        object-fit: contain;
+        justify-self: center;
+        transform: scale(1.25);
+      }
+      .topbar-brand{display:flex;align-items:center;justify-content:center;gap:6px}.topbar-brand .brand-owl{width:48px;height:48px;transform:none}.topbar-brand .brand-logo{height:43px;transform:none}
+
+      .btn-top-back {
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        justify-self: start;
+        border: 0;
+        border-radius: 50%;
+        color: #fff;
+        background: transparent;
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1;
+        text-shadow: 0 0 0 currentColor;
+        text-decoration: none;
+      }
+
+      .btn-top-back:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-page-refresh {
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        justify-self: end;
+        border: 0;
+        border-radius: 50%;
+        color: #fff;
+        background: transparent;
+        font-size: 23px;
+        font-weight: 900;
+        line-height: 1;
+        text-shadow: 0 0 0 currentColor;
+      }
+
+      .btn-page-refresh:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 28px 0 54px;
+      }
+
+      .hero {
+        margin-bottom: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        border: 1px solid rgba(245, 197, 66, 0.3);
+        border-radius: 24px;
+        background: linear-gradient(135deg, #1a1a1a, #101010);
+        box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
+      }
+
+      .hero-icon {
+        width: 64px;
+        height: 64px;
+        flex: 0 0 64px;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        color: var(--blue);
+        background: rgba(245, 197, 66, 0.12);
+        font-size: 29px;
+      }
+
+      .hero-copy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .hero h1 {
+        margin-bottom: 6px;
+        color: var(--info);
+        font-size: clamp(23px, 4vw, 34px);
+      }
+
+      .hero p {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .hero-establishment {
+        margin-top: 17px;
+      }
+
+      .create-establishment-button {
+        width: 100%;
+        min-height: 50px;
+        margin-bottom: 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .hero-establishment > label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 400;
+      }
+
+      .hero-selector-row {
+        display: flex;
+        align-items: stretch;
+        gap: 9px;
+      }
+
+      .hero-selector-row select {
+        min-width: 0;
+        flex: 1;
+        height: 44px;
+        margin: 0;
+        color: var(--info);
+        font-weight: 800;
+      }
+
+      .hero-selector-row .btn-inline {
+        height: 44px;
+        min-height: 44px;
+        padding-block: 0;
+      }
+
+      .status-badge {
+        padding: 8px 12px;
+        border: 1px solid rgba(245, 197, 66, 0.38);
+        border-radius: 999px;
+        color: var(--gold);
+        background: rgba(245, 197, 66, 0.08);
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .status-badge.status-aceitou,
+      .status-badge.status-recusou {
+        padding: 10px 16px;
+        font-size: 17px;
+      }
+
+      .status-badge.status-aceitou {
+        border-color: rgba(34, 197, 94, 0.48);
+        color: #15803d;
+        background: rgba(34, 197, 94, 0.12);
+      }
+
+      .status-badge.status-recusou {
+        border-color: rgba(239, 68, 68, 0.48);
+        color: #dc2626;
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      .stats {
+        margin: 18px 0 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .stat {
+        width: 100%;
+        min-height: 58px;
+        padding: 13px 17px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        text-align: left;
+        color: inherit;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: inset 0 3px 0 rgba(245, 197, 66, 0.75), 0 10px 24px rgba(0, 0, 0, 0.2);
+        transition: 0.2s ease;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .stat:hover,
+      .stat:focus-visible {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+        outline: none;
+      }
+
+      .stat::after {
+        content: ">";
+        display: inline-block;
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .stat strong {
+        display: inline;
+        margin: 0;
+        color: var(--gold);
+        font-size: 16px;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      .forgot-button {
+        margin-top: 4px;
+        border: 0;
+        color: var(--blue);
+        background: transparent;
+        font-weight: 850;
+        text-decoration: underline;
+      }
+
+      .recovery-form {
+        margin-top: 15px;
+        padding-top: 15px;
+        display: grid;
+        gap: 10px;
+        border-top: 1px solid var(--line);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.75fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .column {
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--card);
+        box-shadow: 0 13px 35px rgba(0, 0, 0, 0.2);
+      }
+
+      .panel-head {
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-head h2 {
+        font-size: 18px;
+      }
+
+      .detail-lead-name {
+        margin-left: 7px;
+        color: var(--info);
+      }
+
+      .panel-head p {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .panel-title-select {
+        width: min(100%, 520px);
+        padding: 4px 34px 4px 0;
+        border: 0;
+        outline: 0;
+        color: #55aaff;
+        background: transparent;
+        font-size: clamp(19px, 3vw, 25px);
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .panel-title-select option {
+        color: #111;
+        background: #fff;
+        font-size: 16px;
+      }
+
+      .panel-body > .panel-title-select {
+        width: 100%;
+        margin-bottom: 18px;
+        padding-left: 12px;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+      }
+      .panel-establishment-name {
+        width: 100%;
+        margin-bottom: 18px;
+        padding: 8px 12px;
+        color: #55aaff;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+        font-size: clamp(19px, 3vw, 25px);
+        font-weight: 900;
+      }
+
+      .panel-body {
+        padding: 18px 20px 20px;
+      }
+
+      .btn-refresh {
+        padding: 8px 10px;
+        border: 1px solid #3b3b3b;
+        border-radius: 11px;
+        color: #ddd;
+        background: #1b1b1b;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .messages {
+        max-height: 480px;
+        padding-right: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        overflow-y: auto;
+      }
+
+      .message {
+        max-width: 82%;
+        padding: 12px 14px;
+        border-radius: 16px;
+        line-height: 1.5;
+        word-break: break-word;
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        column-gap: 10px;
+        align-items: start;
+        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.18);
+      }
+
+      .message.clubbar {
+        align-self: flex-start;
+        border: 1px solid rgba(88, 190, 255, 0.42);
+        border-bottom-left-radius: 5px;
+        color: #eaf8ff;
+        background: linear-gradient(135deg, #123247, #184d68);
+      }
+
+      .message.lead {
+        align-self: flex-end;
+        grid-template-columns: minmax(0, 1fr) 34px;
+        border: 1px solid rgba(245, 197, 66, 0.62);
+        border-bottom-right-radius: 5px;
+        color: #141414;
+        background: linear-gradient(135deg, #ffe792, #f5c542);
+        text-align: right;
+      }
+
+      .message-content {
+        min-width: 0;
+      }
+
+      .message-sender {
+        display: block;
+        margin-bottom: 3px;
+        color: #75d2ff;
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .message.lead .message-sender {
+        color: #4d318f;
+      }
+
+      .message-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .message-heading .message-sender {
+        flex: 1;
+      }
+
+      .message-delete {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        color: #8b2020;
+        background: rgba(255, 255, 255, 0.48);
+        cursor: pointer;
+        font-size: 17px;
+      }
+
+      .message-delete:hover,
+      .message-delete:focus-visible {
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .message.lead .message-content {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .message-avatar {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+        font-size: 19px;
+        line-height: 1;
+      }
+
+      .message-avatar img {
+        width: 29px;
+        height: 29px;
+        object-fit: contain;
+      }
+
+      .message.lead .message-avatar {
+        grid-column: 2;
+        grid-row: 1;
+        color: #fff;
+        background: #7653d6;
+      }
+
+      .message small {
+        display: block;
+        margin-top: 6px;
+        opacity: 0.78;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .message-form {
+        margin-top: 15px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .message-form textarea {
+        width: 100%;
+        min-height: 92px;
+        padding: 13px;
+        resize: vertical;
+        border: 1px solid #3b3b3b;
+        border-radius: 14px;
+        color: #111;
+        background: #f7f7f7;
+      }
+
+      .message-form textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.13);
+      }
+
+      .btn-primary {
+        min-height: 48px;
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 14px;
+        color: #000;
+        background: var(--gold);
+        font-weight: 900;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--gold-dark);
+      }
+
+      .btn-secondary {
+        min-height: 46px;
+        margin-top: 22px;
+        padding: 11px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #4a4a4a;
+        border-radius: 14px;
+        color: #fff;
+        background: #242424;
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      .btn-secondary:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+        background: #181818;
+      }
+
+      .decision-title {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .decision-status {
+        padding: 6px 11px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .decision-status.pending {
+        color: #fff;
+        border-color: #2378cf;
+        background: #3287df;
+      }
+
+      .decision-status.analyzing {
+        color: #211700;
+        border-color: #e4ac00;
+        background: #ffc107;
+      }
+
+      .decision-status.accepted {
+        color: #fff;
+        border-color: #279758;
+        background: #31a967;
+      }
+
+      .decision-status.declined {
+        color: #fff;
+        border-color: #b92935;
+        background: #d83b47;
+      }
+
+      .list {
+        display: grid;
+        gap: 11px;
+      }
+
+      .item {
+        padding: 14px;
+        border: 1px solid #303030;
+        border-radius: 15px;
+        background: var(--card-soft);
+      }
+
+      .item-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .item h3 {
+        margin-bottom: 5px;
+        font-size: 15px;
+      }
+
+      .item p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .material-sent-at {
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .item-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn-small {
+        padding: 8px 11px;
+        border: 1px solid #3b3b3b;
+        border-radius: 10px;
+        color: #fff;
+        background: #232323;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .btn-small.confirm {
+        color: #000;
+        border-color: rgba(49, 182, 106, 0.55);
+        background: rgba(49, 182, 106, 0.12);
+      }
+
+      .btn-small.reject {
+        color: #000;
+        border-color: rgba(224, 82, 82, 0.55);
+        background: rgba(224, 82, 82, 0.12);
+      }
+
+      .badge {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #292929;
+        color: #d6d6d6;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .badge.pendente {
+        color: #000;
+        border: 1px solid rgba(69, 155, 255, 0.42);
+        background: rgba(39, 126, 229, 0.18);
+      }
+
+      .badge.confirmado {
+        color: #ffe89a;
+        border: 1px solid rgba(245, 197, 66, 0.48);
+        background: rgba(245, 197, 66, 0.16);
+      }
+
+      .badge.recusado {
+        color: #ffd0a1;
+        border: 1px solid rgba(238, 137, 52, 0.48);
+        background: rgba(238, 137, 52, 0.16);
+      }
+
+      .badge.realizado {
+        color: #bfffd8;
+        border: 1px solid rgba(49, 182, 106, 0.42);
+        background: rgba(49, 182, 106, 0.13);
+      }
+
+      .badge.cancelado {
+        color: #ffc6c6;
+        border: 1px solid rgba(224, 82, 82, 0.42);
+        background: rgba(224, 82, 82, 0.13);
+      }
+
+      .material-link {
+        color: var(--gold);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .material-link:hover {
+        text-decoration: underline;
+      }
+
+      .decision-copy {
+        margin: 22px 0 13px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .decision-actions {
+        display: grid;
+        gap: 9px;
+      }
+
+      .decision-button {
+        min-height: 46px;
+        padding: 11px;
+        border: 1px solid #383838;
+        border-radius: 13px;
+        color: #fff;
+        background: #1e1e1e;
+        font-weight: 850;
+      }
+
+      .decision-button.accept {
+        border-color: rgba(49, 182, 106, 0.55);
+      }
+
+      .form-control {
+        width: 100%;
+        min-height: 44px;
+        margin: 8px 0 14px;
+        padding: 0 12px;
+        border: 1px solid #383838;
+        border-radius: 12px;
+        color: #fff;
+        background: #171717;
+        font: inherit;
+      }
+
+      .decision-button.analyzing {
+        color: #211700;
+        border-color: #e4ac00;
+        background: #ffc107;
+      }
+
+      .decision-button.decline {
+        border-color: rgba(224, 82, 82, 0.55);
+      }
+
+      #acoesDecisao .decision-button.accept {
+        color: #fff;
+        border-color: #218947;
+        background: #2eaa5f;
+      }
+
+      #acoesDecisao .decision-button.accept:not(:disabled):hover {
+        background: #258e50;
+      }
+
+      #acoesDecisao #btnVisualizarContrato {
+        border-color: #1565c0;
+        background: #1976d2;
+      }
+
+      #acoesDecisao #btnVisualizarContrato:not(:disabled):hover {
+        background: #1565c0;
+      }
+
+      #acoesDecisao .decision-button.decline {
+        color: #fff;
+        border-color: #b92f2f;
+        background: #df3b3b;
+      }
+
+      #acoesDecisao .decision-button.decline:not(:disabled):hover {
+        background: #bd2f2f;
+      }
+
+      .empty,
+      .loading,
+      .access-error {
+        padding: 25px 15px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.55;
+      }
+
+      .screen-state {
+        min-height: calc(100vh - 74px);
+        padding: 30px 15px;
+        display: grid;
+        place-items: center;
+      }
+      #telaErro {
+        min-height: auto;
+        padding-top: 18px;
+        align-items: start;
+      }
+
+      .state-card {
+        width: min(520px, 100%);
+        padding: 30px;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--card);
+      }
+
+      .state-card .state-icon {
+        margin-bottom: 14px;
+        font-size: 42px;
+      }
+
+      .state-card .state-owl {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 14px;
+        object-fit: contain;
+      }
+
+      .state-card h1 {
+        margin-bottom: 10px;
+        font-size: 25px;
+      }
+
+      .state-card p {
+        margin-bottom: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .toast {
+        position: fixed;
+        z-index: 9999;
+        top: 88px;
+        left: 50%;
+        width: min(390px, calc(100% - 28px));
+        padding: 16px 18px;
+        transform: translateX(-50%);
+        text-align: center;
+        border: 1px solid var(--gold);
+        border-radius: 16px;
+        color: #fff;
+        background: #171717;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+      }
+
+      .toast.error {
+        border-color: var(--danger);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+      .partnership-celebration {
+        position: relative;
+        overflow: hidden;
+        padding: 24px 18px;
+        text-align: center;
+        border: 1px solid rgba(50, 205, 110, 0.45);
+        border-radius: 16px;
+        background: rgba(22, 101, 52, 0.16);
+      }
+      .partnership-celebration .celebration-icon {
+        display: block;
+        font-size: 58px;
+        margin-bottom: 8px;
+        animation: celebrate-pop 700ms ease-out both;
+      }
+      .partnership-celebration::before,
+      .partnership-celebration::after {
+        content: "★  ✦  ★  ✨  ✦";
+        position: absolute;
+        top: 12px;
+        color: #fbc531;
+        font-size: 20px;
+        animation: star-burst 1.4s ease-out both;
+      }
+      .partnership-celebration::before { left: 7%; }
+      .partnership-celebration::after { right: 7%; animation-delay: 120ms; }
+      @keyframes celebrate-pop {
+        0% { transform: scale(.35) rotate(-18deg); opacity: 0; }
+        70% { transform: scale(1.18) rotate(5deg); }
+        100% { transform: scale(1) rotate(0); opacity: 1; }
+      }
+      @keyframes star-burst {
+        0% { transform: translateY(35px) scale(.4); opacity: 0; }
+        55% { opacity: 1; }
+        100% { transform: translateY(-5px) scale(1.1); opacity: .75; }
+      }
+      .partnership-celebration h3 { color: #078a35; font-size: 24px; }
+      .partnership-celebration a { margin-top: 14px; display: inline-flex; }
+      .implantation-exemption-badge {
+        display: flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        margin: 14px auto 0;
+        padding: 8px 14px;
+        color: #086b2c;
+        background: #effbf3;
+        border: 1px solid rgba(8, 138, 53, 0.35);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .implantation-exemption-badge.paid {
+        color: #0b67c7;
+        background: #eef6ff;
+        border-color: rgba(11, 103, 199, 0.35);
+      }
+
+      .portal-actions {
+        margin-top: 18px;
+        display: flex;
+        justify-content: center;
+      }
+      .new-establishment-card{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+      .new-establishment-card>.new-establishment-head,.new-establishment-card>fieldset,.new-establishment-card>details,.new-establishment-card>.new-establishment-grid,.new-establishment-card>.btn-primary{grid-column:1/-1}
+      .new-establishment-card>.new-establishment-field{grid-column:auto}
+      .new-establishment-card>.new-establishment-head{margin-bottom:0}
+      .new-establishment-address{display:block}
+      @media(max-width:600px){.new-establishment-card{grid-template-columns:1fr}.new-establishment-card>.new-establishment-field{grid-column:1/-1}}
+      #btnBaixarContrato,.contract-tools{display:none!important}
+
+      .decision-panel {
+        max-width: none;
+        margin: 18px 0 0;
+      }
+
+      .decision-establishment-name {
+        display: block;
+        color: var(--info);
+      }
+      .decision-establishment-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .modal {
+        position: fixed;
+        z-index: 5000;
+        inset: 0;
+        padding: 22px;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.82);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-card {
+        width: min(760px, 100%);
+        max-height: calc(100vh - 44px);
+        overflow: auto;
+        border: 1px solid #3b3b3b;
+        border-radius: 22px;
+        background: var(--card);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65);
+      }
+
+      .modal-close {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border: 1px solid #444;
+        border-radius: 50%;
+        color: #fff;
+        background: #202020;
+        font-size: 21px;
+      }
+
+      .btn-panel-refresh {
+        min-height: 38px;
+        padding: 8px 12px;
+        flex: 0 0 auto;
+        border: 1px solid var(--gold);
+        border-radius: 11px;
+        color: #000;
+        background: var(--gold);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .contract-flow {
+        margin: 14px 0;
+        padding: 16px;
+        border: 1px solid rgba(49, 182, 106, 0.4);
+        border-radius: 15px;
+        background: rgba(49, 182, 106, 0.07);
+      }
+
+      .contract-flow .empty {
+        padding: 8px 0 14px;
+      }
+
+      .contract-text {
+        max-height: 380px;
+        margin-top: 12px;
+        padding: 16px;
+        overflow-y: auto;
+        border: 1px solid #3a3a3a;
+        border-radius: 12px;
+        color: #e9e9e9;
+        background: #141414;
+        white-space: pre-wrap;
+        font: 13px/1.6 Arial, sans-serif;
+      }
+
+      .contract-tools,
+      .implantation-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .contract-tools .decision-button,
+      .implantation-actions .decision-button,
+      .implantation-actions .decision-button.accept {
+        width: auto;
+        max-width: 100%;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        text-decoration: none;
+        line-height: 1.25;
+      }
+
+      body.modal-open {
+        overflow: hidden;
+      }
+
+      body.pagina-detalhe .modal {
+        position: static;
+        min-height: calc(100vh - 74px);
+        padding: 24px 15px;
+        background: var(--bg);
+        backdrop-filter: none;
+        place-items: start center;
+      }
+
+      body.pagina-detalhe .modal-card {
+        max-height: none;
+      }
+
+      .estabelecimento-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .estabelecimento-title label { margin: 0; }
+
+      .btn-inline {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--gold);
+        border-radius: 10px;
+        color: #17120a;
+        background: var(--gold);
+        font-weight: 900;
+      }
+
+      .new-establishment-card {
+        padding: 20px;
+        border: 1px solid #383838;
+        border-radius: 18px;
+        background: #101010;
+      }
+
+      .new-establishment-head {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .new-establishment-head h3,
+      .new-establishment-card label,
+      .new-establishment-card legend {
+        color: #111;
+        font-weight: 850;
+      }
+
+      .new-establishment-card label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .new-establishment-card .form-control {
+        min-height: 52px;
+        margin: 0;
+        padding: 14px 15px;
+        color: #111;
+        background: #f7f7f7;
+      }
+
+      .new-establishment-card select:disabled {
+        color: #777;
+        background: #bdbdbd;
+      }
+
+      .new-establishment-field { margin-bottom: 18px; }
+      .required { color: #ff7676; }
+
+      .remove-establishment {
+        padding: 10px 14px;
+        border: 1px solid #d85d5d;
+        border-radius: 12px;
+        color: #ff8585;
+        background: transparent;
+        font-weight: 800;
+      }
+
+      .new-establishment-choices {
+        margin: 0 0 18px;
+        padding: 0;
+        border: 0;
+      }
+
+      .new-establishment-choices legend { margin-bottom: 10px; font-size: 14px; }
+      .new-establishment-choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .new-establishment-choice { position: relative; display: block; margin: 0; cursor: pointer; }
+      .new-establishment-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .new-establishment-choice span {
+        min-height: 62px;
+        padding: 12px 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 1px solid #383838;
+        border-radius: 14px;
+        color: #222;
+        background: #f7f7f7;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .new-establishment-choice input:checked + span {
+        border-color: var(--gold);
+        background: #fff5cf;
+        box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.13);
+      }
+
+      .responsible-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 16px;
+        padding: 13px 14px;
+        border: 1px solid #383838;
+        border-radius: 14px;
+        background: #f7f7f7;
+        color: #222;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .responsible-toggle input {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        accent-color: var(--gold);
+        flex: 0 0 auto;
+      }
+
+      .responsible-toggle:has(input:checked) {
+        border-color: var(--gold);
+        background: #fff5cf;
+      }
+
+      .new-establishment-address summary {
+        margin-bottom: 14px;
+        color: #111;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .new-establishment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+      @media (max-width: 850px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .contract-tools,
+        .implantation-actions {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .contract-tools .decision-button,
+        .implantation-actions .decision-button,
+        .implantation-actions .decision-button.accept {
+          width: 100%;
+        }
+        .topbar {
+          min-height: 66px;
+          padding-inline: 14px;
+        }
+
+        .topbar img {
+          height: 34px;
+        }
+
+        .toast {
+          top: 78px;
+        }
+
+        .page {
+          width: min(100% - 20px, 1180px);
+          padding-top: 14px;
+        }
+
+        .hero {
+          padding: 19px;
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+
+        .hero-icon {
+          width: 52px;
+          height: 52px;
+          flex-basis: 52px;
+          border-radius: 16px;
+          font-size: 23px;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .stat {
+          min-height: 55px;
+          padding: 12px 14px;
+          text-align: left;
+        }
+
+        .stat strong {
+          margin: 0;
+          font-size: 14px;
+        }
+
+        .stat span {
+          display: inline;
+          font-size: 14px;
+          line-height: 1.3;
+        }
+
+        .new-establishment-choice-grid,
+        .new-establishment-grid { grid-template-columns: 1fr; }
+
+        .stat::after {
+          margin-top: 0;
+          margin-left: auto;
+          font-size: 16px;
+        }
+
+        .panel-head,
+        .panel-body {
+          padding-inline: 15px;
+        }
+
+        .message {
+          max-width: 91%;
+        }
+      }
+      /* Tema claro */
+      :root { --bg:#fff; --card:#fff; --card-soft:#f7f8fa; --line:#dedede; --text:#202124; --muted:#666; }
+      body { background:linear-gradient(145deg,#fff,#f7f8fa); color:var(--text); }
+      .hero,.panel,.stat,.item,.decision-panel,.state-card,.new-establishment-card,.modal-card {
+        background:#fff;
+        color:#202124;
+        border-color:#dedede;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+      }
+      .hero { background:linear-gradient(135deg,#fff,#f5f7fa); }
+      .panel-head { background:#f7f8fa; border-bottom-color:#dedede; }
+      .message { background:#f6f7f9; color:#202124; border-color:#dedede; }
+      .message.lead { background:#edf5ff; }
+      .message.clubbar { background:#fff6d8; color:#000; }
+      .screen-state,.contract-text,.empty { background:#f7f8fa; color:#202124; border-color:#dedede; }
+      .form-control,.panel-title-select,.hero-establishment,.new-establishment-field input,.new-establishment-field select,.new-establishment-field textarea {
+        background:#fff;
+        color:#202124;
+        border-color:#cfd3d7;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="btn-top-back" id="btnVoltarTopo" href="index.html" aria-label="Voltar" title="Voltar">←</a>
+      <span class="topbar-brand"><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img class="brand-logo" src="assets/images/logo.png" alt="Clubbar" /></span>
+      <div class="topbar-actions">
+        <button class="btn-page-refresh" type="button" id="btnAtualizarPagina" aria-label="Atualizar página" title="Atualizar">↻</button>
+      </div>
+    </header>
+
+    <section class="screen-state" id="telaCarregando">
+      <div class="state-card">
+        <img class="state-owl" src="assets/images/coruja.png" alt="" aria-hidden="true" />
+        <h1>Preparando o seu portal</h1>
+        <p>Aguarde enquanto consultamos seus dados.</p>
+      </div>
+    </section>
+
+    <section class="screen-state hidden" id="telaErro">
+      <div class="state-card">
+        <div class="state-icon">🔒</div>
+        <h1>Acesse seu cadastro</h1>
+        <p id="textoErroAcesso">
+          Seu acesso é inválido ou expirou. Entre em contato com a equipe
+          Clubbar.
+        </p>
+        <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
+          <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <button class="btn-primary" id="btnNovoAcesso" type="submit">Confirmar</button>
+          <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
+        </form>
+        <form class="recovery-form hidden" id="formRecuperarDados">
+          <p>Informe seu e-mail para receber seu número de telefone de acesso.</p>
+          <input id="emailRecuperarDados" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <button class="btn-primary" id="btnEnviarRecuperacao" type="submit">Enviar meu número de telefone</button>
+          <p class="recovery-help">Para acessar sua página de atendimento, informe o e-mail usado no cadastro e o telefone com DDD. Se não lembrar, basta digitar seu e-mail de cadastro. Se nem o e-mail você se lembrar, faça um novo cadastro. Obs.: não aceitamos duas pessoas com o mesmo e-mail. <span role="img" aria-label="Tudo bem, é fácil">😎👍</span></p>
+        </form>
+      </div>
+    </section>
+
+    <main class="page hidden" id="conteudoPortal">
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 id="saudacao"></h1>
+          <div class="hero-establishment" id="seletorEstabelecimento">
+            <button class="btn-inline create-establishment-button" type="button" data-pagina="estabelecimento">
+              ＋ Criar novo estabelecimento
+            </button>
+            <label for="estabelecimentoDecisao">Selecione o estabelecimento</label>
+            <div class="hero-selector-row">
+              <select id="estabelecimentoDecisao" class="form-control"></select>
+            </div>
+          </div>
+          <section class="panel decision-panel">
+            <div class="panel-body">
+              <div class="decision-title">
+                <div class="decision-establishment-row">
+                  <span class="decision-establishment-name" id="nomeEstabelecimentoDecisao">este estabelecimento</span>
+                </div>
+              </div>
+              <div class="contract-flow hidden" id="contratoEstabelecimento"></div>
+              <p class="decision-copy hidden" id="textoDecisao">
+                Escolha uma opção abaixo:
+              </p>
+              <div class="decision-actions" id="acoesDecisao">
+                <button
+                  class="decision-button accept"
+                  id="btnVisualizarContrato"
+                  type="button"
+                  hidden
+                >
+                  Conferir e editar dados do seu cadastro
+                </button>
+                <button
+                  class="decision-button accept"
+                  id="btnAceitarParceria"
+                  type="button"
+                  hidden
+                >
+                  Assinar contrato
+                </button>
+                <button
+                  class="decision-button analyzing"
+                  id="btnDocumentosContratuais"
+                  type="button"
+                  disabled
+                >
+                  Documentos contratuais
+                </button>
+                <button class="decision-button analyzing" id="btnBaixarContrato" type="button" disabled>Baixar contrato em PDF</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+    </main>
+
+    <section class="modal hidden" id="modalMensagens" role="dialog" aria-modal="true" aria-labelledby="tituloMensagens">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloMensagens">Mensagens <span class="detail-lead-name" data-nome-lead></span></h2><p>Todas as mensagens trocadas com a equipe Clubbar.</p></div></header>
+        <div class="panel-body">
+          <div id="estabelecimentoMensagens" class="panel-establishment-name"></div>
+          <div class="messages" id="listaMensagens"></div>
+          <form class="message-form" id="formMensagem">
+            <textarea id="novaMensagem" maxlength="3000" placeholder="Digite sua mensagem..." required></textarea>
+            <button class="btn-primary" id="btnEnviarMensagem" type="submit">Enviar mensagem</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalAgendamentos" role="dialog" aria-modal="true" aria-labelledby="tituloAgendamentos">
+      <div class="modal-card">
+        <header class="panel-head">
+          <div>
+            <h2 id="tituloAgendamentos">Agendamentos <span class="detail-lead-name" data-nome-lead></span></h2>
+            <p>Todos os agendamentos realizados com a equipe Clubbar.</p>
+          </div>
+        </header>
+        <div class="panel-body">
+          <div id="estabelecimentoAgendamentos" class="panel-establishment-name"></div>
+          <div class="list" id="listaAgendamentos"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="tituloMateriais">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloMateriais">Materiais <span class="detail-lead-name" data-nome-lead></span></h2><p>Apresentações, propostas, contratos e demais arquivos.</p></div></header>
+        <div class="panel-body"><div id="estabelecimentoMateriais" class="panel-establishment-name"></div><div class="list" id="listaMateriais"></div></div>
+      </div>
+    </section>
+
+    <section class="modal hidden" id="modalEstabelecimento" role="dialog" aria-modal="true" aria-labelledby="tituloEstabelecimento">
+      <div class="modal-card">
+        <header class="panel-head"><div><h2 id="tituloEstabelecimento">Novo estabelecimento</h2><p>Cadastre outra unidade para negociar separadamente.</p></div></header>
+        <div class="panel-body">
+          <form id="formEstabelecimento" class="new-establishment-card">
+            <div class="new-establishment-head">
+              <h3>Estabelecimento 1</h3>
+            </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoNome">Nome <span class="required">*</span></label>
+              <input class="form-control" id="novoEstabelecimentoNome" maxlength="160" placeholder="Ex.: Adega Bar" required />
+            </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoTipo">Tipo <span class="required">*</span></label>
+              <select class="form-control" id="novoEstabelecimentoTipo" required>
+                <option value="">Selecione</option>
+                <option value="BAR">Bar</option>
+                <option value="CASA_NOTURNA">Casa noturna</option>
+                <option value="PRODUTOR_EVENTOS">Produtor de eventos</option>
+                <option value="CASA_EVENTOS">Casa de eventos</option>
+              </select>
+            </div>
+            <div class="new-establishment-field">
+              <label for="novoEstabelecimentoDocumento">CPF ou CNPJ <span class="required">*</span></label>
+              <input class="form-control" id="novoEstabelecimentoDocumento" inputmode="text" autocapitalize="characters" required placeholder="Informe o CPF ou CNPJ" />
+            </div>
+            <fieldset class="new-establishment-choices">
+              <legend>O que deseja vender? <span class="required">*</span></legend>
+              <div class="new-establishment-choice-grid">
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="PRODUTOS" required><span>Somente produtos</span></label>
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="INGRESSOS"><span>Somente ingressos</span></label>
+                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="AMBOS"><span>Produtos e ingressos</span></label>
+              </div>
+            </fieldset>
+            <label class="responsible-toggle">
+              <input id="novoEstabelecimentoUsarResponsavelPrincipal" type="checkbox" checked>
+              <span>Usar o responsável principal da empresa</span>
+            </label>
+            <div class="hidden" id="dadosResponsavelEstabelecimento">
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoResponsavel">Responsável pelo estabelecimento <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoResponsavel"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoTelefoneResponsavel">Telefone do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoTelefoneResponsavel" inputmode="tel"></div>
+              </div>
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoEmailResponsavel">E-mail do responsável <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEmailResponsavel" type="email"></div>
+              </div>
+            </div>
+            <div class="new-establishment-address">
+              <strong>Endereço do estabelecimento</strong>
+              <div class="new-establishment-grid">
+                <div class="new-establishment-field"><label for="novoEstabelecimentoCep">CEP <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoCep" required inputmode="numeric" maxlength="9"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoEndereco">Endereço <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoEndereco" required maxlength="255"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoNumero">Número <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoNumero" required maxlength="20"></div>
+                <div class="new-establishment-field"><label for="novoEstabelecimentoBairro">Bairro <span class="required">*</span></label><input class="form-control" id="novoEstabelecimentoBairro" required maxlength="120"></div>
+              </div>
+              <div class="new-establishment-field"><label for="novoEstabelecimentoComplemento">Complemento</label><input class="form-control" id="novoEstabelecimentoComplemento" maxlength="120"></div>
+            </div>
+            <div class="new-establishment-grid">
+              <div class="new-establishment-field">
+                <label for="novoEstabelecimentoEstado">Estado <span class="required">*</span></label>
+                <select class="form-control" id="novoEstabelecimentoEstado" required><option value="">Selecione o estado</option></select>
+              </div>
+              <div class="new-establishment-field">
+                <label for="novoEstabelecimentoCidade">Cidade <span class="required">*</span></label>
+                <select class="form-control" id="novoEstabelecimentoCidade" required disabled><option value="">Selecione primeiro o estado</option></select>
+              </div>
+            </div>
+            <button class="btn-primary" type="submit">Cadastrar estabelecimento</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script>
+      document.querySelectorAll('input[type="tel"], input[inputmode="tel"]').forEach((campo) => {
+        campo.addEventListener("input", () => {
+          const numeros = campo.value.replace(/\D/g, "").slice(0, 11);
+          if (numeros.length <= 2) campo.value = numeros;
+          else if (numeros.length <= 6) campo.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+          else if (numeros.length <= 10) campo.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+          else campo.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+        });
+      });
+    </script>
+    <script>
+      const STORAGE_KEY = "clubbar_portal_lead_token";
+
+      const elementos = {
+        telaCarregando: document.getElementById("telaCarregando"),
+        telaErro: document.getElementById("telaErro"),
+        textoErroAcesso: document.getElementById("textoErroAcesso"),
+        conteudoPortal: document.getElementById("conteudoPortal"),
+        saudacao: document.getElementById("saudacao"),
+        nomeEstabelecimentoDecisao: document.getElementById("nomeEstabelecimentoDecisao"),
+        listaMensagens: document.getElementById("listaMensagens"),
+        listaAgendamentos: document.getElementById("listaAgendamentos"),
+        listaMateriais: document.getElementById("listaMateriais"),
+        formMensagem: document.getElementById("formMensagem"),
+        novaMensagem: document.getElementById("novaMensagem"),
+        btnEnviarMensagem: document.getElementById("btnEnviarMensagem"),
+        estabelecimentoDecisao: document.getElementById(
+          "estabelecimentoDecisao",
+        ),
+        estabelecimentoMensagens: document.getElementById("estabelecimentoMensagens"),
+        estabelecimentoAgendamentos: document.getElementById("estabelecimentoAgendamentos"),
+        estabelecimentoMateriais: document.getElementById("estabelecimentoMateriais"),
+        contratoEstabelecimento: document.getElementById(
+          "contratoEstabelecimento",
+        ),
+        btnVisualizarContrato: document.getElementById("btnVisualizarContrato"),
+        btnAceitarParceria: document.getElementById("btnAceitarParceria"),
+        btnDocumentosContratuais: document.getElementById("btnDocumentosContratuais"),
+        formEstabelecimento: document.getElementById("formEstabelecimento"),
+        novoEstabelecimentoNome: document.getElementById("novoEstabelecimentoNome"),
+        novoEstabelecimentoTipo: document.getElementById("novoEstabelecimentoTipo"),
+        novoEstabelecimentoUsarResponsavelPrincipal: document.getElementById("novoEstabelecimentoUsarResponsavelPrincipal"),
+        dadosResponsavelEstabelecimento: document.getElementById("dadosResponsavelEstabelecimento"),
+        novoEstabelecimentoResponsavel: document.getElementById("novoEstabelecimentoResponsavel"),
+        novoEstabelecimentoTelefoneResponsavel: document.getElementById("novoEstabelecimentoTelefoneResponsavel"),
+        novoEstabelecimentoEmailResponsavel: document.getElementById("novoEstabelecimentoEmailResponsavel"),
+        novoEstabelecimentoDocumento: document.getElementById("novoEstabelecimentoDocumento"),
+        novoEstabelecimentoEstado: document.getElementById("novoEstabelecimentoEstado"),
+        novoEstabelecimentoCidade: document.getElementById("novoEstabelecimentoCidade"),
+        novoEstabelecimentoCep: document.getElementById("novoEstabelecimentoCep"),
+        novoEstabelecimentoEndereco: document.getElementById("novoEstabelecimentoEndereco"),
+        novoEstabelecimentoNumero: document.getElementById("novoEstabelecimentoNumero"),
+        novoEstabelecimentoBairro: document.getElementById("novoEstabelecimentoBairro"),
+        novoEstabelecimentoComplemento: document.getElementById("novoEstabelecimentoComplemento"),
+        btnRemoverNovoEstabelecimento: document.getElementById("btnRemoverNovoEstabelecimento"),
+        formNovoAcesso: document.getElementById("formNovoAcesso"),
+        emailNovoAcesso: document.getElementById("emailNovoAcesso"),
+        telefoneNovoAcesso: document.getElementById("telefoneNovoAcesso"),
+        btnNovoAcesso: document.getElementById("btnNovoAcesso"),
+        btnEsqueciDados: document.getElementById("btnEsqueciDados"),
+        formRecuperarDados: document.getElementById("formRecuperarDados"),
+        emailRecuperarDados: document.getElementById("emailRecuperarDados"),
+        btnEnviarRecuperacao: document.getElementById("btnEnviarRecuperacao"),
+        btnAtualizarPagina: document.getElementById("btnAtualizarPagina"),
+        btnVoltarTopo: document.getElementById("btnVoltarTopo"),
+        seletorEstabelecimento: document.getElementById("seletorEstabelecimento"),
+      };
+
+      const parametrosPagina = new URLSearchParams(window.location.search);
+      const paginaAtual = parametrosPagina.get("tela");
+      const estabelecimentoInicialId = Number(
+        parametrosPagina.get("leadestabelecimento_id"),
+      );
+      const modaisPorPagina = {
+        mensagens: "modalMensagens",
+        agendamentos: "modalAgendamentos",
+        materiais: "modalMateriais",
+        estabelecimento: "modalEstabelecimento",
+      };
+      if (estabelecimentoInicialId) {
+        elementos.seletorEstabelecimento.classList.add("hidden");
+        elementos.btnVoltarTopo.href = "portal-lead-estabelecimentos.html";
+      }
+      if (paginaAtual && modaisPorPagina[paginaAtual]) {
+        document.body.classList.add("pagina-detalhe");
+        elementos.btnVoltarTopo.href = "portal-lead-estabelecimentos.html";
+      }
+
+      function obterToken() {
+        const parametros = new URLSearchParams(
+          window.location.hash.substring(1),
+        );
+        const tokenRecebido = parametros.get("acesso");
+
+        if (tokenRecebido) {
+          ClubbarSession.start(tokenRecebido);
+          history.replaceState(
+            null,
+            document.title,
+            window.location.pathname + window.location.search,
+          );
+          return tokenRecebido;
+        }
+
+        return sessionStorage.getItem(STORAGE_KEY);
+      }
+
+      let token = obterToken();
+      let resumoAtual = null;
+      let estabelecimentoSelecionadoId = estabelecimentoInicialId || null;
+      let fluxoAceiteAberto = false;
+      let contratoAcaoId = null;
+      let contratoEdicaoId = null;
+      let implantacaoVerificada = false;
+
+      if (token && !paginaAtual && !estabelecimentoSelecionadoId) {
+        window.location.replace("portal-lead-estabelecimentos.html");
+      }
+
+      function nomeStatus(valor) {
+        const nomes = {
+          NOVO: "Pendente",
+          CONTATADO: "Contatado",
+          NEGOCIANDO: "Em negociação",
+          ACEITOU_PARCERIA: "Aceitou parceria",
+          CONVERTIDO: "Parceiro",
+          RECUSOU_PARCERIA: "Recusou parceria",
+        };
+        return nomes[valor] || valor || "Não informado";
+      }
+
+      function nomeTipoAgendamento(valor) {
+        const nomes = {
+          DEMONSTRACAO: "Demonstração",
+          LIGACAO: "Ligação",
+          REUNIAO_ONLINE: "Reunião online",
+          VISITA: "Visita presencial",
+        };
+        const codigo = String(valor || "").split(".").pop().toUpperCase();
+        return nomes[codigo] || valor;
+      }
+
+      function nomeTipoMaterial(valor) {
+        const nomes = {
+          APRESENTACAO: "Apresentação",
+          PROPOSTA: "Proposta",
+          CONTRATO: "Contrato",
+          VIDEO: "Vídeo",
+          OUTRO: "Material",
+        };
+        return nomes[valor] || valor;
+      }
+
+      function formatarData(valor) {
+        if (!valor) return "";
+        const data = new Date(valor);
+        if (Number.isNaN(data.getTime())) return valor;
+        return new Intl.DateTimeFormat("pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }).format(data);
+      }
+
+      function mostrarToast(mensagem, erro = false) {
+        document.querySelectorAll(".toast").forEach((item) => item.remove());
+        const toast = document.createElement("div");
+        toast.className = `toast${erro ? " error" : ""}`;
+        toast.textContent = mensagem;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 7000);
+      }
+
+      async function api(caminho, opcoes = {}) {
+        const headers = new Headers(opcoes.headers || {});
+        headers.set("Authorization", `Bearer ${token}`);
+
+        if (opcoes.body && !headers.has("Content-Type")) {
+          headers.set("Content-Type", "application/json");
+        }
+
+        const resposta = await fetch(
+          `${CLUBBAR_CONFIG.API_BASE_URL}${caminho}`,
+          {
+            ...opcoes,
+            headers,
+          },
+        );
+
+        const texto = await resposta.text();
+        let dados = {};
+
+        if (texto) {
+          try {
+            dados = JSON.parse(texto);
+          } catch {
+            dados = { detail: texto };
+          }
+        }
+
+        if (!resposta.ok) {
+          if (resposta.status === 401) {
+            sessionStorage.removeItem(STORAGE_KEY);
+          }
+
+          let mensagem = dados.detail || "Não foi possível concluir a ação.";
+          if (Array.isArray(mensagem)) {
+            mensagem = mensagem
+              .map((item) => item.description || item.msg || JSON.stringify(item))
+              .join(" ");
+          } else if (mensagem && typeof mensagem === "object") {
+            const erros = Array.isArray(mensagem.errors) ? mensagem.errors : [];
+            mensagem = erros.length
+              ? erros
+                  .map((item) => item.description || item.msg || JSON.stringify(item))
+                  .join(" ")
+              : mensagem.description || mensagem.message || JSON.stringify(mensagem);
+          }
+          throw new Error(mensagem);
+        }
+
+        return dados;
+      }
+
+      function mostrarErroAcesso(mensagem, semToken = false) {
+        elementos.telaCarregando.classList.add("hidden");
+        elementos.conteudoPortal.classList.add("hidden");
+        elementos.telaErro.classList.remove("hidden");
+        elementos.telaErro.querySelector("h1").textContent = semToken
+          ? "Acesse seu cadastro"
+          : "Entre novamente";
+        elementos.textoErroAcesso.textContent = semToken
+          ? ""
+          : mensagem + " Informe seus dados para entrar novamente.";
+        elementos.textoErroAcesso.classList.toggle("hidden", semToken);
+      }
+
+      function mostrarPortal() {
+        elementos.telaCarregando.classList.add("hidden");
+        elementos.telaErro.classList.add("hidden");
+        elementos.conteudoPortal.classList.remove("hidden");
+        if (paginaAtual && modaisPorPagina[paginaAtual]) {
+          elementos.conteudoPortal.classList.add("hidden");
+          abrirModal(modaisPorPagina[paginaAtual]);
+        }
+      }
+
+      function criarVazio(texto) {
+        const vazio = document.createElement("div");
+        vazio.className = "empty";
+        vazio.textContent = texto;
+        return vazio;
+      }
+
+      function abrirModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.remove("hidden");
+        if (!paginaAtual) document.body.classList.add("modal-open");
+        modal.querySelector(".modal-close")?.focus();
+      }
+
+      function fecharModal(modal) {
+        if (paginaAtual) {
+          window.location.href = "portal-lead-estabelecimentos.html";
+          return;
+        }
+        modal?.classList.add("hidden");
+        if (!document.querySelector(".modal:not(.hidden)")) {
+          document.body.classList.remove("modal-open");
+        }
+      }
+
+      async function carregarResumo() {
+        const filtroEstabelecimento = estabelecimentoSelecionadoId
+          ? `?leadestabelecimento_id=${estabelecimentoSelecionadoId}`
+          : "";
+        const resumo = await api(`/portal-parceiro/resumo${filtroEstabelecimento}`);
+        resumoAtual = resumo;
+
+        elementos.saudacao.textContent = resumo.nmresponsavel || "parceiro";
+        document.querySelectorAll("[data-nome-lead]").forEach((elemento) => {
+          elemento.textContent = resumo.nmresponsavel || "";
+        });
+        const estabelecimentos = resumo.estabelecimentos || [];
+      const tituloNovoEstabelecimento = document.querySelector(
+          "#formEstabelecimento .new-establishment-head h3",
+        );
+        if (tituloNovoEstabelecimento) {
+          tituloNovoEstabelecimento.textContent = `Estabelecimento ${estabelecimentos.length + 1}`;
+        }
+        const formNovo = document.getElementById("formEstabelecimento");
+        const escolhaVenda = formNovo?.querySelector(".new-establishment-choices");
+        if (formNovo && escolhaVenda) {
+          const enderecoNovo = formNovo.querySelector(".new-establishment-address");
+          if (enderecoNovo) enderecoNovo.open = true;
+        }
+        if (
+          !estabelecimentoSelecionadoId ||
+          !estabelecimentos.some(
+            (item) =>
+              item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+          )
+        ) {
+          estabelecimentoSelecionadoId =
+            estabelecimentos[0]?.leadestabelecimento_id ?? null;
+        }
+        if (!filtroEstabelecimento && estabelecimentoSelecionadoId) {
+          return carregarResumo();
+        }
+        elementos.estabelecimentoDecisao.replaceChildren();
+        estabelecimentos.forEach((item) => {
+          const opcao = document.createElement("option");
+          opcao.value = item.leadestabelecimento_id;
+          opcao.textContent = item.nmestabelecimento;
+          opcao.selected =
+            item.leadestabelecimento_id === estabelecimentoSelecionadoId;
+          elementos.estabelecimentoDecisao.append(opcao);
+        });
+        const estabelecimento =
+          estabelecimentos.find(
+            (item) =>
+              item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+          ) || { status: "NOVO", contratos: [] };
+        elementos.nomeEstabelecimentoDecisao.textContent =
+          estabelecimento.nmestabelecimento || "este estabelecimento";
+        [
+          elementos.estabelecimentoMensagens,
+          elementos.estabelecimentoAgendamentos,
+          elementos.estabelecimentoMateriais,
+        ].forEach((elemento) => {
+          elemento.textContent =
+            estabelecimento.nmestabelecimento || "Estabelecimento";
+        });
+        elementos.contratoEstabelecimento.replaceChildren();
+        const contratos = estabelecimento.contratos || [];
+        const contratoOriginalPendente = contratos.find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status !== "ACEITO",
+        );
+        const retificacaoPendente = contratos.find(
+          (item) => item.tipoinstrumento === "RETIFICACAO" &&
+            ["RASCUNHO", "ENVIADO"].includes(item.status),
+        );
+        const contratoOriginalAceito = contratos.find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
+        );
+        const contrato = retificacaoPendente || contratoOriginalPendente ||
+          contratoOriginalAceito || contratos[0];
+        const parceriaAceita =
+          estabelecimento.status === "ACEITOU_PARCERIA" ||
+          estabelecimento.status === "CONVERTIDO";
+        const contratoOriginalResumo = contratos.find(
+          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
+        );
+        const cobrancaResumo = contratoOriginalResumo?.cobranca_implantacao;
+        if (
+          parceriaAceita &&
+          contratoOriginalResumo &&
+          cobrancaResumo?.status === "PENDENTE" &&
+          !implantacaoVerificada
+        ) {
+          implantacaoVerificada = true;
+          const retornoAsaas =
+            parametrosPagina.get("gateway") === "asaas" ||
+            parametrosPagina.get("pagamento") === "sucesso" ||
+            parametrosPagina.has("checkout_id");
+          const tentativas = retornoAsaas ? 5 : 1;
+          for (let tentativa = 0; tentativa < tentativas; tentativa += 1) {
+            const cobrancaAtualizada = await api(
+              `/portal-parceiro/contratos/${contratoOriginalResumo.leadestabelecimentocontrato_id}/implantacao`,
+            );
+            contratoOriginalResumo.cobranca_implantacao = cobrancaAtualizada;
+            if (["PAGA", "ISENTA"].includes(cobrancaAtualizada.status)) break;
+            if (tentativa < tentativas - 1) {
+              await new Promise((resolve) => setTimeout(resolve, 1200));
+            }
+          }
+        }
+        document.getElementById("textoDecisao").classList.toggle(
+          "hidden",
+          parceriaAceita,
+        );
+        document.getElementById("acoesDecisao").classList.toggle(
+          "hidden",
+          false,
+        );
+        if (parceriaAceita) {
+          fluxoAceiteAberto = false;
+          elementos.contratoEstabelecimento.classList.remove("hidden");
+          const contratoOriginal = contratos.find(
+            (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
+          ) || contrato;
+          const cobrancaImplantacao = contratoOriginal?.cobranca_implantacao;
+          const implantacaoIsenta = cobrancaImplantacao?.status === "ISENTA";
+          const implantacaoPaga = cobrancaImplantacao?.status === "PAGA";
+          const implantacaoLiberada =
+            Number(contratoOriginal?.vrimplantacao || 0) <= 0 ||
+            implantacaoPaga ||
+            implantacaoIsenta;
+          const celebracao = document.createElement("div");
+          celebracao.className = "partnership-celebration";
+          const icone = document.createElement("span");
+          icone.className = "celebration-icon";
+          icone.textContent = "🍾✨";
+          const titulo = document.createElement("h3");
+          titulo.textContent = "Parceria aceita!";
+          const mensagem = document.createElement("p");
+          mensagem.textContent = implantacaoLiberada
+            ? "Você receberá um e-mail com os dados para acesso ao Clubbar Partner."
+            : "Agora falta somente concluir o pagamento da implantação.";
+          const linkPartner = document.createElement("a");
+          linkPartner.className = "btn-primary";
+          linkPartner.href = CLUBBAR_CONFIG.PARTNER_URL;
+          linkPartner.target = "_blank";
+          linkPartner.rel = "noopener noreferrer";
+          linkPartner.textContent = "Acessar Clubbar Partner ↗";
+          celebracao.append(icone, titulo, mensagem);
+          if (implantacaoIsenta) {
+            const avisoIsencao = document.createElement("div");
+            avisoIsencao.className = "implantation-exemption-badge";
+            avisoIsencao.textContent = "✓ Taxa de implantação isenta";
+            celebracao.append(avisoIsencao);
+          } else if (implantacaoPaga) {
+            const avisoPagamento = document.createElement("div");
+            avisoPagamento.className = "implantation-exemption-badge paid";
+            avisoPagamento.textContent = "✓ Taxa de implantação paga";
+            celebracao.append(avisoPagamento);
+          }
+          if (implantacaoLiberada) celebracao.append(linkPartner);
+          elementos.contratoEstabelecimento.append(celebracao);
+          if (!implantacaoLiberada && contratoOriginal) {
+            const pagamento = document.createElement("div");
+            pagamento.style.cssText =
+              "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:16px;background:#f5f9ff";
+            const tituloPagamento = document.createElement("strong");
+            tituloPagamento.textContent = `Implantação — ${Number(contratoOriginal.vrimplantacao || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
+            const descricaoPagamento = document.createElement("p");
+            descricaoPagamento.textContent =
+              "Pague com Pix ou cartão no ambiente seguro do Asaas. Este pagamento não altera o aceite da parceria já registrado.";
+            pagamento.append(tituloPagamento, descricaoPagamento);
+            const pagar = document.createElement("button");
+            pagar.type = "button";
+            pagar.className = "decision-button accept";
+            pagar.textContent = "Pagar taxa de implantação no Asaas";
+            pagar.addEventListener("click", () =>
+              abrirPagamentoImplantacao(
+                contratoOriginal.leadestabelecimentocontrato_id,
+                pagar,
+              ),
+            );
+            pagamento.append(pagar);
+            elementos.contratoEstabelecimento.append(pagamento);
+          }
+        }
+        elementos.contratoEstabelecimento.classList.toggle(
+          "hidden",
+          !fluxoAceiteAberto && !parceriaAceita,
+        );
+        if (!parceriaAceita && fluxoAceiteAberto && contrato) {
+          const cardContrato = document.createElement("div");
+          const tituloContrato = document.createElement("strong");
+          tituloContrato.textContent = contrato.tipoinstrumento === "RETIFICACAO"
+            ? `Retificação nº ${contrato.nrretificacao} — ${contrato.status}`
+            : `Contrato ${contrato.versao} — ${contrato.status}`;
+          cardContrato.append(tituloContrato);
+          const ferramentasContrato = document.createElement("div");
+          ferramentasContrato.className = "contract-tools";
+          const baixarPdf = document.createElement("button");
+          baixarPdf.type = "button";
+          baixarPdf.className = "decision-button analyzing";
+          baixarPdf.textContent = "Baixar contrato em PDF";
+          baixarPdf.disabled = contrato.status !== "ACEITO";
+          baixarPdf.addEventListener("click", () =>
+            baixarContratoPdf(contrato.leadestabelecimentocontrato_id),
+          );
+          ferramentasContrato.append(baixarPdf);
+          cardContrato.append(ferramentasContrato);
+          if (contrato.conteudocontrato) {
+            const textoContrato = document.createElement("div");
+            textoContrato.className = "contract-text";
+            textoContrato.textContent = contrato.conteudocontrato;
+            cardContrato.append(textoContrato);
+          }
+          if (contrato.status === "ENVIADO") {
+            const aceitarContrato = document.createElement("button");
+            aceitarContrato.type = "button";
+            aceitarContrato.className = "decision-button accept";
+            aceitarContrato.style.marginTop = "14px";
+            aceitarContrato.textContent = "Li e aceito o contrato";
+            aceitarContrato.addEventListener("click", iniciarAceiteParceria);
+            cardContrato.append(document.createElement("br"), aceitarContrato);
+          }
+          const cobranca = contrato.cobranca_implantacao;
+          const implantacaoLiberada =
+            cobranca?.status === "PAGA" || cobranca?.status === "ISENTA";
+          if (contrato.status === "ACEITO") {
+            const pagamento = document.createElement("div");
+            pagamento.style.cssText =
+              "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:16px;background:#f5f9ff";
+            const tituloPagamento = document.createElement("strong");
+            tituloPagamento.textContent = implantacaoLiberada
+              ? cobranca.status === "ISENTA" ? "Implantação isenta" : "Implantação paga"
+              : `Taxa única de implantação — ${Number(contrato.vrimplantacao || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
+            const descricaoPagamento = document.createElement("p");
+            descricaoPagamento.textContent = implantacaoLiberada
+              ? "Pagamento confirmado. A parceria já pode ser concluída."
+              : "Pague com Pix ou cartão no ambiente seguro do Asaas para liberar a implantação.";
+            pagamento.append(tituloPagamento, descricaoPagamento);
+            if (!implantacaoLiberada) {
+              const pagar = document.createElement("button");
+              pagar.type = "button";
+              pagar.className = "decision-button accept";
+              pagar.textContent = "Pagar taxa de implantação no Asaas";
+              pagar.addEventListener("click", () =>
+                abrirPagamentoImplantacao(
+                  contrato.leadestabelecimentocontrato_id,
+                  pagar,
+                ),
+              );
+              pagamento.append(pagar);
+            }
+            cardContrato.append(pagamento);
+          }
+          elementos.contratoEstabelecimento.append(cardContrato);
+        } else if (!parceriaAceita && fluxoAceiteAberto) {
+          elementos.contratoEstabelecimento.append(
+            criarVazio("Contrato ainda não disponibilizado para esta unidade."),
+          );
+        }
+        document.querySelectorAll("[data-status]").forEach((botao) => {
+          botao.disabled =
+            estabelecimento.status === "CONVERTIDO" ||
+            botao.dataset.status === estabelecimento.status;
+        });
+        const contratoAssinado = Boolean(contratoOriginalAceito);
+        const podeEditarCadastro = Boolean(contratoOriginalPendente) && !contratoAssinado;
+        const documentoPendenteAssinatura = retificacaoPendente || contratoOriginalPendente;
+        const podeAssinarDocumento = Boolean(documentoPendenteAssinatura?.conteudocontrato);
+        contratoAcaoId = documentoPendenteAssinatura?.leadestabelecimentocontrato_id || null;
+        contratoEdicaoId = contratoOriginalPendente?.leadestabelecimentocontrato_id || null;
+        elementos.btnVisualizarContrato.disabled = !podeEditarCadastro;
+        elementos.btnVisualizarContrato.hidden = !podeEditarCadastro;
+        elementos.btnAceitarParceria.disabled = !podeAssinarDocumento;
+        elementos.btnAceitarParceria.hidden = !documentoPendenteAssinatura;
+        elementos.btnAceitarParceria.title = podeAssinarDocumento
+          ? ""
+          : "O documento ainda está sendo preparado para assinatura";
+        elementos.btnVisualizarContrato.textContent = "Conferir e editar dados do seu cadastro";
+        elementos.btnAceitarParceria.textContent = retificacaoPendente
+          ? `Visualizar e assinar retificação nº ${retificacaoPendente.nrretificacao}`
+          : "Visualizar e assinar contrato";
+        const documentosAssinados = contratos.filter(
+          item => item.status === "ACEITO" && item.conteudocontrato,
+        );
+        elementos.btnDocumentosContratuais.disabled = !documentosAssinados.length;
+        elementos.btnDocumentosContratuais.hidden = false;
+        elementos.btnDocumentosContratuais.textContent = documentosAssinados.length
+          ? `Documentos contratuais (${documentosAssinados.length})`
+          : "Documentos contratuais";
+        const baixar = document.getElementById("btnBaixarContrato");
+        const contratoAceito = contratos.find(item => item.status === "ACEITO");
+        baixar.hidden = true;
+        baixar.disabled = !contratoAceito;
+        baixar.title = contratoAceito ? "Baixar o contrato aceito" : "Disponível após assinar o contrato";
+        baixar.onclick = () => {
+          if (contratoAceito) baixarContratoPdf(contratoAceito.leadestabelecimentocontrato_id);
+        };
+      }
+
+      async function carregarMensagens() {
+        const mensagens = await api(`/portal-parceiro/mensagens?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
+        elementos.listaMensagens.replaceChildren();
+
+        if (!mensagens.length) {
+          elementos.listaMensagens.append(
+            criarVazio("Nenhuma mensagem disponível no momento."),
+          );
+          return;
+        }
+
+        const ultimaMensagemDoLead = [...mensagens]
+          .reverse()
+          .find((item) => item.origem === "LEAD")?.leadmensagem_id;
+
+        mensagens.forEach((item) => {
+          const caixa = document.createElement("article");
+          const enviadaPeloLead = item.origem === "LEAD";
+          caixa.className = `message ${enviadaPeloLead ? "lead" : "clubbar"}`;
+
+          const avatar = document.createElement("span");
+          avatar.className = "message-avatar";
+          avatar.setAttribute("aria-hidden", "true");
+          if (enviadaPeloLead) {
+            avatar.textContent = "👤";
+          } else {
+            const cora = document.createElement("img");
+            cora.src = "assets/images/coruja.png";
+            cora.alt = "";
+            avatar.append(cora);
+          }
+
+          const conteudo = document.createElement("div");
+          conteudo.className = "message-content";
+
+          const remetente = document.createElement("strong");
+          remetente.className = "message-sender";
+          const nomeLead = resumoAtual?.nmresponsavel || "Lead";
+          remetente.textContent = enviadaPeloLead
+            ? nomeLead
+            : `Cora • Clubbar — para ${nomeLead}`;
+
+          const cabecalho = document.createElement("div");
+          cabecalho.className = "message-heading";
+          cabecalho.append(remetente);
+
+          if (
+            enviadaPeloLead &&
+            item.leadmensagem_id === ultimaMensagemDoLead
+          ) {
+            const excluir = document.createElement("button");
+            excluir.type = "button";
+            excluir.className = "message-delete";
+            excluir.title = "Excluir última mensagem enviada";
+            excluir.setAttribute("aria-label", "Excluir última mensagem enviada");
+            excluir.textContent = "🗑";
+            excluir.addEventListener("click", () =>
+              excluirMensagem(item.leadmensagem_id),
+            );
+            cabecalho.append(excluir);
+          }
+
+          const texto = document.createElement("div");
+          texto.textContent = item.mensagem;
+
+          const data = document.createElement("small");
+          data.textContent =
+            formatarData(item.dtcriacao);
+
+          conteudo.append(cabecalho, texto, data);
+          caixa.append(avatar, conteudo);
+          elementos.listaMensagens.append(caixa);
+        });
+
+        elementos.listaMensagens.scrollTop =
+          elementos.listaMensagens.scrollHeight;
+      }
+
+      async function excluirMensagem(mensagemId) {
+        if (!window.confirm("Excluir sua última mensagem enviada?")) return;
+
+        try {
+          await api(
+            `/portal-parceiro/mensagens/${mensagemId}?leadestabelecimento_id=${estabelecimentoSelecionadoId}`,
+            { method: "DELETE" },
+          );
+          await carregarMensagens();
+          mostrarToast("Mensagem excluída.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function enviarMensagem(evento) {
+        evento.preventDefault();
+        const mensagem = elementos.novaMensagem.value.trim();
+        if (!mensagem) return;
+
+        elementos.btnEnviarMensagem.disabled = true;
+        elementos.btnEnviarMensagem.textContent = "Enviando...";
+
+        try {
+          await api(`/portal-parceiro/mensagens?leadestabelecimento_id=${estabelecimentoSelecionadoId}`, {
+            method: "POST",
+            body: JSON.stringify({ mensagem }),
+          });
+          elementos.novaMensagem.value = "";
+          await carregarMensagens();
+          mostrarToast("Mensagem enviada com sucesso.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnEnviarMensagem.disabled = false;
+          elementos.btnEnviarMensagem.textContent = "Enviar mensagem";
+        }
+      }
+
+      async function carregarAgendamentos() {
+        const itens = await api(`/portal-parceiro/agendamentos?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
+        elementos.listaAgendamentos.replaceChildren();
+
+        if (!itens.length) {
+          elementos.listaAgendamentos.append(
+            criarVazio("Nenhum agendamento disponível."),
+          );
+          return;
+        }
+
+        itens.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "item";
+
+          const topo = document.createElement("div");
+          topo.className = "item-top";
+
+          const copia = document.createElement("div");
+          const titulo = document.createElement("h3");
+          titulo.textContent = nomeTipoAgendamento(item.tipo);
+          const data = document.createElement("p");
+          data.textContent = formatarData(item.dtagendamento);
+          copia.append(titulo, data);
+
+          const badge = document.createElement("span");
+          const situacao = situacaoAgendamento(item.status);
+          badge.className = `badge ${situacao.classe}`;
+          badge.textContent = situacao.texto;
+
+          topo.append(copia, badge);
+          card.append(topo);
+
+          if (item.observacao) {
+            const observacao = document.createElement("p");
+            observacao.style.marginTop = "9px";
+            observacao.textContent = item.observacao;
+            card.append(observacao);
+          }
+
+          if (item.status === "PENDENTE") {
+            const acoes = document.createElement("div");
+            acoes.className = "item-actions";
+
+            const confirmar = document.createElement("button");
+            confirmar.className = "btn-small confirm";
+            confirmar.textContent = "Confirmar";
+            confirmar.addEventListener("click", () =>
+              responderAgendamento(item.leadagendamento_id, "CONFIRMADO"),
+            );
+
+            const recusar = document.createElement("button");
+            recusar.className = "btn-small reject";
+            recusar.textContent = "Recusar";
+            recusar.addEventListener("click", () =>
+              responderAgendamento(item.leadagendamento_id, "RECUSADO"),
+            );
+
+            acoes.append(confirmar, recusar);
+            card.append(acoes);
+          }
+
+          elementos.listaAgendamentos.append(card);
+        });
+      }
+
+      function situacaoAgendamento(valor) {
+        const situacoes = {
+          PENDENTE: { texto: "Pendente", classe: "pendente" },
+          CONFIRMADO: { texto: "Confirmado", classe: "confirmado" },
+          RECUSADO: { texto: "Recusado", classe: "recusado" },
+          REALIZADO: { texto: "Realizado", classe: "realizado" },
+          CANCELADO: { texto: "Cancelado", classe: "cancelado" },
+        };
+        return situacoes[valor] || { texto: valor, classe: "pendente" };
+      }
+
+      async function responderAgendamento(id, status) {
+        const acao = status === "CONFIRMADO" ? "confirmar" : "recusar";
+        if (!window.confirm(`Deseja realmente ${acao} este agendamento?`)) {
+          return;
+        }
+
+        try {
+          await api(`/portal-parceiro/agendamentos/${id}/resposta`, {
+            method: "PATCH",
+            body: JSON.stringify({ status }),
+          });
+          await Promise.all([carregarAgendamentos(), carregarResumo()]);
+          mostrarToast("Resposta registrada com sucesso.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function carregarMateriais() {
+        const itens = await api(`/portal-parceiro/materiais?leadestabelecimento_id=${estabelecimentoSelecionadoId}`);
+        elementos.listaMateriais.replaceChildren();
+
+        if (!itens.length) {
+          elementos.listaMateriais.append(
+            criarVazio("Nenhum material enviado até agora."),
+          );
+          return;
+        }
+
+        itens.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "item";
+
+          const topo = document.createElement("div");
+          topo.className = "item-top";
+
+          const titulo = document.createElement("h3");
+          titulo.textContent = item.titulo;
+
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = nomeTipoMaterial(item.tipo);
+
+          topo.append(titulo, badge);
+          card.append(topo);
+
+          const enviadoEm = document.createElement("div");
+          enviadoEm.className = "material-sent-at";
+          enviadoEm.textContent = `Enviado em ${formatarData(item.dtcriacao)}`;
+          card.append(enviadoEm);
+
+          if (item.descricao) {
+            const descricao = document.createElement("p");
+            descricao.style.marginTop = "8px";
+            descricao.textContent = item.descricao;
+            card.append(descricao);
+          }
+
+          const acoes = document.createElement("div");
+          acoes.className = "item-actions";
+
+          const link = document.createElement("a");
+          link.className = "material-link";
+          link.textContent = "Abrir material ↗";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.href = new URL(
+            item.urlarquivo,
+            CLUBBAR_CONFIG.API_BASE_URL,
+          ).href;
+
+          acoes.append(link);
+          card.append(acoes);
+          elementos.listaMateriais.append(card);
+        });
+      }
+
+      async function iniciarAceiteParceria() {
+        const destino = new URL("aceite-parceria.html", window.location.href);
+        destino.searchParams.set(
+          "leadestabelecimento_id",
+          estabelecimentoSelecionadoId,
+        );
+        if (contratoAcaoId) {
+          destino.searchParams.set("contrato_id", contratoAcaoId);
+        }
+        window.location.href = destino.href;
+      }
+
+      async function visualizarContrato() {
+        const destino = new URL("visualizar-contrato.html", window.location.href);
+        destino.searchParams.set(
+          "leadestabelecimento_id",
+          estabelecimentoSelecionadoId,
+        );
+        if (contratoEdicaoId) {
+          destino.searchParams.set("contrato_id", contratoEdicaoId);
+        }
+        window.location.href = destino.href;
+      }
+
+      async function baixarContratoPdf(contratoId) {
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/contratos/${contratoId}/pdf`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          if (!resposta.ok) {
+            const dados = await resposta.json().catch(() => ({}));
+            throw new Error(dados.detail || "Não foi possível gerar o PDF do contrato.");
+          }
+          const blob = await resposta.blob();
+          const arquivo = new File([blob], `contrato-clubbar-${contratoId}.pdf`, { type: "application/pdf" });
+
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = arquivo.name;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
+          mostrarToast("Contrato em PDF gerado com sucesso.");
+        } catch (erro) {
+          if (erro?.name !== "AbortError") mostrarToast(erro.message, true);
+        }
+      }
+
+      async function registrarStatus(status) {
+        const textos = {
+          NEGOCIANDO: "continuar analisando a parceria",
+          ACEITOU_PARCERIA: "aceitar a parceria",
+          RECUSOU_PARCERIA: "recusar a parceria",
+        };
+
+        if (!window.confirm(`Deseja realmente ${textos[status]}?`)) return;
+
+        try {
+          await api("/portal-parceiro/status", {
+            method: "PATCH",
+            body: JSON.stringify({
+              leadestabelecimento_id: estabelecimentoSelecionadoId,
+              status,
+            }),
+          });
+          await carregarResumo();
+          mostrarToast("Sua decisão foi registrada.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function carregarEstadosEstabelecimento() {
+        try {
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados`);
+          const estados = await resposta.json();
+          if (!resposta.ok) throw new Error("Não foi possível carregar os estados.");
+          elementos.novoEstabelecimentoEstado.innerHTML = '<option value="">Selecione o estado</option>';
+          estados.forEach((estado) => {
+            const opcao = document.createElement("option");
+            opcao.value = estado.estado_id;
+            opcao.textContent = estado.sgestado;
+            elementos.novoEstabelecimentoEstado.append(opcao);
+          });
+        } catch (_) {
+          elementos.novoEstabelecimentoEstado.innerHTML = '<option value="">Erro ao carregar estados</option>';
+        }
+      }
+
+      async function abrirPagamentoImplantacao(contratoId, botao) {
+        const textoOriginal = botao.textContent;
+        botao.disabled = true;
+        botao.textContent = "Preparando pagamento...";
+        try {
+          const cobranca = await api(`/portal-parceiro/contratos/${contratoId}/implantacao`);
+          if (cobranca.status === "PAGA" || cobranca.status === "ISENTA") {
+            await carregarResumo();
+            mostrarToast(
+              cobranca.status === "PAGA"
+                ? "Pagamento confirmado com sucesso."
+                : "Taxa de implantação isenta.",
+            );
+            return;
+          }
+          if (!cobranca.checkout_url) {
+            throw new Error("Não foi possível abrir o pagamento no Asaas.");
+          }
+          window.location.href = cobranca.checkout_url;
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+          botao.disabled = false;
+          botao.textContent = textoOriginal;
+        }
+      }
+
+      async function carregarCidadesEstabelecimento(estadoId) {
+        elementos.novoEstabelecimentoCidade.disabled = true;
+        elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Carregando cidades...</option>';
+        if (!estadoId) {
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Selecione primeiro o estado</option>';
+          return;
+        }
+        try {
+          const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/localidades/estados/${estadoId}/cidades`);
+          const cidades = await resposta.json();
+          if (!resposta.ok) throw new Error("Não foi possível carregar as cidades.");
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Selecione a cidade</option>';
+          cidades.forEach((cidade) => {
+            const opcao = document.createElement("option");
+            opcao.value = cidade.cidade_id;
+            opcao.textContent = cidade.nmcidade;
+            elementos.novoEstabelecimentoCidade.append(opcao);
+          });
+          elementos.novoEstabelecimentoCidade.disabled = false;
+        } catch (_) {
+          elementos.novoEstabelecimentoCidade.innerHTML = '<option value="">Erro ao carregar cidades</option>';
+        }
+      }
+
+      function documentoValido(valor) {
+        const fiscal = String(valor || "").replace(/[^0-9a-z]/gi, "").toUpperCase();
+        if (/[A-Z]/.test(fiscal)) return /^[A-Z0-9]{12}\d{2}$/.test(fiscal);
+        const numeros = (valor || "").replace(/\D/g, "");
+        if (/^(\d)\1+$/.test(numeros)) return false;
+        if (numeros.length === 11) {
+          let soma = 0;
+          for (let indice = 0; indice < 9; indice++) soma += Number(numeros[indice]) * (10 - indice);
+          let digito = (soma * 10) % 11;
+          if (digito === 10) digito = 0;
+          if (digito !== Number(numeros[9])) return false;
+          soma = 0;
+          for (let indice = 0; indice < 10; indice++) soma += Number(numeros[indice]) * (11 - indice);
+          digito = (soma * 10) % 11;
+          if (digito === 10) digito = 0;
+          return digito === Number(numeros[10]);
+        }
+        if (numeros.length === 14) {
+          let soma = 0;
+          let peso = 5;
+          for (let indice = 0; indice < 12; indice++) {
+            soma += Number(numeros[indice]) * peso;
+            peso = peso === 2 ? 9 : peso - 1;
+          }
+          let resto = soma % 11;
+          let digito = resto < 2 ? 0 : 11 - resto;
+          if (digito !== Number(numeros[12])) return false;
+          soma = 0;
+          peso = 6;
+          for (let indice = 0; indice < 13; indice++) {
+            soma += Number(numeros[indice]) * peso;
+            peso = peso === 2 ? 9 : peso - 1;
+          }
+          resto = soma % 11;
+          digito = resto < 2 ? 0 : 11 - resto;
+          return digito === Number(numeros[13]);
+        }
+        return false;
+      }
+
+      let cepEstabelecimentoTimer;
+      async function buscarCepEstabelecimento() {
+        const cep = elementos.novoEstabelecimentoCep.value.replace(/\D/g, "");
+        if (cep.length !== 8) return;
+        clearTimeout(cepEstabelecimentoTimer);
+        cepEstabelecimentoTimer = setTimeout(async () => {
+          try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const dados = await resposta.json();
+            if (!resposta.ok || dados.erro) throw new Error("CEP não encontrado.");
+            elementos.novoEstabelecimentoEndereco.value = dados.logradouro || "";
+            elementos.novoEstabelecimentoBairro.value = dados.bairro || "";
+            elementos.novoEstabelecimentoComplemento.value = dados.complemento || "";
+            const estado = [...elementos.novoEstabelecimentoEstado.options].find(
+              (opcao) => opcao.textContent.trim().toUpperCase() === dados.uf?.toUpperCase(),
+            );
+            if (estado) {
+              elementos.novoEstabelecimentoEstado.value = estado.value;
+              await carregarCidadesEstabelecimento(estado.value);
+              const cidade = [...elementos.novoEstabelecimentoCidade.options].find(
+                (opcao) => opcao.textContent.trim().toLowerCase() === dados.localidade?.toLowerCase(),
+              );
+              if (cidade) elementos.novoEstabelecimentoCidade.value = cidade.value;
+            }
+          } catch (erro) {
+            mostrarToast(erro.message || "Não foi possível consultar o CEP.", true);
+          }
+        }, 350);
+      }
+
+      async function cadastrarNovoEstabelecimento(evento) {
+        evento.preventDefault();
+        const usarResponsavelPrincipal = elementos.novoEstabelecimentoUsarResponsavelPrincipal.checked;
+        const tipoVenda = elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]:checked')?.value;
+        if (!elementos.novoEstabelecimentoNome.value.trim()) {
+          mostrarToast("Informe o nome do estabelecimento.", true);
+          elementos.novoEstabelecimentoNome.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoTipo.value) {
+          mostrarToast("Selecione o tipo do estabelecimento.", true);
+          elementos.novoEstabelecimentoTipo.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoDocumento.value.trim()) {
+          mostrarToast("Informe o CPF ou CNPJ do estabelecimento.", true);
+          elementos.novoEstabelecimentoDocumento.focus();
+          return;
+        }
+        if (!documentoValido(elementos.novoEstabelecimentoDocumento.value)) {
+          mostrarToast("Informe um CPF ou CNPJ válido.", true);
+          elementos.novoEstabelecimentoDocumento.focus();
+          return;
+        }
+        if (!tipoVenda) {
+          mostrarToast("Selecione o que deseja vender.", true);
+          elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]')?.focus();
+          return;
+        }
+        if (elementos.novoEstabelecimentoCep.value.replace(/\D/g, "").length !== 8) {
+          mostrarToast("Informe um CEP válido com 8 dígitos.", true);
+          elementos.novoEstabelecimentoCep.focus();
+          return;
+        }
+        if (![elementos.novoEstabelecimentoEndereco, elementos.novoEstabelecimentoNumero, elementos.novoEstabelecimentoBairro].every(campo => campo.value.trim())) {
+          mostrarToast("Complete o endereço, número e bairro.", true);
+          elementos.novoEstabelecimentoEndereco.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoEstado.value) {
+          mostrarToast("Selecione o estado.", true);
+          elementos.novoEstabelecimentoEstado.focus();
+          return;
+        }
+        if (!elementos.novoEstabelecimentoCidade.value) {
+          mostrarToast("Selecione a cidade.", true);
+          elementos.novoEstabelecimentoCidade.focus();
+          return;
+        }
+        if (!usarResponsavelPrincipal && ![
+          elementos.novoEstabelecimentoResponsavel,
+          elementos.novoEstabelecimentoTelefoneResponsavel,
+          elementos.novoEstabelecimentoEmailResponsavel,
+        ].every((campo) => campo.value.trim())) {
+          mostrarToast("Informe nome, telefone e e-mail do responsável pelo estabelecimento.", true);
+          elementos.novoEstabelecimentoResponsavel.focus();
+          return;
+        }
+        try {
+          await api("/portal-parceiro/estabelecimentos", {
+            method: "POST",
+            body: JSON.stringify({
+              nmestabelecimento: elementos.novoEstabelecimentoNome.value.trim(),
+              tipo: elementos.novoEstabelecimentoTipo.value,
+              tipovenda: tipoVenda,
+              nmresponsavel: usarResponsavelPrincipal ? null : elementos.novoEstabelecimentoResponsavel.value.trim(),
+              telefone_responsavel: usarResponsavelPrincipal ? null : elementos.novoEstabelecimentoTelefoneResponsavel.value.trim(),
+              email_responsavel: usarResponsavelPrincipal ? null : elementos.novoEstabelecimentoEmailResponsavel.value.trim(),
+              cpfcnpj: elementos.novoEstabelecimentoDocumento.value.replace(/[^0-9a-z]/gi, "").toUpperCase() || null,
+              cep: elementos.novoEstabelecimentoCep.value.replace(/\D/g, "") || null,
+              endereco: elementos.novoEstabelecimentoEndereco.value.trim() || null,
+              numero: elementos.novoEstabelecimentoNumero.value.trim() || null,
+              bairro: elementos.novoEstabelecimentoBairro.value.trim() || null,
+              complemento: elementos.novoEstabelecimentoComplemento.value.trim() || null,
+              cidade_id: Number(elementos.novoEstabelecimentoCidade.value),
+              estado_id: Number(elementos.novoEstabelecimentoEstado.value),
+            }),
+          });
+          elementos.formEstabelecimento.reset();
+          configurarResponsavelEstabelecimento(true);
+          await carregarCidadesEstabelecimento("");
+          await carregarResumo();
+          fecharModal(document.getElementById("modalEstabelecimento"));
+          mostrarToast("Estabelecimento cadastrado para negociação.");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        }
+      }
+
+      async function iniciar() {
+        if (!token) {
+          mostrarErroAcesso("", true);
+          return;
+        }
+
+        try {
+          await carregarResumo();
+          await Promise.all([
+            carregarMensagens(),
+            carregarAgendamentos(),
+            carregarMateriais(),
+          ]);
+          mostrarPortal();
+        } catch (erro) {
+          mostrarErroAcesso(erro.message);
+        }
+      }
+
+      function configurarResponsavelEstabelecimento(usarPrincipal) {
+        elementos.novoEstabelecimentoUsarResponsavelPrincipal.checked = usarPrincipal;
+        elementos.dadosResponsavelEstabelecimento.classList.toggle(
+          "hidden",
+          usarPrincipal,
+        );
+        [
+          elementos.novoEstabelecimentoResponsavel,
+          elementos.novoEstabelecimentoTelefoneResponsavel,
+          elementos.novoEstabelecimentoEmailResponsavel,
+        ].forEach((campo) => {
+          campo.disabled = usarPrincipal;
+          campo.required = !usarPrincipal;
+          if (usarPrincipal) campo.value = "";
+        });
+      }
+
+      elementos.formMensagem.addEventListener("submit", enviarMensagem);
+      elementos.formEstabelecimento.addEventListener(
+        "submit",
+        cadastrarNovoEstabelecimento,
+      );
+      elementos.novoEstabelecimentoEstado.addEventListener("change", () =>
+        carregarCidadesEstabelecimento(elementos.novoEstabelecimentoEstado.value),
+      );
+      elementos.novoEstabelecimentoCep.addEventListener("input", buscarCepEstabelecimento);
+      elementos.novoEstabelecimentoUsarResponsavelPrincipal.addEventListener(
+        "change",
+        () => configurarResponsavelEstabelecimento(
+          elementos.novoEstabelecimentoUsarResponsavelPrincipal.checked,
+        ),
+      );
+      elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        elementos.btnNovoAcesso.disabled = true;
+        elementos.btnNovoAcesso.textContent = "Entrando...";
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/entrar`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: elementos.emailNovoAcesso.value.trim().toLowerCase(),
+                telefone: elementos.telefoneNovoAcesso.value.trim(),
+              }),
+            },
+          );
+          const dados = await resposta.json();
+          if (!resposta.ok) throw new Error(dados.detail || "Não foi possível entrar.");
+          token = dados.acesso;
+          ClubbarSession.start(token);
+          window.location.href = "portal-lead-estabelecimentos.html";
+          return;
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnNovoAcesso.disabled = false;
+          elementos.btnNovoAcesso.textContent = "Confirmar";
+        }
+      });
+
+      elementos.btnEsqueciDados.addEventListener("click", () => {
+        elementos.emailRecuperarDados.value = elementos.emailNovoAcesso.value.trim();
+        elementos.formRecuperarDados.classList.toggle("hidden");
+        if (!elementos.formRecuperarDados.classList.contains("hidden")) {
+          elementos.emailRecuperarDados.focus();
+        }
+      });
+
+      elementos.formRecuperarDados.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        elementos.btnEnviarRecuperacao.disabled = true;
+        elementos.btnEnviarRecuperacao.textContent = "Enviando...";
+        try {
+          const resposta = await fetch(
+            `${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/recuperar-dados`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: elementos.emailRecuperarDados.value.trim().toLowerCase(),
+              }),
+            },
+          );
+          const dados = await resposta.json();
+          if (!resposta.ok) {
+            const detalhe = dados.detail;
+            const mensagem = Array.isArray(detalhe)
+              ? detalhe
+                  .map((item) => item.description || item.msg || JSON.stringify(item))
+                  .join(" ")
+              : detalhe && typeof detalhe === "object"
+                ? detalhe.description || detalhe.message || JSON.stringify(detalhe)
+                : detalhe || "Não foi possível enviar os dados.";
+            throw new Error(mensagem);
+          }
+          mostrarToast(dados.mensagem);
+          elementos.formRecuperarDados.classList.add("hidden");
+        } catch (erro) {
+          mostrarToast(erro.message, true);
+        } finally {
+          elementos.btnEnviarRecuperacao.disabled = false;
+          elementos.btnEnviarRecuperacao.textContent = "Enviar meu número de telefone";
+        }
+      });
+
+      document.querySelectorAll("[data-pagina]").forEach((botao) => {
+        botao.addEventListener("click", () => {
+          const destino = new URL("portal-lead.html", window.location.href);
+          destino.searchParams.set("tela", botao.dataset.pagina);
+          if (estabelecimentoSelecionadoId) {
+            destino.searchParams.set(
+              "leadestabelecimento_id",
+              estabelecimentoSelecionadoId,
+            );
+          }
+          window.location.href = destino.href;
+        });
+      });
+
+      document.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
+        botao.addEventListener("click", () => fecharModal(botao.closest(".modal")));
+      });
+
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.addEventListener("click", (evento) => {
+          if (evento.target === modal) fecharModal(modal);
+        });
+      });
+
+      document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape") {
+          fecharModal(document.querySelector(".modal:not(.hidden)"));
+        }
+      });
+
+      elementos.btnAceitarParceria.addEventListener("click", iniciarAceiteParceria);
+      elementos.btnVisualizarContrato.addEventListener("click", visualizarContrato);
+      elementos.btnDocumentosContratuais.addEventListener("click", () => {
+        const destino = new URL("contrato-assinado.html", window.location.href);
+        destino.searchParams.set("leadestabelecimento_id", estabelecimentoSelecionadoId);
+        window.location.href = destino.href;
+      });
+
+      document.querySelectorAll("[data-status]").forEach((botao) => {
+        botao.addEventListener("click", () =>
+          registrarStatus(botao.dataset.status),
+        );
+      });
+
+      elementos.estabelecimentoDecisao.addEventListener("change", async () => {
+        estabelecimentoSelecionadoId = Number(
+          elementos.estabelecimentoDecisao.value,
+        );
+        fluxoAceiteAberto = false;
+        await carregarResumo();
+        await Promise.all([
+          carregarMensagens(),
+          carregarAgendamentos(),
+          carregarMateriais(),
+        ]);
+      });
+
+      elementos.btnAtualizarPagina.addEventListener("click", () =>
+        window.location.reload(),
+      );
+
+      configurarResponsavelEstabelecimento(true);
+      carregarEstadosEstabelecimento();
+      iniciar();
+    </script>
+  </body>
+</html>
