@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suporte | Clubbar</title>
+    <meta
+      name="description"
+      content="Canais de suporte para os aplicativos e serviços Clubbar."
+    />
+    <link rel="icon" type="image/png" href="assets/images/coruja.png" />
+    <style>
+      :root {
+        --blue: #1683ff;
+        --gold: #dcae24;
+        --text: #202124;
+        --muted: #5f6368;
+        --line: #e0e3e7;
+        --surface: #ffffff;
+        --background: #f6f8fb;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      a { color: #0b67c7; }
+      header {
+        min-height: 68px;
+        padding: 10px max(20px, 7vw);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        background: #050505;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .brand img:first-child { width: 34px; height: 34px; object-fit: contain; }
+      .brand img:last-child { width: auto; height: 29px; object-fit: contain; }
+      .back-link {
+        padding: 8px 13px;
+        border: 1px solid #4d4d4d;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .back-link:hover { border-color: var(--gold); color: #ffe598; }
+      main { width: min(860px, calc(100% - 32px)); margin: 42px auto 56px; }
+      .intro {
+        padding: 34px;
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(135deg, #0f67c0, #1683ff);
+        color: #fff;
+      }
+      .intro h1 { margin: 0 0 8px; font-size: clamp(29px, 5vw, 42px); line-height: 1.12; }
+      .intro p { margin: 0; color: #eaf4ff; }
+      article {
+        padding: 34px;
+        border: 1px solid var(--line);
+        border-top: 0;
+        border-radius: 0 0 22px 22px;
+        background: var(--surface);
+        box-shadow: 0 14px 38px rgba(15, 42, 76, 0.08);
+      }
+      h2 { margin: 0 0 10px; color: #153c69; font-size: 22px; }
+      p { margin: 0 0 18px; }
+      .contacts { display: grid; gap: 14px; margin: 26px 0; }
+      .contact {
+        padding: 19px;
+        border: 1px solid #b9d7f7;
+        border-radius: 14px;
+        background: #f2f8ff;
+      }
+      .contact-label {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .contact a { font-weight: 700; font-size: 18px; }
+      .note {
+        padding: 16px 18px;
+        border-left: 4px solid var(--gold);
+        border-radius: 10px;
+        background: #fff9e9;
+      }
+      footer { padding: 25px 20px; text-align: center; color: #70757a; font-size: 13px; }
+      @media (max-width: 600px) {
+        header { padding: 10px 16px; }
+        .back-link { padding: 7px 10px; font-size: 13px; }
+        main { width: min(100% - 24px, 860px); margin: 20px auto 35px; }
+        .intro, article { padding: 24px 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html" aria-label="Página inicial do Clubbar">
+        <img src="assets/images/coruja.png" alt="" />
+        <img src="assets/images/logo.png" alt="Clubbar" />
+      </a>
+      <a class="back-link" href="index.html">Voltar ao site</a>
+    </header>
+
+    <main>
+      <section class="intro">
+        <h1>Suporte Clubbar</h1>
+        <p>Estamos à disposição para ajudar com os aplicativos e serviços Clubbar.</p>
+      </section>
+
+      <article>
+        <h2>Fale com o suporte</h2>
+        <p>Para dúvidas, problemas de acesso ou sugestões sobre o Clubbar QrCode Reader, entre em contato pelos canais abaixo.</p>
+
+        <div class="contacts">
+          <div class="contact">
+            <span class="contact-label">Responsável pelo suporte</span>
+            <strong>Luciana Corrêa</strong>
+          </div>
+          <div class="contact">
+            <span class="contact-label">E-mail</span>
+            <a href="mailto:suporte@clubbar.com.br">suporte@clubbar.com.br</a>
+          </div>
+          <div class="contact">
+            <span class="contact-label">Telefone</span>
+            <a href="tel:+5535999811045">(35) 99981-1045</a>
+          </div>
+        </div>
+
+        <div class="note">
+          Ao pedir suporte, informe o e-mail da conta e uma breve descrição do ocorrido. Não envie senhas, códigos de acesso ou dados de pagamento.
+        </div>
+      </article>
+    </main>
+
+    <footer>© 2026 Clubbar. Todos os direitos reservados.</footer>
+  </body>
+</html>
