@@ -1305,29 +1305,27 @@
         <div class="plan">
           <div class="plan-head">
             <h3>Plano Clubbar</h3>
-            <div class="badge">PLANO ÚNICO - SEM MENSALIDADE</div>
+            <div class="badge">PLANO CLUBBAR</div>
           </div>
           <div class="fees">
             <div class="fee">
               <div class="fee-title">
-                <strong id="taxaProduto">—</strong>
-                <h4>sobre a venda de produtos</h4>
+                <strong>Venda de produtos</strong>
+                <h4>Taxa aplicada sobre cada venda ou mensalidade</h4>
               </div>
               <p>
-                Taxa aplicada sobre a venda de produtos (exceto ingressos) e
-                cobrada do parceiro no momento do pagamento, utilizando a
-                tecnologia de split de valores do gateway Asaas, com repasse
-                imediato.
+                Taxa aplicada sobre cada venda ou mensalidade cobrada do
+                parceiro (negociável), com repasse imediato ao parceiro.
               </p>
             </div>
             <div class="fee">
               <div class="fee-title">
-                <strong id="taxaIngresso">—</strong>
-                <h4>de taxa de conveniência na venda de ingressos</h4>
+                <strong>Venda de ingressos</strong>
+                <h4>Taxa de conveniência de 5% a 10%</h4>
               </div>
               <p id="regraTaxaIngresso">
-                Taxa aplicada sobre a venda de ingressos, no valor mínimo de R$
-                2,99, cobrada do cliente final.
+                Taxa de conveniência de 5% a 10% (negociável com o parceiro),
+                no valor mínimo de R$ 2,99, cobrada do cliente final.
               </p>
             </div>
           </div>
@@ -1436,13 +1434,13 @@
         if (botaoPlano) {
           const textoTaxas = document.createElement("div");
           textoTaxas.className = "fees-label";
-          textoTaxas.textContent = "Plano Único Clubbar";
+          textoTaxas.textContent = "Plano Clubbar";
           botaoPlano.replaceWith(textoTaxas);
           taxasCard.prepend(textoTaxas);
           const condicoesPlano = document.createElement("p");
           condicoesPlano.className = "plan-terms-note";
           condicoesPlano.textContent =
-            "Sem mensalidade e sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).";
+            "Sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).";
           textoTaxas.after(condicoesPlano);
         }
         planoSecao?.remove();
@@ -1458,20 +1456,6 @@
       const aplicativos = document.querySelector(".app-showcase");
       const plano = document.getElementById("plano");
       if (aplicativos && plano) plano.after(aplicativos);
-      fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/taxas-padrao/vigente`)
-        .then((r) => {
-          if (!r.ok) throw new Error();
-          return r.json();
-        })
-        .then((t) => {
-          document.getElementById("taxaProduto").textContent =
-            `${Number(t.pctaxaproduto).toLocaleString("pt-BR")}%`;
-          document.getElementById("taxaIngresso").textContent =
-            `${Number(t.pctaxaingresso).toLocaleString("pt-BR")}%`;
-          document.getElementById("regraTaxaIngresso").textContent =
-            `Taxa aplicada sobre a venda de ingressos, no valor mínimo de ${Number(t.vrtaxaminimaingresso).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}, cobrada do cliente final.`;
-        })
-        .catch(() => {});
     </script>
   </body>
 </html>
