@@ -419,11 +419,9 @@
       }
       .fee strong {
         color: var(--gold);
-        font-size: 31px;
+        font-size: 27px;
         line-height: 1;
-      }
-      .fee h4 {
-        font-size: 17px;
+        white-space: nowrap;
       }
       .fee p {
         color: #bbb;
@@ -1311,7 +1309,6 @@
             <div class="fee">
               <div class="fee-title">
                 <strong>Venda de produtos</strong>
-                <h4>Taxa aplicada sobre cada venda ou mensalidade</h4>
               </div>
               <p>
                 Taxa aplicada sobre cada venda ou mensalidade cobrada do
@@ -1321,7 +1318,6 @@
             <div class="fee">
               <div class="fee-title">
                 <strong>Venda de ingressos</strong>
-                <h4>Taxa de conveniência de 5% a 10%</h4>
               </div>
               <p id="regraTaxaIngresso">
                 Taxa de conveniência de 5% a 10% (negociável com o parceiro),
@@ -1441,7 +1437,7 @@
           condicoesPlano.className = "plan-terms-note";
           condicoesPlano.textContent =
             "Sem carência (cancelamento do contrato a qualquer momento com antecedência mínima de 30 dias).";
-          textoTaxas.after(condicoesPlano);
+          taxasCard.append(condicoesPlano);
         }
         planoSecao?.remove();
       }
