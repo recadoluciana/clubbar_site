@@ -755,20 +755,6 @@
         font-weight: 700;
         cursor: pointer;
       }
-      .logout-link {
-        display: none;
-        border: 1px solid #c62828;
-        background: #c62828;
-        cursor: pointer;
-      }
-      .logout-link.show {
-        display: inline-flex;
-      }
-      .logout-link:hover {
-        background: #a91f1f;
-        border-color: #a91f1f;
-        color: #fff;
-      }
       .topbar-control svg {
         width: 17px;
         height: 17px;
@@ -1064,20 +1050,7 @@
   </head>
   <body>
     <header>
-      <div class="topbar-side topbar-left">
-        <button
-          class="topbar-control logout-link"
-          id="logoutIndex"
-          type="button"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M10 17l5-5-5-5"></path>
-            <path d="M15 12H3"></path>
-            <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"></path>
-          </svg>
-          <span>Sair</span>
-        </button>
-      </div>
+      <div class="topbar-side topbar-left"></div>
       <a class="header-brand" href="index.html"
         ><img class="brand-owl" src="assets/images/coruja.png" alt="" /><img
           class="brand-logo"
@@ -1371,14 +1344,6 @@
       const recoveryDialog = document.getElementById("recoveryDialog");
       document.querySelector(".not-received")?.remove();
       recoveryDialog?.remove();
-      const logoutIndex = document.getElementById("logoutIndex");
-      if (sessionStorage.getItem("clubbar_portal_lead_token"))
-        logoutIndex.classList.add("show");
-      logoutIndex.onclick = () => {
-        sessionStorage.removeItem("clubbar_portal_lead_token");
-        sessionStorage.removeItem("clubbar_portal_lead_activity");
-        logoutIndex.classList.remove("show");
-      };
       document.querySelector(".hero h1")?.remove();
       document.querySelector(".hero p")?.remove();
       
