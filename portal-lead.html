@@ -1686,7 +1686,6 @@
       let fluxoAceiteAberto = false;
       let contratoAcaoId = null;
       let contratoEdicaoId = null;
-      let implantacaoVerificada = false;
 
       if (token && !paginaAtual && !estabelecimentoSelecionadoId) {
         window.location.replace("portal-lead-estabelecimentos.html");
@@ -1923,33 +1922,6 @@
         const parceriaAceita =
           estabelecimento.status === "ACEITOU_PARCERIA" ||
           estabelecimento.status === "CONVERTIDO";
-        const contratoOriginalResumo = contratos.find(
-          (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
-        );
-        const cobrancaResumo = contratoOriginalResumo?.cobranca_implantacao;
-        if (
-          parceriaAceita &&
-          contratoOriginalResumo &&
-          cobrancaResumo?.status === "PENDENTE" &&
-          !implantacaoVerificada
-        ) {
-          implantacaoVerificada = true;
-          const retornoAsaas =
-            parametrosPagina.get("gateway") === "asaas" ||
-            parametrosPagina.get("pagamento") === "sucesso" ||
-            parametrosPagina.has("checkout_id");
-          const tentativas = retornoAsaas ? 5 : 1;
-          for (let tentativa = 0; tentativa < tentativas; tentativa += 1) {
-            const cobrancaAtualizada = await api(
-              `/portal-parceiro/contratos/${contratoOriginalResumo.leadestabelecimentocontrato_id}/implantacao`,
-            );
-            contratoOriginalResumo.cobranca_implantacao = cobrancaAtualizada;
-            if (["PAGA", "ISENTA"].includes(cobrancaAtualizada.status)) break;
-            if (tentativa < tentativas - 1) {
-              await new Promise((resolve) => setTimeout(resolve, 1200));
-            }
-          }
-        }
         document.getElementById("textoDecisao").classList.toggle(
           "hidden",
           parceriaAceita,
@@ -1961,16 +1933,6 @@
         if (parceriaAceita) {
           fluxoAceiteAberto = false;
           elementos.contratoEstabelecimento.classList.remove("hidden");
-          const contratoOriginal = contratos.find(
-            (item) => item.tipoinstrumento !== "RETIFICACAO" && item.status === "ACEITO",
-          ) || contrato;
-          const cobrancaImplantacao = contratoOriginal?.cobranca_implantacao;
-          const implantacaoIsenta = cobrancaImplantacao?.status === "ISENTA";
-          const implantacaoPaga = cobrancaImplantacao?.status === "PAGA";
-          const implantacaoLiberada =
-            Number(contratoOriginal?.vrimplantacao || 0) <= 0 ||
-            implantacaoPaga ||
-            implantacaoIsenta;
           const celebracao = document.createElement("div");
           celebracao.className = "partnership-celebration";
           const icone = document.createElement("span");
@@ -1979,9 +1941,7 @@
           const titulo = document.createElement("h3");
           titulo.textContent = "Parceria aceita!";
           const mensagem = document.createElement("p");
-          mensagem.textContent = implantacaoLiberada
-            ? "Você receberá um e-mail com os dados para acesso ao Clubbar Partner."
-            : "Agora falta somente concluir o pagamento da implantação.";
+          mensagem.textContent = "Você receberá um e-mail com os dados para acesso ao Clubbar Partner.";
           const linkPartner = document.createElement("a");
           linkPartner.className = "btn-primary";
           linkPartner.href = CLUBBAR_CONFIG.PARTNER_URL;
@@ -1989,42 +1949,8 @@
           linkPartner.rel = "noopener noreferrer";
           linkPartner.textContent = "Acessar Clubbar Partner ↗";
           celebracao.append(icone, titulo, mensagem);
-          if (implantacaoIsenta) {
-            const avisoIsencao = document.createElement("div");
-            avisoIsencao.className = "implantation-exemption-badge";
-            avisoIsencao.textContent = "✓ Taxa de implantação isenta";
-            celebracao.append(avisoIsencao);
-          } else if (implantacaoPaga) {
-            const avisoPagamento = document.createElement("div");
-            avisoPagamento.className = "implantation-exemption-badge paid";
-            avisoPagamento.textContent = "✓ Taxa de implantação paga";
-            celebracao.append(avisoPagamento);
-          }
-          if (implantacaoLiberada) celebracao.append(linkPartner);
+          celebracao.append(linkPartner);
           elementos.contratoEstabelecimento.append(celebracao);
-          if (!implantacaoLiberada && contratoOriginal) {
-            const pagamento = document.createElement("div");
-            pagamento.style.cssText =
-              "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:16px;background:#f5f9ff";
-            const tituloPagamento = document.createElement("strong");
-            tituloPagamento.textContent = `Implantação — ${Number(contratoOriginal.vrimplantacao || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
-            const descricaoPagamento = document.createElement("p");
-            descricaoPagamento.textContent =
-              "Pague com Pix ou cartão no ambiente seguro do Asaas. Este pagamento não altera o aceite da parceria já registrado.";
-            pagamento.append(tituloPagamento, descricaoPagamento);
-            const pagar = document.createElement("button");
-            pagar.type = "button";
-            pagar.className = "decision-button accept";
-            pagar.textContent = "Pagar taxa de implantação no Asaas";
-            pagar.addEventListener("click", () =>
-              abrirPagamentoImplantacao(
-                contratoOriginal.leadestabelecimentocontrato_id,
-                pagar,
-              ),
-            );
-            pagamento.append(pagar);
-            elementos.contratoEstabelecimento.append(pagamento);
-          }
         }
         elementos.contratoEstabelecimento.classList.toggle(
           "hidden",
@@ -2063,37 +1989,6 @@
             aceitarContrato.textContent = "Li e aceito o contrato";
             aceitarContrato.addEventListener("click", iniciarAceiteParceria);
             cardContrato.append(document.createElement("br"), aceitarContrato);
-          }
-          const cobranca = contrato.cobranca_implantacao;
-          const implantacaoLiberada =
-            cobranca?.status === "PAGA" || cobranca?.status === "ISENTA";
-          if (contrato.status === "ACEITO") {
-            const pagamento = document.createElement("div");
-            pagamento.style.cssText =
-              "margin-top:14px;padding:16px;border:1px solid #d7e8ff;border-radius:16px;background:#f5f9ff";
-            const tituloPagamento = document.createElement("strong");
-            tituloPagamento.textContent = implantacaoLiberada
-              ? cobranca.status === "ISENTA" ? "Implantação isenta" : "Implantação paga"
-              : `Taxa única de implantação — ${Number(contrato.vrimplantacao || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
-            const descricaoPagamento = document.createElement("p");
-            descricaoPagamento.textContent = implantacaoLiberada
-              ? "Pagamento confirmado. A parceria já pode ser concluída."
-              : "Pague com Pix ou cartão no ambiente seguro do Asaas para liberar a implantação.";
-            pagamento.append(tituloPagamento, descricaoPagamento);
-            if (!implantacaoLiberada) {
-              const pagar = document.createElement("button");
-              pagar.type = "button";
-              pagar.className = "decision-button accept";
-              pagar.textContent = "Pagar taxa de implantação no Asaas";
-              pagar.addEventListener("click", () =>
-                abrirPagamentoImplantacao(
-                  contrato.leadestabelecimentocontrato_id,
-                  pagar,
-                ),
-              );
-              pagamento.append(pagar);
-            }
-            cardContrato.append(pagamento);
           }
           elementos.contratoEstabelecimento.append(cardContrato);
         } else if (!parceriaAceita && fluxoAceiteAberto) {
@@ -2504,31 +2399,6 @@
         }
       }
 
-      async function abrirPagamentoImplantacao(contratoId, botao) {
-        const textoOriginal = botao.textContent;
-        botao.disabled = true;
-        botao.textContent = "Preparando pagamento...";
-        try {
-          const cobranca = await api(`/portal-parceiro/contratos/${contratoId}/implantacao`);
-          if (cobranca.status === "PAGA" || cobranca.status === "ISENTA") {
-            await carregarResumo();
-            mostrarToast(
-              cobranca.status === "PAGA"
-                ? "Pagamento confirmado com sucesso."
-                : "Taxa de implantação isenta.",
-            );
-            return;
-          }
-          if (!cobranca.checkout_url) {
-            throw new Error("Não foi possível abrir o pagamento no Asaas.");
-          }
-          window.location.href = cobranca.checkout_url;
-        } catch (erro) {
-          mostrarToast(erro.message, true);
-          botao.disabled = false;
-          botao.textContent = textoOriginal;
-        }
-      }
 
       async function carregarCidadesEstabelecimento(estadoId) {
         elementos.novoEstabelecimentoCidade.disabled = true;
