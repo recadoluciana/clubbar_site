@@ -1389,7 +1389,9 @@
         </p>
         <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
           <input id="documentoNovoAcesso" required placeholder="CPF ou CNPJ" aria-label="CPF ou CNPJ" autocomplete="off" maxlength="25" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <p id="ajudaCodigo" class="hidden">Enviamos um código para o e-mail cadastrado, se houver uma conta para esse documento.</p>
+          <p id="ajudaEmail" class="hidden">Este documento está em mais de uma conta. Informe o e-mail cadastrado na conta que deseja acessar.</p>
+          <input id="emailContaAcesso" class="hidden" type="email" placeholder="E-mail da conta" aria-label="E-mail da conta" autocomplete="email" maxlength="160" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <p id="ajudaCodigo" class="hidden">Se os dados corresponderem a uma conta, enviaremos um código ao e-mail cadastrado. Verifique também a caixa de spam.</p>
           <input id="codigoNovoAcesso" class="hidden" placeholder="Código de 8 dígitos" aria-label="Código de acesso" inputmode="numeric" autocomplete="one-time-code" maxlength="8" pattern="[0-9]{8}" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Receber código</button>
           <button class="forgot-button hidden" id="btnTrocarDocumento" type="button">Usar outro documento</button>
@@ -1628,6 +1630,8 @@
         formNovoAcesso: document.getElementById("formNovoAcesso"),
         documentoNovoAcesso: document.getElementById("documentoNovoAcesso"),
         codigoNovoAcesso: document.getElementById("codigoNovoAcesso"),
+        emailContaAcesso: document.getElementById("emailContaAcesso"),
+        ajudaEmail: document.getElementById("ajudaEmail"),
         ajudaCodigo: document.getElementById("ajudaCodigo"),
         btnTrocarDocumento: document.getElementById("btnTrocarDocumento"),
         btnNovoAcesso: document.getElementById("btnNovoAcesso"),
@@ -2632,9 +2636,16 @@
         ),
       );
       let aguardandoCodigo = false;
+      let aguardandoEmail = false;
       elementos.btnTrocarDocumento.addEventListener("click", () => {
         aguardandoCodigo = false;
+        aguardandoEmail = false;
         elementos.documentoNovoAcesso.readOnly = false;
+        elementos.emailContaAcesso.value = "";
+        elementos.emailContaAcesso.readOnly = false;
+        elementos.emailContaAcesso.required = false;
+        elementos.emailContaAcesso.classList.add("hidden");
+        elementos.ajudaEmail.classList.add("hidden");
         elementos.codigoNovoAcesso.value = "";
         elementos.codigoNovoAcesso.required = false;
         elementos.codigoNovoAcesso.classList.add("hidden");
@@ -2651,12 +2662,23 @@
         try {
           const rota = aguardandoCodigo ? "confirmar-codigo" : "solicitar-codigo";
           const corpo = { documento };
+          if (aguardandoEmail) corpo.email = elementos.emailContaAcesso.value.trim();
           if (aguardandoCodigo) corpo.codigo = elementos.codigoNovoAcesso.value.trim();
           const resposta = await fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/${rota}`, {
             method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo),
           });
           const dados = await resposta.json();
           if (!resposta.ok) throw new Error(typeof dados.detail === "string" ? dados.detail : "Confira os dados informados.");
+          if (dados.requer_email && !aguardandoCodigo) {
+            aguardandoEmail = true;
+            elementos.documentoNovoAcesso.readOnly = true;
+            elementos.emailContaAcesso.required = true;
+            elementos.emailContaAcesso.classList.remove("hidden");
+            elementos.ajudaEmail.classList.remove("hidden");
+            elementos.btnTrocarDocumento.classList.remove("hidden");
+            elementos.emailContaAcesso.focus();
+            return;
+          }
           if (aguardandoCodigo) {
             ClubbarSession.start(dados.acesso);
             window.location.href = "portal-lead-estabelecimentos.html";
@@ -2664,6 +2686,7 @@
           }
           aguardandoCodigo = true;
           elementos.documentoNovoAcesso.readOnly = true;
+          elementos.emailContaAcesso.readOnly = aguardandoEmail;
           elementos.codigoNovoAcesso.required = true;
           elementos.codigoNovoAcesso.classList.remove("hidden");
           elementos.ajudaCodigo.classList.remove("hidden");
