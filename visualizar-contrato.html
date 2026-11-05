@@ -208,7 +208,7 @@
 
       function texto(valor) { return String(valor ?? "").trim() || "Não informado"; }
       function moeda(valor) { const numero = Number(valor); return Number.isFinite(numero) ? numero.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : texto(valor); }
-      function tipo(valor) { return { BAR: "Bar", CASA_NOTURNA: "Casa noturna", PRODUTOR_EVENTOS: "Produtor de eventos", CASA_EVENTOS: "Casa de eventos", RESTAURANTE: "Restaurante", CONVENIENCIA: "Conveniência" }[valor] || texto(valor); }
+      function tipo(valor) { return { BAR: "Bar", CASA_NOTURNA: "Casa noturna", PRODUTOR_EVENTOS: "Produtora de eventos", CASA_EVENTOS: "Casa de eventos", RESTAURANTE: "Restaurante", CONVENIENCIA: "Conveniência" }[valor] || texto(valor); }
       function venda(valor) { return { PRODUTOS: "Somente produtos", INGRESSOS: "Somente ingressos", AMBOS: "Produtos e ingressos" }[valor] || texto(valor); }
       function dataHora(valor) { if (!valor) return ""; const data = new Date(valor); return Number.isNaN(data.getTime()) ? texto(valor) : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(data); }
       function campo(rotulo, valor, opcoes = {}) {
@@ -224,7 +224,7 @@
         div.append(label, input); return div;
       }
 
-      const tipos = [["BAR", "Bar"], ["CASA_NOTURNA", "Casa noturna"], ["PRODUTOR_EVENTOS", "Produtor de eventos"], ["CASA_EVENTOS", "Casa de eventos"], ["RESTAURANTE", "Restaurante"], ["CONVENIENCIA", "Conveniência"]];
+      const tipos = [["BAR", "Bar"], ["CASA_NOTURNA", "Casa noturna"], ["PRODUTOR_EVENTOS", "Produtora de eventos"], ["CASA_EVENTOS", "Casa de eventos"], ["RESTAURANTE", "Restaurante"], ["CONVENIENCIA", "Conveniência"]];
       const vendas = [["PRODUTOS", "Somente produtos"], ["INGRESSOS", "Somente ingressos"], ["AMBOS", "Produtos e ingressos"]];
       let estabelecimentoAtual = null;
       let ultimoCepConsultado = "";
@@ -265,16 +265,21 @@
         const telefone = estabelecimento.telefone_responsavel || estabelecimento.telefone || resumo.telefone || "";
         el.dadosEstabelecimento.replaceChildren();
         const cardDados = document.createElement("section"); cardDados.className = "edit-card";
-        cardDados.innerHTML = "<h3>Dados do estabelecimento</h3><div class='edit-grid'></div>";
+        cardDados.innerHTML = `<h3>Dados ${estabelecimento.tipo === "PRODUTOR_EVENTOS" ? "da produtora de eventos" : "do estabelecimento"}</h3><div class='edit-grid'></div>`;
         const dadosGrid = cardDados.querySelector(".edit-grid");
         dadosGrid.append(
-          campo("E-mail", estabelecimento.email_responsavel || estabelecimento.email || resumo.email, { campo:"email", type:"email", disabled:true }),
+          campo(estabelecimento.tipo === "PRODUTOR_EVENTOS" ? "Nome da produtora de eventos" : "Nome do estabelecimento", estabelecimento.nmestabelecimento, { campo:"nmestabelecimento", full:true }),
+          campo("E-mail de contato", estabelecimento.email_responsavel || estabelecimento.email || resumo.email, { campo:"email_responsavel", type:"email" }),
           campo("Telefone", telefone, { campo:"telefone_responsavel", type:"tel" }),
           campo("Responsável", estabelecimento.nmresponsavel || resumo.nmresponsavel, { campo:"nmresponsavel" }),
           campo("CPF/CNPJ", estabelecimento.cpfcnpj, { campo:"cpfcnpj" }),
           campo("Tipo de estabelecimento", estabelecimento.tipo, { campo:"tipo", select:true, options:tipos }),
           campo("O que deseja vender", estabelecimento.tipovenda, { campo:"tipovenda", select:true, options:vendas }),
         );
+        const avisoEmail = document.createElement("p");
+        avisoEmail.className = "readonly-note";
+        avisoEmail.textContent = "Este e-mail é o contato da unidade. O e-mail usado para acessar o portal não é alterado aqui.";
+        cardDados.append(avisoEmail);
         const cardEndereco = document.createElement("section"); cardEndereco.className = "edit-card";
         cardEndereco.innerHTML = "<h3>Endereço</h3><div class='edit-grid'></div>";
         const enderecoGrid = cardEndereco.querySelector(".edit-grid");
@@ -305,10 +310,22 @@
 
       async function salvarDados() {
         const valor = campo => el.dadosEstabelecimento.querySelector(`[data-campo="${campo}"]`)?.value || null;
+        const nome = el.dadosEstabelecimento.querySelector('[data-campo="nmestabelecimento"]');
+        if (nome.value.trim().length < 2) {
+          mostrarToast("Informe o nome com pelo menos dois caracteres.");
+          nome.focus();
+          return;
+        }
+        const email = el.dadosEstabelecimento.querySelector('[data-campo="email_responsavel"]');
+        if (!email.value.trim() || !email.checkValidity()) {
+          mostrarToast("Informe um e-mail de contato válido.");
+          email.focus();
+          return;
+        }
         el.salvarDados.disabled = true; el.salvarDados.textContent = "Salvando...";
         try {
           await consultarCep();
-          await api(`/portal-parceiro/estabelecimentos/${estabelecimentoId}`, { method:"PATCH", body: JSON.stringify({ nmresponsavel:valor("nmresponsavel"), telefone_responsavel:valor("telefone_responsavel"), tipo:valor("tipo"), tipovenda:valor("tipovenda"), cpfcnpj:valor("cpfcnpj"), estado_id:Number(valor("estado_id")), cidade_id:Number(valor("cidade_id")), cep:(valor("cep") || "").replace(/\D/g, ""), endereco:valor("endereco"), numero:valor("numero"), complemento:valor("complemento"), bairro:valor("bairro") }) });
+          await api(`/portal-parceiro/estabelecimentos/${estabelecimentoId}`, { method:"PATCH", body: JSON.stringify({ nmestabelecimento:nome.value.trim(), nmresponsavel:valor("nmresponsavel"), telefone_responsavel:valor("telefone_responsavel"), email_responsavel:valor("email_responsavel").trim(), tipo:valor("tipo"), tipovenda:valor("tipovenda"), cpfcnpj:valor("cpfcnpj"), estado_id:Number(valor("estado_id")), cidade_id:Number(valor("cidade_id")), cep:(valor("cep") || "").replace(/\D/g, ""), endereco:valor("endereco"), numero:valor("numero"), complemento:valor("complemento"), bairro:valor("bairro") }) });
           mostrarToast("Informações salvas com sucesso.", true);
           setTimeout(() => { window.location.href = el.voltar.href; }, 1000);
         } catch (erro) {
@@ -351,7 +368,7 @@
             );
           }
           el.nomeLead.textContent = `Lead #${resumo.leadparceiro_id || ""} ${resumo.nmresponsavel || ""}`.trim();
-          el.tituloEstabelecimento.textContent = `Estabelecimento: ${texto(estabelecimento.nmestabelecimento)}`;
+          el.tituloEstabelecimento.textContent = `${estabelecimento.tipo === "PRODUTOR_EVENTOS" ? "Produtora de eventos" : "Estabelecimento"}: ${texto(estabelecimento.nmestabelecimento)}`;
           estabelecimentoAtual = estabelecimento;
           renderizarDados(estabelecimento, resumo);
           el.tituloContrato.textContent =
