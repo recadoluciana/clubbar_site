@@ -978,17 +978,15 @@
               m = d.detail.map((x) => x.msg).join(" ");
             throw new Error(m);
           }
-          if (!d.acesso_portal) {
-            throw new Error(
-              "Cadastro realizado, mas a API não retornou o acesso ao portal.",
-            );
-          }
-
-          prepararPortal(d.acesso_portal);
+          // Após o cadastro, o acesso é confirmado por código enviado por e-mail.
+          sessionStorage.removeItem("clubbar_portal_lead_token");
+          sessionStorage.removeItem("clubbar_portal_lead_activity");
+          window.location.href = "portal-lead.html?cadastro=concluido";
         } catch (err) {
           const detalhe = String(err.message || "");
           if (detalhe.includes("já está cadastrad")) {
             const motivos = [];
+            if (detalhe.includes("CPF") || detalhe.includes("CNPJ")) motivos.push("O CPF ou CNPJ já está cadastrado.");
             if (detalhe.includes("empresa")) motivos.push("O nome da empresa já está cadastrado.");
             if (detalhe.includes("e-mail")) motivos.push("O e-mail já está cadastrado.");
             if (detalhe.includes("telefone")) motivos.push("O telefone já está cadastrado.");
