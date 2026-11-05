@@ -986,8 +986,14 @@
 
           prepararPortal(d.acesso_portal);
         } catch (err) {
-          if (err.message.includes("já está cadastrada") || err.message.includes("já está cadastrado")) {
-            toast('Cadastro não realizado.<br><br>Esta empresa já se encontra cadastrada. Para acessar seu painel de atendimento, clique no botão abaixo.<br><br><a class="toast-action" href="portal-lead.html">Já tenho cadastro. Faça login e prossiga.</a>', "err");
+          const detalhe = String(err.message || "");
+          if (detalhe.includes("já está cadastrad")) {
+            const motivos = [];
+            if (detalhe.includes("empresa")) motivos.push("O nome da empresa já está cadastrado.");
+            if (detalhe.includes("e-mail")) motivos.push("O e-mail já está cadastrado.");
+            if (detalhe.includes("telefone")) motivos.push("O telefone já está cadastrado.");
+            const orientacao = 'Se você já possui cadastro, acesse o portal para adicionar outro estabelecimento ou produtora.';
+            toast(`${motivos.join("<br>") || "Já existe um cadastro com esses dados."}<br><br>${orientacao}<br><br><a class="toast-action" href="portal-lead.html">Acessar meu cadastro</a>`, "err");
           } else {
             toast(err.message || "Erro inesperado.", "err");
           }
