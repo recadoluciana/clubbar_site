@@ -1389,8 +1389,9 @@
           Clubbar.
         </p>
         <form id="formNovoAcesso" style="margin-top:18px;display:grid;gap:10px">
-          <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
-          <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <input id="emailNovoAcesso" type="email" required placeholder="E-mail usado no cadastro" aria-label="E-mail usado no cadastro" autocomplete="email" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
+          <label for="telefoneNovoAcesso" style="text-align:left;font-size:14px">Telefone cadastrado com DDD</label>
+          <input id="telefoneNovoAcesso" type="tel" required placeholder="Telefone com DDD, não é senha" autocomplete="tel" inputmode="tel" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Confirmar</button>
           <button class="forgot-button" id="btnEsqueciDados" type="button">Esqueci meus dados</button>
         </form>
@@ -2636,6 +2637,12 @@
       );
       elementos.formNovoAcesso.addEventListener("submit", async (evento) => {
         evento.preventDefault();
+        const telefone = elementos.telefoneNovoAcesso.value.replace(/\D/g, "");
+        if (![10, 11].includes(telefone.length)) {
+          mostrarToast("Informe o telefone cadastrado com DDD (10 ou 11 dígitos). Este campo não é uma senha.", true);
+          elementos.telefoneNovoAcesso.focus();
+          return;
+        }
         elementos.btnNovoAcesso.disabled = true;
         elementos.btnNovoAcesso.textContent = "Entrando...";
         try {
@@ -2646,12 +2653,25 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 email: elementos.emailNovoAcesso.value.trim().toLowerCase(),
-                telefone: elementos.telefoneNovoAcesso.value.trim(),
+                telefone,
               }),
             },
           );
           const dados = await resposta.json();
-          if (!resposta.ok) throw new Error(dados.detail || "Não foi possível entrar.");
+          if (!resposta.ok) {
+            const detalhe = dados.detail;
+            let mensagem = "Não foi possível entrar. Confira os dados e tente novamente.";
+            if (typeof detalhe === "string" && detalhe.trim()) mensagem = detalhe;
+            else if (Array.isArray(detalhe)) {
+              const campos = detalhe.flatMap((item) => Array.isArray(item.loc) ? item.loc : []);
+              if (campos.includes("telefone")) mensagem = "Informe o telefone cadastrado com DDD.";
+              else if (campos.includes("email")) mensagem = "Informe um e-mail válido.";
+            } else if (detalhe && typeof detalhe === "object") {
+              const descricao = detalhe.description || detalhe.message || detalhe.msg;
+              if (typeof descricao === "string" && descricao.trim()) mensagem = descricao;
+            }
+            throw new Error(mensagem);
+          }
           token = dados.acesso;
           ClubbarSession.start(token);
           window.location.href = "portal-lead-estabelecimentos.html";
