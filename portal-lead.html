@@ -1395,7 +1395,7 @@
           <input id="codigoNovoAcesso" class="hidden" placeholder="Código de 8 dígitos" aria-label="Código de acesso" inputmode="numeric" autocomplete="one-time-code" maxlength="8" pattern="[0-9]{8}" style="min-height:48px;padding:12px;border:1px solid #ddd;border-radius:10px" />
           <button class="btn-primary" id="btnNovoAcesso" type="submit">Receber código</button>
           <button class="forgot-button hidden" id="btnTrocarDocumento" type="button">Usar outro documento</button>
-          <p class="recovery-help">Sem acesso ao e-mail cadastrado? Entre em contato com o suporte Clubbar.</p>
+          <p class="recovery-help">Sem acesso ao e-mail cadastrado? <a href="https://wa.me/5535999811045?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20para%20acessar%20o%20portal%20Clubbar." target="_blank" rel="noopener noreferrer">Entre em contato com o suporte Clubbar pelo WhatsApp</a>.</p>
         </form>
       </div>
     </section>
@@ -2699,6 +2699,9 @@
           elementos.emailContaAcesso.readOnly = aguardandoEmail;
           elementos.codigoNovoAcesso.required = true;
           elementos.codigoNovoAcesso.classList.remove("hidden");
+          elementos.ajudaCodigo.textContent = dados.email_mascarado
+            ? `Enviamos o código para ${dados.email_mascarado}. Verifique também a caixa de spam.`
+            : "Se os dados corresponderem a uma conta, enviaremos um código ao e-mail cadastrado. Verifique também a caixa de spam.";
           elementos.ajudaCodigo.classList.remove("hidden");
           elementos.btnTrocarDocumento.classList.remove("hidden");
           elementos.codigoNovoAcesso.focus();
