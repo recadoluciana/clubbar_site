@@ -193,11 +193,15 @@
         });
         const dados = await resposta.json().catch(() => ({}));
         if (!resposta.ok) {
-          throw new Error(
-            typeof dados.detail === "string"
-              ? dados.detail
-              : "Não foi possível carregar o contrato.",
-          );
+          const detalhes = dados.detail;
+          const campos = { cpfcnpj: "CPF ou CNPJ", nmestabelecimento: "Nome", email_responsavel: "E-mail", telefone_responsavel: "Telefone", estado_id: "Estado", cidade_id: "Cidade", cep: "CEP", endereco: "Endereço", numero: "Número", bairro: "Bairro" };
+          const primeiroErro = Array.isArray(detalhes) ? detalhes[0] : null;
+          const campoErro = primeiroErro?.loc?.at(-1);
+          const mensagem = typeof detalhes === "string" ? detalhes
+            : campoErro === "cpfcnpj" ? "Informe um CPF com 11 dígitos ou um CNPJ com 14 posições."
+            : campoErro ? `Verifique o campo ${campos[campoErro] || campoErro}.`
+            : "Não foi possível concluir a operação. Tente novamente.";
+          throw new Error(mensagem);
         }
         return dados;
       }
@@ -316,6 +320,13 @@
         if (!email.value.trim() || !email.checkValidity()) {
           mostrarToast("Informe um e-mail de contato válido.");
           email.focus();
+          return;
+        }
+        const documento = el.dadosEstabelecimento.querySelector('[data-campo="cpfcnpj"]');
+        const documentoNormalizado = documento.value.replace(/[.\/\-\s]/g, "").toUpperCase();
+        if (!/^(\d{11}|[A-Z0-9]{12}\d{2})$/.test(documentoNormalizado)) {
+          mostrarToast("Informe um CPF com 11 dígitos ou um CNPJ com 14 posições.");
+          documento.focus();
           return;
         }
         el.salvarDados.disabled = true; el.salvarDados.textContent = "Salvando...";
