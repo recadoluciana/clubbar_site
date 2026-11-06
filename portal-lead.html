@@ -1854,10 +1854,10 @@
         const unidadeAtual = (resumo.estabelecimentos || []).find(
           item => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
         );
-        const retificacaoPendente = (unidadeAtual?.contratos || []).some(
+        const possuiRetificacaoPendente = (unidadeAtual?.contratos || []).some(
           item => item.tipoinstrumento === "RETIFICACAO" && ["RASCUNHO", "ENVIADO"].includes(item.status),
         );
-        if (!paginaAtual && unidadeAtual && ["ACEITOU_PARCERIA", "CONVERTIDO"].includes(unidadeAtual.status) && !retificacaoPendente) {
+        if (!paginaAtual && unidadeAtual && ["ACEITOU_PARCERIA", "CONVERTIDO"].includes(unidadeAtual.status) && !possuiRetificacaoPendente) {
           window.location.replace("portal-lead-estabelecimentos.html");
           return;
         }
