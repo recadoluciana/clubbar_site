@@ -221,6 +221,14 @@
         <p>Informe os dados abaixo para revisar o contrato e assinar. Se cancelar, a assinatura será encerrada.</p>
         <label>CPF ou CNPJ <input id="documentoAssinatura" required maxlength="18" inputmode="text" autocapitalize="characters" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
         <label>Nome completo ou razão social <input id="nomeAssinatura" required minlength="2" maxlength="160" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        <div id="planoComercial" hidden>
+          <label>Modalidade do contrato <select id="modalidadeComercial" style="display:block;width:100%;padding:10px;box-sizing:border-box">
+            <option value="">Selecione</option>
+            <option value="EXPERIENCIA">Três meses gratuitos; mensalidade negociada depois</option>
+            <option value="MENSALIDADE">Mensalidade negociada desde o início</option>
+          </select></label>
+          <label id="linhaMensalidade" hidden>Mensalidade acordada (R$) <input id="mensalidadeAcordada" type="number" min="0.01" max="99999999.99" step="0.01" style="display:block;width:100%;padding:10px;box-sizing:border-box"></label>
+        </div>
         <p id="erroPreenchimento" role="alert" style="color:#b42318"></p>
         <button class="button" type="submit">Continuar para o contrato</button>
         <button class="button secondary" id="cancelarPreenchimento" type="button">Cancelar e fechar</button>
@@ -334,13 +342,27 @@
         el.pagamento.append(concluir);
       }
 
-      function solicitarDados(dados) {
+      function solicitarDados(dados, requerPlano = false) {
         const dialog = document.getElementById("completarDados");
         const form = document.getElementById("formDadosContrato");
         const documento = document.getElementById("documentoAssinatura");
         const nome = document.getElementById("nomeAssinatura");
         documento.value = dados.cpfcnpj;
         nome.value = dados.nmrazaosocial;
+        const plano = document.getElementById("planoComercial");
+        const modalidade = document.getElementById("modalidadeComercial");
+        const mensalidade = document.getElementById("mensalidadeAcordada");
+        const linhaMensalidade = document.getElementById("linhaMensalidade");
+        plano.hidden = !requerPlano;
+        modalidade.required = requerPlano;
+        modalidade.value = "";
+        mensalidade.value = "";
+        mensalidade.required = false;
+        linhaMensalidade.hidden = true;
+        modalidade.onchange = () => {
+          linhaMensalidade.hidden = modalidade.value !== "MENSALIDADE";
+          mensalidade.required = modalidade.value === "MENSALIDADE";
+        };
         el.carregando.classList.add("hidden");
         return new Promise(resolve => {
           const terminar = value => { dialog.close(); resolve(value); };
@@ -352,7 +374,8 @@
               document.getElementById("erroPreenchimento").textContent = "Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos e o nome completo ou razão social.";
               return;
             }
-            terminar({cpfcnpj, nmrazaosocial});
+            const planoDados = requerPlano ? { modalidade_comercial: modalidade.value, mensalidade_acordada: modalidade.value === "MENSALIDADE" ? Number(mensalidade.value) : null } : {};
+            terminar({cpfcnpj, nmrazaosocial, ...planoDados});
           };
           document.getElementById("cancelarPreenchimento").onclick = () => terminar(null);
           dialog.oncancel = event => { event.preventDefault(); terminar(null); };
@@ -459,8 +482,9 @@
             cpfcnpj: contratoAtual.cpfcnpjcontratante || estabelecimento.cpfcnpj || "",
             nmrazaosocial: contratoAtual.nmrazaosocial || "",
           };
-          if (![11, 14].includes(dados.cpfcnpj.replace(/[^0-9a-z]/gi, "").length) || dados.nmrazaosocial.trim().length < 2) {
-            dados = await solicitarDados(dados);
+          const requerPlano = contratoAtual.conteudocontrato.includes("{{CONDICOES_COMERCIAIS}}");
+          if (requerPlano || ![11, 14].includes(dados.cpfcnpj.replace(/[^0-9a-z]/gi, "").length) || dados.nmrazaosocial.trim().length < 2) {
+            dados = await solicitarDados(dados, requerPlano);
             if (!dados) {
               window.location.replace(`portal-lead.html?leadestabelecimento_id=${estabelecimentoId}`);
               return;
