@@ -276,10 +276,6 @@
           campo("Tipo de estabelecimento", estabelecimento.tipo, { campo:"tipo", select:true, options:tipos }),
           campo("O que deseja vender", estabelecimento.tipovenda, { campo:"tipovenda", select:true, options:vendas }),
         );
-        const avisoEmail = document.createElement("p");
-        avisoEmail.className = "readonly-note";
-        avisoEmail.textContent = "Este e-mail é o contato da unidade. O e-mail usado para acessar o portal não é alterado aqui.";
-        cardDados.append(avisoEmail);
         const cardEndereco = document.createElement("section"); cardEndereco.className = "edit-card";
         cardEndereco.innerHTML = "<h3>Endereço</h3><div class='edit-grid'></div>";
         const enderecoGrid = cardEndereco.querySelector(".edit-grid");
