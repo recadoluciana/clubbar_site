@@ -622,7 +622,7 @@
       </div>
     </div>
     <script src="js/config.js"></script>
-    <script src="js/session.js"></script>
+    <script src="js/session.js?v=2"></script>
     <script>
       const form = document.getElementById("formParceiro"),
         btn = document.getElementById("btnEnviar"),
@@ -979,8 +979,7 @@
             throw new Error(m);
           }
           // Após o cadastro, o acesso é confirmado por código enviado por e-mail.
-          sessionStorage.removeItem("clubbar_portal_lead_token");
-          sessionStorage.removeItem("clubbar_portal_lead_activity");
+          ClubbarSession.clear();
           window.location.href = "portal-lead.html?cadastro=concluido";
         } catch (err) {
           const detalhe = String(err.message || "");

@@ -1,48 +1,65 @@
 (() => {
   "use strict";
   const TOKEN = "clubbar_portal_lead_token";
-  const ACTIVITY = "clubbar_portal_lead_activity";
-  const LIMIT = 30 * 60 * 1000;
+  const EXPIRY = "clubbar_portal_lead_expiry";
+  const OLD_ACTIVITY = "clubbar_portal_lead_activity";
+  const DURATION = 30 * 24 * 60 * 60 * 1000;
   const loginUrl = new URL("../portal-lead.html", document.currentScript.src).href;
   let ending = false;
+
+  function clear() {
+    localStorage.removeItem(TOKEN);
+    localStorage.removeItem(EXPIRY);
+    sessionStorage.removeItem(TOKEN);
+    sessionStorage.removeItem(OLD_ACTIVITY);
+  }
   function end() {
     if (ending) return;
     ending = true;
-    sessionStorage.removeItem(TOKEN);
-    sessionStorage.removeItem(ACTIVITY);
+    clear();
     location.replace(loginUrl);
   }
-  function check() {
-    const token = sessionStorage.getItem(TOKEN);
-    if (!token) return false;
-    const last = Number(sessionStorage.getItem(ACTIVITY));
-    if (!last || Date.now() - last >= LIMIT) { end(); return false; }
-    return true;
-  }
   function start(token) {
-    sessionStorage.setItem(ACTIVITY, String(Date.now()));
-    sessionStorage.setItem(TOKEN, token);
+    localStorage.setItem(TOKEN, token);
+    localStorage.setItem(EXPIRY, String(Date.now() + DURATION));
+    sessionStorage.removeItem(TOKEN);
+    sessionStorage.removeItem(OLD_ACTIVITY);
   }
-  window.ClubbarSession = { start, end };
-  // Existing sessions receive an initial activity time once during migration.
-  if (sessionStorage.getItem(TOKEN) && !sessionStorage.getItem(ACTIVITY)) {
-    sessionStorage.setItem(ACTIVITY, String(Date.now()));
+  // Preserva o acesso aberto antes da atualização; o servidor verifica sua validade.
+  const oldToken = sessionStorage.getItem(TOKEN);
+  if (oldToken && !localStorage.getItem(TOKEN)) start(oldToken);
+  function get() {
+    const token = localStorage.getItem(TOKEN);
+    const expires = Number(localStorage.getItem(EXPIRY));
+    if (!token) return null;
+    if (!expires || Date.now() >= expires) { clear(); return null; }
+    return token;
   }
-  check();
-  function activity() {
-    if (!check()) return;
-    if (Date.now() - Number(sessionStorage.getItem(ACTIVITY)) >= 1000) {
-      sessionStorage.setItem(ACTIVITY, String(Date.now()));
-    }
+  async function signOut() {
+    const token = get();
+    try {
+      if (token) await window.fetch(`${CLUBBAR_CONFIG.API_BASE_URL}/portal-parceiro/sair`, {
+        method: "POST", headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (_) {
+      // A limpeza local ainda é necessária se a rede estiver indisponível.
+    } finally { end(); }
   }
-  ["pointerdown", "pointermove", "keydown", "scroll", "touchstart"].forEach(event =>
-    document.addEventListener(event, activity, { passive: true, capture: true }));
-  window.addEventListener("focus", check);
-  window.addEventListener("pageshow", check);
-  document.addEventListener("visibilitychange", check);
+  window.ClubbarSession = { start, get, clear, end, signOut };
+
+  // Uma sessão revogada ou expirada deve voltar ao acesso por código.
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (resource, options) => {
+    const response = await originalFetch(resource, options);
+    const headers = new Headers(options?.headers || (resource instanceof Request ? resource.headers : undefined));
+    const token = localStorage.getItem(TOKEN);
+    if (response.status === 401 && token && headers.get("Authorization") === `Bearer ${token}`) end();
+    return response;
+  };
   window.addEventListener("storage", event => {
-    if ((event.key === TOKEN || event.key === null) && !sessionStorage.getItem(TOKEN)) end();
-    else check();
+    if (event.key === TOKEN || event.key === null) {
+      if (!get()) end();
+      else if (event.key === TOKEN && event.oldValue !== event.newValue) location.reload();
+    }
   });
-  setInterval(check, 1000);
 })();

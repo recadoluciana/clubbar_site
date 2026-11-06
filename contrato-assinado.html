@@ -11,9 +11,9 @@
   <header class="topbar"><a class="back" id="voltar" href="#">←</a><span class="brand"><img class="owl" src="assets/images/coruja.png" alt=""><img class="logo" src="assets/images/logo.png" alt="Clubbar"></span><span></span></header>
   <div class="state" id="estado">Carregando documentos contratuais...</div>
   <main id="conteudo" hidden><h1 class="lead" id="lead"></h1><h2 class="estab" id="estabelecimento"></h2><p class="intro">O contrato original e todas as retificações assinadas permanecem disponíveis para consulta.</p><section id="documentos"></section><a class="btn" id="voltarBtn" href="#">Voltar</a></main>
-  <script src="js/config.js"></script><script src="js/session.js"></script>
+  <script src="js/config.js"></script><script src="js/session.js?v=2"></script>
   <script>
-    const token=sessionStorage.getItem('clubbar_portal_lead_token');const id=Number(new URLSearchParams(location.search).get('leadestabelecimento_id'));const api=CLUBBAR_CONFIG.API_BASE_URL;const estado=document.getElementById('estado');const main=document.getElementById('conteudo');const voltar=`portal-lead.html?leadestabelecimento_id=${id}`;document.getElementById('voltar').href=voltar;document.getElementById('voltarBtn').href=voltar;
+    const token=ClubbarSession.get();const id=Number(new URLSearchParams(location.search).get('leadestabelecimento_id'));const api=CLUBBAR_CONFIG.API_BASE_URL;const estado=document.getElementById('estado');const main=document.getElementById('conteudo');const voltar=`portal-lead.html?leadestabelecimento_id=${id}`;document.getElementById('voltar').href=voltar;document.getElementById('voltarBtn').href=voltar;
     function dataHora(valor){if(!valor)return 'Data de assinatura não informada';const data=new Date(valor);if(Number.isNaN(data.getTime()))return 'Data de assinatura não informada';return `Assinado em ${data.toLocaleDateString('pt-BR')} às ${data.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`}
     function nomeDocumento(c){return c.tipoinstrumento==='RETIFICACAO'?`Retificação nº ${c.nrretificacao}`:`Contrato original • versão ${c.versao}`}
     function nomeArquivo(c){return c.tipoinstrumento==='RETIFICACAO'?`retificacao-${c.nrretificacao}-clubbar.pdf`:`contrato-original-clubbar.pdf`}

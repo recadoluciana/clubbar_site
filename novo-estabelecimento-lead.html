@@ -21,9 +21,9 @@
     <div class="grid"><div class="field"><label for="estado">Estado <span>*</span></label><select id="estado" required><option value="">Selecione o estado</option></select></div><div class="field"><label for="cidade">Cidade <span>*</span></label><select id="cidade" required disabled><option value="">Selecione primeiro o estado</option></select></div></div>
     <div class="actions"><button class="btn back" id="voltarRodape" type="button">Voltar</button><button class="btn" id="enviar" type="submit">Cadastrar estabelecimento</button></div>
   </form></main>
-  <script src="js/config.js"></script><script src="js/session.js"></script>
+  <script src="js/config.js"></script><script src="js/session.js?v=2"></script>
   <script>
-    const token=sessionStorage.getItem('clubbar_portal_lead_token');const api=CLUBBAR_CONFIG.API_BASE_URL;const $=id=>document.getElementById(id);const el={nome:$('nome'),tipo:$('tipo'),documento:$('documento'),estado:$('estado'),cidade:$('cidade'),cep:$('cep'),endereco:$('endereco'),numero:$('numero'),bairro:$('bairro'),complemento:$('complemento'),form:$('form'),enviar:$('enviar')};
+    const token=ClubbarSession.get();const api=CLUBBAR_CONFIG.API_BASE_URL;const $=id=>document.getElementById(id);const el={nome:$('nome'),tipo:$('tipo'),documento:$('documento'),estado:$('estado'),cidade:$('cidade'),cep:$('cep'),endereco:$('endereco'),numero:$('numero'),bairro:$('bairro'),complemento:$('complemento'),form:$('form'),enviar:$('enviar')};
     function toast(msg,error=false){document.querySelectorAll('.toast').forEach(x=>x.remove());const x=document.createElement('div');x.className='toast'+(error?' error':'');x.textContent=msg;document.body.append(x);setTimeout(()=>x.remove(),7000)}
 function nums(v){return String(v||'').replace(/\D/g,'')}
 function doc(v){return String(v||'').replace(/[^0-9a-z]/gi,'').toUpperCase()}

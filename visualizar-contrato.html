@@ -160,10 +160,10 @@
     </main>
 
     <script src="js/config.js"></script>
-    <script src="js/session.js"></script>
+    <script src="js/session.js?v=2"></script>
     <script>
       const STORAGE_KEY = "clubbar_portal_lead_token";
-      const token = sessionStorage.getItem(STORAGE_KEY);
+      const token = ClubbarSession.get();
       const params = new URLSearchParams(window.location.search);
       const estabelecimentoId = Number(params.get("leadestabelecimento_id"));
       const contratoId = Number(params.get("contrato_id"));
