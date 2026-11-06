@@ -13,7 +13,7 @@
     .page-head h1{margin:0;color:#1683ff;font-size:clamp(22px,4vw,30px)}.page-head p{margin:5px 0 0;color:#5f6368;font-size:14px}
     .establishments-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px}.establishments-head .intro{margin:0}.add-establishment{padding:9px 13px;border:0;border-radius:11px;background:#1683ff;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.add-establishment:hover{background:#0b6fdd}
     main{width:min(920px,100%);margin:auto;padding:20px 16px 36px}.intro{margin:0 0 14px;font-size:16px}.cards{display:grid;grid-template-columns:1fr;gap:13px}
-    .store{width:100%;padding:0;border:1px solid #dedede;border-radius:18px;background:#fff;text-align:left;box-shadow:0 2px 7px #0002;overflow:hidden;cursor:pointer}
+    .store{width:100%;padding:0;border:1px solid #dedede;border-radius:18px;background:#fff;text-align:left;box-shadow:0 2px 7px #0002;overflow:hidden}.store-clickable{cursor:pointer}
     .store-body{padding:17px}.store-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.store h2{margin:0;min-width:0;overflow-wrap:anywhere;color:#1683ff;font-size:20px}.store-continue{display:inline-flex;text-decoration:none;align-items:center;gap:6px;flex-shrink:0;color:#1683ff;font-size:13px;font-weight:700}.arrow{font-size:25px;line-height:1}.badges{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 12px}.badge{padding:4px 9px;border-radius:20px;background:#eef5ff;color:#116cc5;font-size:11px}.badge.status{background:#fff4d0;color:#755800}.info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;padding-top:11px;border-top:1px solid #eee}.info div{min-width:0;color:#5f6368;font-size:13px;overflow-wrap:anywhere}.info strong{display:block;margin-bottom:2px;color:#202124;font-size:11px;font-weight:normal}
     .store-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}.partner-status{margin:0;color:#188646;font-size:14px;font-weight:700}.store-action{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:9px 14px;border-radius:11px;font-size:13px;font-weight:700;text-decoration:none}.partner-action{background:#ffc83d;color:#171717}.documents-action{background:#edf6ef;color:#176b3b;border:1px solid #a9d8b5}.store-action:focus-visible,.store-continue:focus-visible{outline:2px solid #1683ff;outline-offset:3px}
     .state{padding:55px 20px;text-align:center;color:#666}.retry{margin-top:15px;padding:11px 18px;border:0;border-radius:12px;background:#ffc83d;font-weight:700;cursor:pointer}
@@ -49,14 +49,21 @@
     function card(e) {
       const card = document.createElement('article');
       card.className = 'store';
-      card.tabIndex = 0;
+      const contratos = e.contratos || [];
+      const parceriaAceita = ['ACEITOU_PARCERIA', 'CONVERTIDO'].includes(e.status);
+      const retificacaoPendente = contratos.some(c => c.tipoinstrumento === 'RETIFICACAO' && ['RASCUNHO', 'ENVIADO'].includes(c.status));
+      const precisaContinuar = !parceriaAceita || retificacaoPendente;
       const destino = `portal-lead.html?leadestabelecimento_id=${encodeURIComponent(e.leadestabelecimento_id)}`;
-      card.addEventListener('click', event => {
-        if (!event.target.closest('a, button')) location.href = destino;
-      });
-      card.addEventListener('keydown', event => {
-        if (event.target === card && event.key === 'Enter') location.href = destino;
-      });
+      if (precisaContinuar) {
+        card.classList.add('store-clickable');
+        card.tabIndex = 0;
+        card.addEventListener('click', event => {
+          if (!event.target.closest('a, button')) location.href = destino;
+        });
+        card.addEventListener('keydown', event => {
+          if (event.target === card && event.key === 'Enter') location.href = destino;
+        });
+      }
       const body = document.createElement('div');
       body.className = 'store-body';
       const title = document.createElement('div');
@@ -72,11 +79,10 @@
       arrow.setAttribute('aria-hidden', 'true');
       arrow.textContent = '›';
       continuar.append(arrow);
-      title.append(nome, continuar);
-      const contratos = e.contratos || [];
+      title.append(nome);
+      if (precisaContinuar) title.append(continuar);
       const assinados = contratos.filter(c => c.status === 'ACEITO' && c.conteudocontrato);
       const contratoAssinado = contratos.some(c => c.status === 'ACEITO' && c.tipoinstrumento !== 'RETIFICACAO');
-      const parceriaAceita = ['ACEITOU_PARCERIA', 'CONVERTIDO'].includes(e.status);
       const badges = document.createElement('div');
       badges.className = 'badges';
       for (const value of [tipoLoja[e.tipo] || e.tipo, tipoVenda[e.tipovenda] || e.tipovenda, contratoAssinado ? 'Contrato assinado' : 'Assinatura de contrato pendente', nomesStatus[e.status] || e.status]) {

@@ -1851,6 +1851,16 @@
           : "";
         const resumo = await api(`/portal-parceiro/resumo${filtroEstabelecimento}`);
         resumoAtual = resumo;
+        const unidadeAtual = (resumo.estabelecimentos || []).find(
+          item => item.leadestabelecimento_id === estabelecimentoSelecionadoId,
+        );
+        const retificacaoPendente = (unidadeAtual?.contratos || []).some(
+          item => item.tipoinstrumento === "RETIFICACAO" && ["RASCUNHO", "ENVIADO"].includes(item.status),
+        );
+        if (!paginaAtual && unidadeAtual && ["ACEITOU_PARCERIA", "CONVERTIDO"].includes(unidadeAtual.status) && !retificacaoPendente) {
+          window.location.replace("portal-lead-estabelecimentos.html");
+          return;
+        }
 
         elementos.saudacao.textContent = resumo.nmresponsavel || "parceiro";
         document.querySelectorAll("[data-nome-lead]").forEach((elemento) => {
