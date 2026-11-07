@@ -1525,14 +1525,7 @@
               <label for="novoEstabelecimentoDocumento">CPF ou CNPJ <span class="required">*</span></label>
               <input class="form-control" id="novoEstabelecimentoDocumento" inputmode="text" autocapitalize="characters" required placeholder="Informe o CPF ou CNPJ" />
             </div>
-            <fieldset class="new-establishment-choices">
-              <legend>O que deseja vender? <span class="required">*</span></legend>
-              <div class="new-establishment-choice-grid">
-                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="PRODUTOS" required><span>Somente produtos</span></label>
-                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="INGRESSOS"><span>Somente ingressos</span></label>
-                <label class="new-establishment-choice"><input type="radio" name="novoEstabelecimentoVenda" value="AMBOS"><span>Produtos e ingressos</span></label>
-              </div>
-            </fieldset>
+
             <label class="responsible-toggle">
               <input id="novoEstabelecimentoUsarResponsavelPrincipal" type="checkbox" checked>
               <span>Usar o responsável principal da empresa</span>
@@ -2511,7 +2504,7 @@
       async function cadastrarNovoEstabelecimento(evento) {
         evento.preventDefault();
         const usarResponsavelPrincipal = elementos.novoEstabelecimentoUsarResponsavelPrincipal.checked;
-        const tipoVenda = elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]:checked')?.value;
+        const tipoVenda = "AMBOS";
         if (!elementos.novoEstabelecimentoNome.value.trim()) {
           mostrarToast("Informe o nome do estabelecimento.", true);
           elementos.novoEstabelecimentoNome.focus();
@@ -2532,11 +2525,7 @@
           elementos.novoEstabelecimentoDocumento.focus();
           return;
         }
-        if (!tipoVenda) {
-          mostrarToast("Selecione o que deseja vender.", true);
-          elementos.formEstabelecimento.querySelector('input[name="novoEstabelecimentoVenda"]')?.focus();
-          return;
-        }
+
         if (elementos.novoEstabelecimentoCep.value.replace(/\D/g, "").length !== 8) {
           mostrarToast("Informe um CEP válido com 8 dígitos.", true);
           elementos.novoEstabelecimentoCep.focus();

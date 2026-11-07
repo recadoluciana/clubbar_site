@@ -810,7 +810,6 @@
             <h2 data-unidade-titulo>Dados do estabelecimento</h2>
             <div class="group"><input data-campo="nmestabelecimento" aria-label="Nome do estabelecimento ou produtora" maxlength="160" placeholder="Nome do estabelecimento *"></div>
             <div class="group"><input id="cpfcnpj-${indice}" aria-label="CPF ou CNPJ" data-campo="cpfcnpj" required inputmode="text" autocapitalize="characters" maxlength="18" placeholder="CPF ou CNPJ *"></div>
-            <fieldset class="choice-group"><legend>O que deseja vender? *</legend><div class="choice-grid"><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="PRODUTOS"><span>Somente produtos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="INGRESSOS"><span>Somente ingressos</span></label><label class="choice-card"><input type="radio" name="tipovenda-${indice}" value="AMBOS"><span>Produtos e ingressos</span></label></div></fieldset>
           </section>
           <section data-step="3">
             <h2>Endereço</h2><p class="step-help">Informe o CEP para preencher o endereço.</p>
@@ -869,7 +868,7 @@
           telefone_responsavel: informarResponsavel ? nums(card.querySelector('[data-campo="telefone_responsavel"]').value) || null : null,
           email_responsavel: informarResponsavel ? card.querySelector('[data-campo="email_responsavel"]').value.trim().toLowerCase() || null : null,
           tipo: card.querySelector('[data-campo="tipo"]').value,
-          tipovenda: card.querySelector('input[type="radio"]:checked')?.value || "",
+          tipovenda: "AMBOS",
           cpfcnpj: documentoFiscal(card.querySelector('[data-campo="cpfcnpj"]').value),
           telefone: null,
           email: null,
@@ -916,7 +915,6 @@
             card.querySelector('[data-campo="cpfcnpj"]').classList.add("invalid");
           }
           if (!item.tipo) erros.push("selecione o tipo");
-          if (!item.tipovenda) erros.push("selecione o tipo de venda");
           if (item.cep?.length !== 8 || card.querySelector('[data-campo="cep"]').dataset.cepValidado !== item.cep) {
             erros.push("informe e confirme um CEP válido");
             card.querySelector('[data-campo="cep"]').classList.add("invalid");
@@ -1030,7 +1028,6 @@
         if (etapaAtual === 2) {
           if (campo('nmestabelecimento').value.trim().length < 2) mensagem = 'Informe o nome do estabelecimento ou da produtora.';
           else if (![11,14].includes(documentoFiscal(campo('cpfcnpj').value).length)) mensagem = 'Informe um CPF ou CNPJ válido.';
-          else if (!card.querySelector('input[type="radio"]:checked')) mensagem = 'Selecione o que deseja vender.';
         }
         if (etapaAtual === 3) {
           const cep = nums(campo('cep').value);
